@@ -46,6 +46,7 @@
               }).join('')}
             </div>
             <label class="toggle"><input type="checkbox" id="slow"> 🐢 Slow (0.75x)</label>
+            <p class="muted small">🦜 Pico: "Primero lo lees; la próxima vez te lo canto a velocidad de nativo. El oído también aprueba."</p>
             <div class="row center"><button class="btn big" id="go" type="button">Start ▶</button></div>
           </div>`;
         $('#go', view).onclick = () => { rate = $('#slow', view).checked ? 0.75 : 1; playPassage(pickPassage(level)); };
@@ -57,7 +58,7 @@
         const format = engine.format(entry, level, { noMic: !hasMic });
         // stable shuffled options per question for this round
         const qs = p.qs.map(x => ({ ...x, opts: shuffle(x.opts) }));
-        let qi = 0, score = 0, answered = false;
+        let qi = 0, score = 0, answered = false, combo = 0, comboXp = 0;
 
         function passageBlock(showText) {
           if (!showText) return `
@@ -111,7 +112,11 @@
             const ok = norm(b.dataset.v) === norm(q.ok);
             $$('.opt-line', view).forEach(x => { x.disabled = true; if (norm(x.dataset.v) === norm(q.ok)) x.classList.add('right'); });
             if (!ok) b.classList.add('wrong');
-            if (ok) { score++; fx.sfx('correct'); } else fx.sfx('wrong');
+            if (ok) {
+              score++; combo++;
+              if (combo % 3 === 0) { comboXp += 10; fx.floatText($('.card', view), '🔥 racha x' + combo + ' +10 XP'); }
+              fx.sfx('correct');
+            } else { combo = 0; fx.sfx('wrong'); }
             $('#qfb', view).innerHTML = `
               <div class="fb ${ok ? 'good' : 'bad'}">${ok ? 'Correcto ✓' : `Not quite — <b>${esc(q.ok)}</b>`}</div>
               <div class="fb-actions"><button class="btn" id="qn" type="button">${qi + 1 < 6 ? 'Next →' : 'Finish 🏁'}</button></div>`;
@@ -125,7 +130,7 @@
         function finish() {
           const okAll = score === 6;
           const res = engine.result(level, 'reading', p.id, okAll, format);
-          let xp = score * 10;
+          let xp = score * 10 + comboXp;
           if (res.justMastered) {
             xp += 20;
             fx.confetti(140);
@@ -141,7 +146,7 @@
             fx.stamp('¡LECTOR!');
             fx.confetti(240);
           }
-          player.award(xp, { game: 'Lectura: ' + p.title });
+          player.award(xp, { game: 'Lectura: ' + p.title, exam: level === 'EXAM' });
           view.innerHTML = `
             <div class="card center endcard">
               <div class="end-emoji">${okAll ? '🏆' : '📖'}</div>

@@ -37,6 +37,7 @@ const BADGES = [
 const QUESTS = [
   { id: 'xp80', label: 'Earn 80 XP today', goal: 80, reward: 25 },
   { id: 'games3', label: 'Finish 3 games today', goal: 3, reward: 20 },
+  { id: 'exam1', label: 'Play a game at EXAM level', goal: 1, reward: 30 },
 ];
 
 const MASCOT_LINES = [
@@ -52,6 +53,9 @@ const MASCOT_LINES = [
   'Exam week? La Entrevista first — the 10 questions, out loud, like the real one. 🎙️',
   'In the exam they ask with "usted". Answer polite: podría, usted, por favor. 🇲🇽',
   'One passage a day, 6/6, and in two weeks you have read all 16 — five times. 📖',
+  'Tú vas en B1 — practica donde duele, no donde es fácil. 🎯',
+  'Tres seguidas y la racha sube: ¡+10 XP! El pájaro se pone contento. 🔥',
+  'The exam is a boss fight. 10 questions, 16 passages, 683 cards — you farm them one by one. 🎮',
 ];
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
@@ -79,6 +83,7 @@ const player = {
       d.daily = { date: todayStr(), xp: 0, games: 0, claimed: {} };
       this.save();
     }
+    if (typeof d.daily.exam !== 'number') d.daily.exam = 0;
   },
 
   save() { store.set('player', this.data); },
@@ -107,6 +112,7 @@ const player = {
     }
     d.daily.xp += xp;
     if (meta.game) d.daily.games += 1;
+    if (meta.exam) d.daily.exam += 1;
     d.xpTotal += xp;
     d.xp += xp;
     d.gamesPlayed += 1;
@@ -129,7 +135,7 @@ const player = {
     const d = this.data;
     for (const q of QUESTS) {
       if (d.daily.claimed[q.id]) continue;
-      const prog = q.id === 'xp80' ? d.daily.xp : d.daily.games;
+      const prog = q.id === 'xp80' ? d.daily.xp : (q.id === 'games3' ? d.daily.games : (d.daily.exam || 0));
       if (prog >= q.goal) {
         d.daily.claimed[q.id] = true;
         this.save();

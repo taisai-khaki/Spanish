@@ -53,6 +53,7 @@
             <p class="muted small">${hasMic
               ? '🎤 Mic ready — answers out loud are scored on keywords, not on being word-perfect.'
               : '⚠️ No mic in this browser — you\'ll answer in writing (still real practice). Chrome/Edge unlocks speaking.'}</p>
+            <p class="muted small">🦜 Pico: "En el examen respondes de <b>usted</b>, con "por favor" y sin prisa. Y cada 3 seguidas: +10 XP."</p>
             <div class="row center"><button class="btn big" id="go" type="button">Start ▶</button></div>
           </div>`;
         $('#go', view).onclick = () => { rate = $('#slow', view).checked ? 0.75 : 1; round(); };
@@ -61,7 +62,7 @@
       function round() {
         const pool = engine.order(engine.unmastered(level, 'interview'), level);
         if (!pool.length) return finish(null, true);
-        let qi = 0, xp = 0, locked = 0;
+        let qi = 0, xp = 0, locked = 0, combo = 0;
 
         function item(p) {
           const it = p.item;
@@ -187,7 +188,11 @@
             if (text != null) { const s = scoreAnswer(text); hits = s.hits; n = s.n; meta = { pct: Math.round((n / it.need.tokens.length) * 100) }; }
             const res = engine.result(level, 'interview', it.id, ok, format);
             let gained = ok ? (XPMAP[format] || 10) : 0;
-            if (ok && format === 'ask-speak' && meta && meta.pct >= 80) { gained = 20; player.flag('speak90'); }
+            if (ok) {
+              combo++;
+              if (format === 'ask-speak' && meta && meta.pct >= 80) { gained = 20; player.flag('speak90'); }
+              if (combo % 3 === 0) { gained += 10; fx.floatText($('.card', view), '🔥 racha x' + combo + ' +10 XP'); }
+            } else combo = 0;
             if (ok) {
               fx.sfx(res.justMastered ? 'perfect' : 'correct');
               fx.floatText($('.card', view), '+' + gained + ' XP');
@@ -238,7 +243,7 @@
             fx.stamp('¡LISTO PARA LA ENTREVISTA!');
             fx.confetti(240);
           }
-          player.award(xp, { game: 'La Entrevista' });
+          player.award(xp, { game: 'La Entrevista', exam: level === 'EXAM' });
           view.innerHTML = `
             <div class="card center endcard">
               <div class="end-emoji">${complete ? '🏆' : '🎙️'}</div>

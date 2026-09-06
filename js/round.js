@@ -71,7 +71,7 @@ function runRound(view, cfg) {
 
   if (!pool.length) return showComplete(view, cfg);
 
-  let qi = 0, xp = 0, locked = 0, missFlag = {}, misses = [];
+  let qi = 0, xp = 0, locked = 0, missFlag = {}, misses = [], combo = 0;
   let clean = null;
   const hasMic = !!makeRecognizer();
 
@@ -103,9 +103,15 @@ function runRound(view, cfg) {
         const res = engine.result(level, p.kind, p.id, ok, format);
         let gained = 0;
         if (ok) {
+          combo++;
           gained = XPMAP[format] || 10;
           if (format === 'speak' && meta && meta.pct >= 90) gained = 20;
           if (format === 'speak' && meta && meta.pct >= 90) player.flag('speak90');
+          if (combo % 3 === 0) {
+            gained += 10;
+            if (combo === 3) fx.stamp('¡RACHA!');
+            fx.floatText($('.card', view), '🔥 racha x' + combo + ' +10 XP');
+          }
           fx.sfx(res.justMastered ? 'perfect' : (format === 'speak' && meta && meta.pct >= 90 ? 'perfect' : 'correct'));
           fx.floatText($('.card', view), '+' + gained + ' XP');
           if (res.justMastered) {
@@ -117,6 +123,7 @@ function runRound(view, cfg) {
             player.toast(`<b>${esc(labelOf(p))}</b> — 5/5, it's yours now 🔒 (+20 XP)`, { icon: '🔒' });
           }
         } else {
+          combo = 0;
           fx.sfx('wrong');
           fx.shake($('.card', view));
           if (!missFlag[p.id]) { missFlag[p.id] = true; misses.push(p); }
@@ -149,7 +156,7 @@ function runRound(view, cfg) {
     if (clean && clean.cleanup) clean.cleanup();
     const remaining = engine.unmastered(level, cfg.kind || null).length;
     if (cfg.onDone) cfg.onDone({ xp, locked, poolSize: pool.length, missedCount: misses.length });
-    player.award(xp, { game: title });
+    player.award(xp, { game: title, exam: level === 'EXAM' });
     view.innerHTML = `
       <div class="card center endcard">
         <div class="end-emoji">${icon}</div>

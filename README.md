@@ -44,9 +44,9 @@ Exam badges: 🎙️ all 10 interview questions · 📖 all 16 passages · 🇲�
 
 - **A1 (128 items):** 82 words · 20 sentences · 10 grammar rules · conversations: taxi, taquería
 - **A2 (86 items):** 56 words · 12 sentences · 10 grammar rules · conversation: the doctor
-- **B1 (50 items):** 30 words · 6 sentences · 6 grammar rules · conversation: your boss
+- **B1 (115 items, default level):** 71 words (incl. idioms, formal register, bureaucracy) · 16 complex sentences (subjunctive, relatives, passive, conditionals) · 10 grammar rules · conversations: your boss, the job interview
 - **EXAM (938 items):** 196 words · 16 sentences · 9 grammar rules · 8 dialogue lines · 10 interview questions · 16 passages (96 questions) · 683 bank questions
-- **The fun layer:** XP, an evolving bird (🥚→🦜 Pico el Perico), daily streak, daily quests, 17 badges, combos, confetti, stamps, synthesized sound effects.
+- **The fun layer:** XP, an evolving bird (🥚→🦜 Pico el Perico), daily streak, 3 daily quests (incl. one EXAM quest), **racha combos** (3 in a row = +10 XP, in every game), 17 badges, confetti, stamps, synthesized sound effects, and Pico giving tips from the setup screens.
 
 ## Run it
 
@@ -66,6 +66,8 @@ python3 -m http.server 8080
 - [`js/data-bank.js`](js/data-bank.js) — the real 683-question bank (generated from `naturalizacion.mx/data/questions.json`).
 
 Add entries to any of them and every game picks them up automatically — each new item joins the mastery pipeline (5/5 to lock in).
+
+> The app **starts on B1** (the lab's default level). A1/A2 are there as warm-ups — switch pills whenever you want to drill older material.
 
 ## 15-minute daily routine
 

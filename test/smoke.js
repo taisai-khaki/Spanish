@@ -97,6 +97,12 @@ t('every interview item has tip + model + need', run('DATA.EXAM.interview.every(
 const examTotal = run('engine.stats("EXAM").total');
 const expectedTotal = run('DATA.EXAM.words.length + DATA.EXAM.sentences.length + DATA.EXAM.grammar.length + DATA.EXAM.dialogues[0].lines.length + 10 + 16 + 683');
 t('EXAM total items consistent (' + examTotal + ')', examTotal === expectedTotal);
+t('B1 deck is B1-sized (115 items: 71w/16s/10g/18 lines)', run('engine.stats("B1").total') === 115
+  && run('DATA.B1.words.length') === 71 && run('DATA.B1.sentences.length') === 16
+  && run('DATA.B1.grammar.length') === 10 && run('DATA.B1.dialogues.length') === 2);
+t('B1 has idioms + formal + errands categories', new Set(run('DATA.B1.words.map(w => w.cat)')).has('idioms')
+  && new Set(run('DATA.B1.words.map(w => w.cat)')).has('formal')
+  && new Set(run('DATA.B1.words.map(w => w.cat)')).has('errands'));
 
 console.log('== mastery engine (regression) ==');
 t('5 correct → justMastered on 5th', run(`
@@ -212,11 +218,19 @@ t('Entrevista elsewhere shows the complete screen (no interview items)', run(`
     g.start(v, 'A1');
     return v.innerHTML.includes('Todo aprendido'); })()`));
 
-console.log('== player & badges ==');
+console.log('== player, badges & quests ==');
 t('17 badges incl. the 3 exam ones', run('BADGES.length') === 17 && run("BADGES.some(b => b.id === 'entrevista10') && BADGES.some(b => b.id === 'lectura16') && BADGES.some(b => b.id === 'ciudadano')"));
+t('3 daily quests incl. the EXAM one', run('QUESTS.length') === 3 && run("QUESTS.some(q => q.id === 'exam1')"));
 t('award() runs with EXAM stats in checkBadges', run(`
   (function(){ player.init(); player.award(50, { game: 'smoke' });
     return player.data.xpTotal >= 50 && player.data.badges && true; })()`));
+t('EXAM quest auto-claims after one EXAM-level game', run(`
+  (function(){
+    const d = player.data;
+    d.daily = { date: todayStr(), xp: 0, games: 0, claimed: {}, exam: 0 };
+    player.award(10, { game: 'Lectura test', exam: true });
+    return d.daily.claimed['exam1'] === true && (d.daily.exam || 0) >= 1;
+  })()`));
 
 console.log('');
 console.log(pass + ' passed, ' + fail + ' failed');

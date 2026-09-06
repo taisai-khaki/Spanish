@@ -248,6 +248,52 @@ window.DATA = (function () {
     { es: 'la náusea', en: 'nausea', cat: 'health' },
     { es: 'la inflamación', en: 'inflammation', cat: 'health' },
     { es: 'la tensión', en: 'tension / blood pressure', cat: 'health' },
+    // idioms (B1 — natives live here)
+    { es: 'echar de menos', en: 'to miss (a person or place)', cat: 'idioms' },
+    { es: 'ser pan comido', en: 'a piece of cake', cat: 'idioms' },
+    { es: 'estar hasta el cuello', en: 'to be up to one\'s neck (in work)', cat: 'idioms' },
+    { es: 'no tener pelos en la lengua', en: 'not to mince words', cat: 'idioms' },
+    { es: 'quedarse con la boca abierta', en: 'to be left with your mouth open (in shock)', cat: 'idioms' },
+    { es: 'ponerse las pilas', en: 'to get your act together', cat: 'idioms' },
+    { es: 'estar en las nubes', en: 'to be in the clouds (spaced out)', cat: 'idioms' },
+    { es: 'dar en el clavo', en: 'to hit the nail on the head', cat: 'idioms' },
+    { es: 'costar un ojo de la cara', en: 'to cost an arm and a leg', cat: 'idioms' },
+    { es: 'estar hecho un flan', en: 'to be scared to death', cat: 'idioms' },
+    { es: 'tener la sartén por el mango', en: 'to have the upper hand', cat: 'idioms' },
+    { es: 'pasar página', en: 'to turn the page / move on', cat: 'idioms' },
+    // formal / functional
+    { es: 'por lo tanto', en: 'therefore', cat: 'formal' },
+    { es: 'en cuanto a', en: 'as for', cat: 'formal' },
+    { es: 'desde mi punto de vista', en: 'from my point of view', cat: 'formal' },
+    { es: 'a fin de cuentas', en: 'after all', cat: 'formal' },
+    { es: 'sin duda', en: 'without a doubt', cat: 'formal' },
+    { es: 'de hecho', en: 'in fact', cat: 'formal' },
+    { es: 'para empezar', en: 'to begin with', cat: 'formal' },
+    { es: 'en principio', en: 'in principle', cat: 'formal' },
+    // work
+    { es: 'el informe', en: 'report', cat: 'work' },
+    { es: 'el colega', en: 'colleague', cat: 'work' },
+    { es: 'la jornada', en: 'working day', cat: 'work' },
+    { es: 'el permiso', en: 'time off / permit', cat: 'work' },
+    { es: 'el turno', en: 'shift / turn', cat: 'work' },
+    { es: 'adelantar', en: 'to advance / to pay in advance', cat: 'work' },
+    { es: 'negociar', en: 'to negotiate', cat: 'work' },
+    { es: 'el acuerdo', en: 'agreement / deal', cat: 'work' },
+    // errands & bureaucracy
+    { es: 'el trámite', en: 'paperwork / procedure', cat: 'errands' },
+    { es: 'la cita', en: 'appointment', cat: 'errands' },
+    { es: 'los antecedentes', en: 'background / record (official)', cat: 'errands' },
+    { es: 'el recibo', en: 'receipt', cat: 'errands' },
+    { es: 'la fianza', en: 'deposit (rental)', cat: 'errands' },
+    { es: 'renovar', en: 'to renew', cat: 'errands' },
+    { es: 'la garantía', en: 'guarantee / warranty', cat: 'errands' },
+    // opinions & feelings
+    { es: 'preocupado', en: 'worried', cat: 'emotions' },
+    { es: 'orgulloso', en: 'proud', cat: 'emotions' },
+    { es: 'decepcionado', en: 'disappointed', cat: 'emotions' },
+    { es: 'impresionado', en: 'impressed', cat: 'emotions' },
+    { es: 'en desacuerdo', en: 'in disagreement', cat: 'emotions' },
+    { es: 'opinar', en: 'to have an opinion', cat: 'emotions' },
   ];
 
   const B1S = [
@@ -257,6 +303,16 @@ window.DATA = (function () {
     { en: 'We should meet this weekend.', es: 'Deberíamos encontrarnos este fin de semana.', ans: ['Deberíamos', 'encontrarnos', 'este', 'fin', 'de', 'semana'], distr: ['encontramos', 'debe', 'el'], explain: '"We should" = <b>deberíamos</b> (deber, plural -íamos).' },
     { en: "I haven't been to Mexico City for a long time.", es: 'No he estado en la Ciudad de México en mucho tiempo.', ans: ['No', 'he', 'estado', 'en', 'la', 'Ciudad', 'de', 'México', 'en', 'mucho', 'tiempo'], distr: ['estuve', 'estoy', 'ha'], explain: 'Present perfect: <b>no he estado</b> — recent past connected to now.' },
     { en: "If it rains, we'll stay home.", es: 'Si llueve, nos quedaremos en casa.', ans: ['Si', 'llueve', 'nos', 'quedaremos', 'en', 'casa'], distr: ['queda', 'lluvia', 'quedamos'], explain: 'Real condition: <b>si + present</b>, main clause in <b>future</b>.' },
+    { en: 'I hope you can pass the exam.', es: 'Espero que puedas aprobar el examen.', ans: ['Espero', 'que', 'puedas', 'aprobar', 'el', 'examen'], distr: ['puedes', 'aprobó', 'oye'], explain: 'esperar + que → <b>subjunctive</b>: puedas.' },
+    { en: 'He is the most helpful person I have met.', es: 'Es la persona más servicial que he conocido.', ans: ['Es', 'la', 'persona', 'más', 'servicial', 'que', 'he', 'conocido'], distr: ['conozco', 'fue', 'muy'], explain: 'superlative + <b>present perfect</b> (he conocido).' },
+    { en: 'I don\'t have the document they asked for.', es: 'No tengo el documento que me pidieron.', ans: ['No', 'tengo', 'el', 'documento', 'que', 'me', 'pidieron'], distr: ['pidió', 'tienes', 'ayer'], explain: 'relative <b>que</b> — no extra "lo" (English traps you: "it that" ✗).' },
+    { en: 'The appointment was canceled by the office.', es: 'La cita fue cancelada por la oficina.', ans: ['La', 'cita', 'fue', 'cancelada', 'por', 'la', 'oficina'], distr: ['cancelo', 'es', 'cancela'], explain: 'passive: <b>fue + past participle</b>.' },
+    { en: 'If I had more time, I would study every day.', es: 'Si tuviera más tiempo, estudiaría todos los días.', ans: ['Si', 'tuviera', 'más', 'tiempo', 'estudiaría', 'todos', 'los', 'días'], distr: ['tengo', 'estudio', 'tendría'], explain: 'unreal condition: <b>imperfect + conditional</b> — never "si tendría".' },
+    { en: 'Even if you are tired, keep practicing.', es: 'Aunque estés cansado, sigue practicando.', ans: ['Aunque', 'estés', 'cansado', 'sigue', 'practicando'], distr: ['estás', 'practico', 'pero'], explain: 'aunque + unknown/possible → <b>subjunctive</b>: estés.' },
+    { en: 'I think the exam is not going to be that hard.', es: 'Creo que el examen no va a ser tan difícil.', ans: ['Creo', 'que', 'el', 'examen', 'no', 'va', 'a', 'ser', 'tan', 'difícil'], distr: ['creía', 'será', 'mucho'], explain: 'creer + que → <b>indicative</b> (you affirm it).' },
+    { en: 'I was so nervous that I could not sleep.', es: 'Estaba tan nervioso que no podía dormir.', ans: ['Estaba', 'tan', 'nervioso', 'que', 'no', 'podía', 'dormir'], distr: ['estoy', 'dormí', 'muy'], explain: '<b>tan … que</b> = so … that.' },
+    { en: 'This is the apartment I have been looking for.', es: 'Este es el apartamento que llevo buscando.', ans: ['Este', 'es', 'el', 'apartamento', 'que', 'llevo', 'buscando'], distr: ['busco', 'fui', 'voy'], explain: '<b>llevar + gerund</b> = "I have been …-ing".' },
+    { en: 'They are going to pay us on Friday.', es: 'Nos van a pagar el viernes.', ans: ['Nos', 'van', 'a', 'pagar', 'el', 'viernes'], distr: ['pagan', 'pagarán', 'sábado'], explain: '<b>ir a + infinitive</b> = going to.' },
   ];
 
   const B1G = [
@@ -266,6 +322,10 @@ window.DATA = (function () {
     { id: 'g-b1-4', en: 'I forgot to call her.', correct: 'Se me olvidó llamarla.', wrongs: ['Me se olvidó llamarla.', 'Olvidése llamarla.'], explain: 'Reflexive order: <b>se me</b> olvidó. "To call her" = llamarla.' },
     { id: 'g-b1-5', en: 'She likes the museums.', correct: 'A ella le gustan los museos.', wrongs: ['A ella le gusta los museos.', 'A ella le gustan la museos.'], explain: 'Plural thing → <b>gustan</b> + <i>los</i> (agreement all the way).' },
     { id: 'g-b1-6', en: "I don't agree with the proposal.", correct: 'No estoy de acuerdo con la propuesta.', wrongs: ['No estoy de acuerdo a la propuesta.', 'No estoy en acuerdo con la propuesta.'], explain: 'Fixed expression: <b>estar de acuerdo con</b>.' },
+    { id: 'g-b1-7', en: 'I am glad that you passed the exam.', correct: 'Me alegra que apruebes el examen.', wrongs: ['Me alegra que apruebas el examen.', 'Me alegra que aprobó el examen.'], explain: 'Feelings + que → <b>subjunctive</b>: apruebes (me alegra, me da miedo, me sorprende…).' },
+    { id: 'g-b1-8', en: 'He is the lawyer who defended me.', correct: 'Es el abogado que me defendió.', wrongs: ['Es el abogado el cual lo defendió.', 'Es el abogado que lo defendí.'], explain: 'Relative <b>que</b>, no extra "lo" — English "the one that it" has no Spanish twin.' },
+    { id: 'g-b1-9', en: 'The invoice is paid on the fifteenth.', correct: 'La factura se paga el día quince.', wrongs: ['La factura se es pagada el día quince.', 'La factura es pagada por uno el día quince.'], explain: 'Spanish passive is <b>se + verb</b> — "is paid by one" is a literal English translation.' },
+    { id: 'g-b1-10', en: 'If I had more money, I would pay the debt.', correct: 'Si tuviera más dinero, pagaría la deuda.', wrongs: ['Si tengo más dinero, pagaría la deuda.', 'Si tendría más dinero, pago la deuda.'], explain: 'Unreal condition: <b>si + imperfect + conditional</b> — never "si tendría".' },
   ];
 
   /* ---------- real conversations ---------- */
@@ -326,6 +386,21 @@ window.DATA = (function () {
         { who: 'them', es: 'Está bien. Solo avisa a tu equipo antes del mediodía.', en: "Okay. Just let your team know before noon.", kw: ['avisa', 'mediodía'] },
         { who: 'you', es: 'Gracias, de verdad. Te debo una.', en: "Thanks, really. I owe you one.", kw: ['gracias', 'debo'] },
         { who: 'them', es: 'Aquí andamos. Avísame cómo está tu hija.', en: "We're here for each other. Let me know how your daughter is.", kw: ['avísame', 'hija'] },
+      ],
+    },
+    {
+      id: 'empleo', icon: '🏢', title: 'La entrevista de trabajo', intro: 'Monday, 10 a.m. The HR manager is already talking fast.',
+      lines: [
+        { who: 'you', es: 'Buenos días, señora López. Gracias por recibirme hoy.', en: 'Good morning, Mrs. López. Thank you for seeing me today.', kw: ['gracias', 'recibirme'] },
+        { who: 'them', es: 'El gusto es mío. Hábleme de su experiencia.', en: 'The pleasure is mine. Tell me about your experience.', kw: ['gusto', 'experiencia'] },
+        { who: 'you', es: 'Llevo seis años en logística. Lo último que hice fue coordinar un equipo de ocho personas.', en: 'I have been in logistics for six years. The last thing I did was coordinate a team of eight.', kw: ['logística', 'coordinar'] },
+        { who: 'them', es: '¿Qué harías si el pedido llegara tarde otra vez?', en: 'What would you do if the order arrived late again?', kw: ['harías', 'tarde'] },
+        { who: 'you', es: 'En primer lugar, avisaría al cliente. Después, buscaría otra ruta para entregar el mismo día.', en: 'First, I would warn the client. Then, I would find another route to deliver the same day.', kw: ['avisaría', 'ruta'] },
+        { who: 'them', es: 'Su español me parece muy bueno. ¿De dónde es?', en: 'Your Spanish seems very good to me. Where are you from?', kw: ['español', 'dónde'] },
+        { who: 'you', es: 'Soy de Monterrey, pero vivo aquí desde 2019. La verdad, me he sentido como en casa.', en: 'I am from Monterrey, but I have lived here since 2019. Honestly, I have felt like at home.', kw: ['Monterrey', 'casa'] },
+        { who: 'them', es: 'Bien. El sueldo es negociable, pero el horario es de lunes a viernes, de nueve a seis.', en: 'Good. The salary is negotiable, but the schedule is Monday to Friday, nine to six.', kw: ['sueldo', 'horario'] },
+        { who: 'you', es: 'Me parece perfecto. ¿Cuándo podría empezar?', en: 'That seems perfect to me. When could I start?', kw: ['perfecto', 'empezar'] },
+        { who: 'them', es: 'El lunes que viene. Y traiga sus documentos el viernes, por favor.', en: 'Next Monday. And bring your documents on Friday, please.', kw: ['lunes', 'documentos'] },
       ],
     },
   ];

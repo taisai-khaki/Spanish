@@ -1,8 +1,8 @@
 'use strict';
 (function () {
   const view = $('#view');
-  let level = store.get('level', 'A1');
-  if (!DATA.levels.includes(level)) level = 'A1';
+  let level = store.get('level', 'B1');
+  if (!DATA.levels.includes(level)) level = 'B1';
   let mascotTimer = null;
 
   player.init();
@@ -71,7 +71,7 @@
         <div class="card quest-card">
           <h3>🎯 Today's quests</h3>
           ${QUESTS.map(q => {
-            const prog = q.id === 'xp80' ? d.daily.xp : d.daily.games;
+            const prog = q.id === 'xp80' ? d.daily.xp : (q.id === 'games3' ? d.daily.games : (d.daily.exam || 0));
             const p = Math.min(prog, q.goal);
             const done = d.daily.claimed[q.id];
             return `

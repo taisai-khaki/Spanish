@@ -134,7 +134,7 @@
           fx.sfx('fanfare');
           fx.confetti(220);
         }
-        player.award(Math.floor(score / 5) + xpBonus, { game: 'Word Race' });
+        player.award(Math.floor(score / 5) + xpBonus, { game: 'Word Race', exam: level === 'EXAM' });
         view.innerHTML = `
           <div class="card center endcard">
             <div class="end-emoji">⚡</div>

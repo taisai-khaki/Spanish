@@ -154,7 +154,7 @@
           fx.stamp('¡PLÁTICA COMPLETADA!');
           fx.confetti(220);
         }
-        player.award(xp, { game: 'Plática: ' + dlg.title });
+        player.award(xp, { game: 'Plática: ' + dlg.title, exam: level === 'EXAM' });
         view.innerHTML = `
           <div class="card center endcard">
             <div class="end-emoji">${dlg.icon}</div>
