@@ -103,14 +103,14 @@ t('A1 is a slim warm-up (76 items: 42w/12s/6g/16 lines)', run('engine.stats("A1"
 t('A2 is a slim warm-up (60 items: 34w/10s/8g/8 lines)', run('engine.stats("A2").total') === 60
   && run('DATA.A2.words.length') === 34 && run('DATA.A2.sentences.length') === 10
   && run('DATA.A2.grammar.length') === 8 && run('DATA.A2.dialogues[0].lines.length') === 8);
-t('B1 is the main stage (305 items: 167w/82s/20g/4 dialogues, 36 lines)', run('engine.stats("B1").total') === 305
-  && run('DATA.B1.words.length') === 167 && run('DATA.B1.sentences.length') === 82
+t('B1 is the main stage (683 items: 545w/82s/20g/4 dialogues, 36 lines)', run('engine.stats("B1").total') === 683
+  && run('DATA.B1.words.length') === 545 && run('DATA.B1.sentences.length') === 82
   && run('DATA.B1.grammar.length') === 20 && run('DATA.B1.dialogues.length') === 4);
 t('B2 early-advanced (209 items: 115w/50s/18g/26 lines)', run('engine.stats("B2").total') === 209
   && run('DATA.B2.words.length') === 115 && run('DATA.B2.sentences.length') === 50
   && run('DATA.B2.grammar.length') === 18 && run('DATA.B2.dialogues.length') === 2);
-t('game pool total = 650 items across A1–B2 (exam not counted)',
-  run('engine.stats("A1").total + engine.stats("A2").total + engine.stats("B1").total + engine.stats("B2").total') === 650);
+t('game pool total = 1028 items across A1–B2 (exam not counted)',
+  run('engine.stats("A1").total + engine.stats("A2").total + engine.stats("B1").total + engine.stats("B2").total') === 1028);
 t('B1 has idioms + formal + errands categories', new Set(run('DATA.B1.words.map(w => w.cat)')).has('idioms')
   && new Set(run('DATA.B1.words.map(w => w.cat)')).has('formal')
   && new Set(run('DATA.B1.words.map(w => w.cat)')).has('errands'));
