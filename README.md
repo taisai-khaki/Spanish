@@ -42,11 +42,11 @@ Exam badges: 🎙️ all 10 interview questions · 📖 all 16 passages · 🇲�
 
 ## Content
 
-**650 game items across the four language levels** (the 938-item EXAM level is a separate track and not counted here):
+**1,232 game items across the four language levels** (the 938-item EXAM level is a separate track and not counted here):
 
 - **A1 (76 items):** 42 words · 12 sentences · 6 grammar rules · conversations: taxi, taquería
 - **A2 (60 items):** 34 words · 10 sentences · 8 grammar rules · conversation: the doctor
-- **B1 (305 items — the main stage, default level):** 167 words (idioms, formal register, bureaucracy, emotions, home, communication, environment, education, money, leisure) · 82 complex sentences (subjunctive, relatives, past unreal conditionals, discourse patterns) · 20 grammar rules · 4 conversations: your boss, the job interview, the restaurant complaint, the bank errand
+- **B1 (887 items — the main stage, default level, full B1 course):** 545 words across 27 categories (clothes, body, weather, home, food, housework, appearance, personality, feelings, city & transport, work, shopping, time, education, nature, daily life, communication, idioms, formal register, bureaucracy…) · 180 sentences (subjunctive, relatives, past unreal conditionals, clitics, everyday domains) · 45 grammar rules (the complete B1 map: pluperfect, clitics, ser/estar, reported speech, subjunctive triggers) · 12 real conversations: your boss, the job interview, the restaurant complaint, the bank errand, the market, the pharmacy, the phone call, café small talk, asking directions, the store warranty claim, planning a trip, describing a photo
 - **B2 (209 items — a step ahead):** 115 words (sophisticated idioms, discourse connectives, society, psychology, economy, medicine, law) · 50 advanced sentences (conditional perfect, reported speech, formal subjunctive, generalizations) · 18 grammar rules · 2 conversations: the university thesis, the lawyer's office
 - **EXAM (938 items, separate track):** 196 words · 16 sentences · 9 grammar rules · 8 dialogue lines · 10 interview questions · 16 passages (96 questions) · 683 bank questions
 - **The fun layer:** XP, an evolving bird (🥚→🦜 Pico el Perico), daily streak, 3 daily quests (incl. one EXAM quest), **racha combos** (3 in a row = +10 XP, in every game), 17 badges, confetti, stamps, synthesized sound effects, and Pico giving tips from the setup screens.
@@ -64,7 +64,7 @@ python3 -m http.server 8080
 
 ## Content lives in three files
 
-- [`js/data.js`](js/data.js) — A1/A2/B1/B2 words, sentences, grammar, dialogues (650 items).
+- [`js/data.js`](js/data.js) — A1/A2/B1/B2 words, sentences, grammar, dialogues (1,232 items).
 - [`js/data-exam.js`](js/data-exam.js) — the EXAM level: exam words, interview phrases, exam grammar, the consulate dialogue, the 10 interview questions (with tips, model answers, keyword lists), and the 16 reading passages.
 - [`js/data-bank.js`](js/data-bank.js) — the real 683-question bank (generated from `naturalizacion.mx/data/questions.json`).
 
