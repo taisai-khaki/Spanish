@@ -1,6 +1,6 @@
 'use strict';
-/* Smoke test: boots the whole app in a vm sandbox and checks the exam build.
-   Run: node test/smoke.js   (from the repo root) */
+/* Smoke test: boots the whole app in a vm sandbox and checks level content,
+   the mastery engine, and the EXAM build. Run: node test/smoke.js (repo root). */
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
@@ -100,17 +100,59 @@ t('EXAM total items consistent (' + examTotal + ')', examTotal === expectedTotal
 t('A1 is a slim warm-up (76 items: 42w/12s/6g/16 lines)', run('engine.stats("A1").total') === 76
   && run('DATA.A1.words.length') === 42 && run('DATA.A1.sentences.length') === 12
   && run('DATA.A1.grammar.length') === 6 && run('DATA.A1.dialogues[0].lines.length + DATA.A1.dialogues[1].lines.length') === 16);
-t('A2 is a slim warm-up (60 items: 34w/10s/8g/8 lines)', run('engine.stats("A2").total') === 60
-  && run('DATA.A2.words.length') === 34 && run('DATA.A2.sentences.length') === 10
-  && run('DATA.A2.grammar.length') === 8 && run('DATA.A2.dialogues[0].lines.length') === 8);
+t('A2 conversational level (445 items: 334w/55s/38g/18 lines)', run('engine.stats("A2").total') === 445
+  && run('DATA.A2.words.length') === 334 && run('DATA.A2.sentences.length') === 55
+  && run('DATA.A2.grammar.length') === 38 && run('DATA.A2.dialogues.length') === 2
+  && run('DATA.A2.dialogues.reduce((n, d) => n + d.lines.length, 0)') === 18);
+t('A2 vocabulary is de-duplicated and includes all 11 magic frames', run(`
+  (function(){
+    const words = DATA.A2.words;
+    const frames = ['necesitar + infinitivo','tener que + infinitivo','querer + infinitivo','ir a + infinitivo','poder + infinitivo','acabar de + infinitivo','podría + infinitivo','debería + infinitivo','soler + infinitivo','me gusta + infinitivo','me gustaría + infinitivo'];
+    return words.every(w => w.es && w.en && w.cat)
+      && new Set(words.map(w => w.es)).size === words.length
+      && frames.every(es => words.some(w => w.es === es));
+  })()`));
+t('A2 glue-word bank covers the new reference categories', run(`
+  (function(){
+    const words = DATA.A2.words;
+    const cats = ['possessives','demonstratives','location','time','adverbs','quantity','comparisons','prepositions','conjunctions'];
+    const required = ['¿De quién?','nuestro','mías','este','aquello','aquí','por la mañana','tampoco','nada','tan ... como','antes de','porque'];
+    const inGlueDeck = words.filter(w => cats.includes(w.cat));
+    return inGlueDeck.length >= 100 && cats.every(c => inGlueDeck.some(w => w.cat === c))
+      && required.every(es => words.some(w => w.es === es));
+  })()`));
+t('A2 glue-word sentence builders practice ownership, comparisons, and connectors', run(`
+  (function(){
+    const ss = DATA.A2.sentences.map(s => s.es);
+    const gs = DATA.A2.grammar.map(g => g.id);
+    return ss.includes('¿De quién es esta mochila? Es mía.')
+      && ss.includes('Mi hermana es tan alta como mi madre.')
+      && ss.includes('Necesito un poco de agua antes de salir.')
+      && ss.includes('No me gusta el café y tampoco quiero té.')
+      && ['g-a2-glue-1','g-a2-glue-4','g-a2-glue-9','g-a2-glue-13','g-a2-glue-16'].every(id => gs.includes(id));
+  })()`));
+t('A2 word-order tokens reproduce every sentence',
+  run('DATA.A2.sentences.every(s => norm(s.ans.join(" ")) === norm(s.es) && s.distr.length >= 2)'));
+t('all uploaded verb and glue-word reference PDFs are present',
+  ['Spanish_Verb_Trainer.pdf','100 verbs.pdf','30DAY_-_DAY_10_-_VERBS_100_MAGIC_VERBS.pdf','30DAY_-_DAY_11_-_VERBS_200_MAGIC_VERBS.pdf','f639fbd0-06e1-480a-956a-a9749f4fd849.pdf'].every(f => fs.existsSync(path.join(ROOT, f))));
+t('A2 verb-practice sentences and grammar include past-tense patterns', run(`
+  (function(){
+    const ss = DATA.A2.sentences.map(s => s.es);
+    const gs = DATA.A2.grammar.map(g => g.id);
+    return ss.includes('Tuve que cancelar la cita.') && ss.includes('Busqué mis llaves por toda la casa.')
+      && ss.includes('Ella leyó el mensaje y respondió.')
+      && ['g-a2-past-3','g-a2-past-4','g-a2-past-6','g-a2-past-7'].every(id => gs.includes(id));
+  })()`));
+t('A2 grammar distractors are genuinely different after app normalization',
+  run('DATA.A2.grammar.every(g => g.wrongs.every(w => norm(w) !== norm(g.correct)))'));
 t('B1 is the main stage (887 items: 545w/180s/45g/12 dialogues, 117 lines)', run('engine.stats("B1").total') === 887
   && run('DATA.B1.words.length') === 545 && run('DATA.B1.sentences.length') === 180
   && run('DATA.B1.grammar.length') === 45 && run('DATA.B1.dialogues.length') === 12);
 t('B2 early-advanced (209 items: 115w/50s/18g/26 lines)', run('engine.stats("B2").total') === 209
   && run('DATA.B2.words.length') === 115 && run('DATA.B2.sentences.length') === 50
   && run('DATA.B2.grammar.length') === 18 && run('DATA.B2.dialogues.length') === 2);
-t('game pool total = 1232 items across A1–B2 (exam not counted)',
-  run('engine.stats("A1").total + engine.stats("A2").total + engine.stats("B1").total + engine.stats("B2").total') === 1232);
+t('game pool total = 1617 items across A1–B2 (exam not counted)',
+  run('engine.stats("A1").total + engine.stats("A2").total + engine.stats("B1").total + engine.stats("B2").total') === 1617);
 t('B1 has idioms + formal + errands categories', new Set(run('DATA.B1.words.map(w => w.cat)')).has('idioms')
   && new Set(run('DATA.B1.words.map(w => w.cat)')).has('formal')
   && new Set(run('DATA.B1.words.map(w => w.cat)')).has('errands'));

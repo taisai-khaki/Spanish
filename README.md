@@ -42,10 +42,10 @@ Exam badges: 🎙️ all 10 interview questions · 📖 all 16 passages · 🇲�
 
 ## Content
 
-**1,232 game items across the four language levels** (the 938-item EXAM level is a separate track and not counted here):
+**1,617 game items across the four language levels** (the 938-item EXAM level is a separate track and not counted here):
 
 - **A1 (76 items):** 42 words · 12 sentences · 6 grammar rules · conversations: taxi, taquería
-- **A2 (60 items):** 34 words · 10 sentences · 8 grammar rules · conversation: the doctor
+- **A2 (445 items):** 334 words (including 181 additional verbs, all 11 verb frames, and a curated glue-word set) · 55 sentences · 38 grammar rules · 2 conversations (doctor visit, weekend plans). Practice covers verb frames, preterite forms, possessives, demonstratives, comparisons, quantities, and connectors.
 - **B1 (887 items — the main stage, default level, full B1 course):** 545 words across 27 categories (clothes, body, weather, home, food, housework, appearance, personality, feelings, city & transport, work, shopping, time, education, nature, daily life, communication, idioms, formal register, bureaucracy…) · 180 sentences (subjunctive, relatives, past unreal conditionals, clitics, everyday domains) · 45 grammar rules (the complete B1 map: pluperfect, clitics, ser/estar, reported speech, subjunctive triggers) · 12 real conversations: your boss, the job interview, the restaurant complaint, the bank errand, the market, the pharmacy, the phone call, café small talk, asking directions, the store warranty claim, planning a trip, describing a photo
 - **B2 (209 items — a step ahead):** 115 words (sophisticated idioms, discourse connectives, society, psychology, economy, medicine, law) · 50 advanced sentences (conditional perfect, reported speech, formal subjunctive, generalizations) · 18 grammar rules · 2 conversations: the university thesis, the lawyer's office
 - **EXAM (938 items, separate track):** 196 words · 16 sentences · 9 grammar rules · 8 dialogue lines · 10 interview questions · 16 passages (96 questions) · 683 bank questions
@@ -64,13 +64,24 @@ python3 -m http.server 8080
 
 ## Content lives in three files
 
-- [`js/data.js`](js/data.js) — A1/A2/B1/B2 words, sentences, grammar, dialogues (1,232 items).
+- [`js/data.js`](js/data.js) — A1/A2/B1/B2 words, sentences, grammar, dialogues (1,617 items).
 - [`js/data-exam.js`](js/data-exam.js) — the EXAM level: exam words, interview phrases, exam grammar, the consulate dialogue, the 10 interview questions (with tips, model answers, keyword lists), and the 16 reading passages.
 - [`js/data-bank.js`](js/data-bank.js) — the real 683-question bank (generated from `naturalizacion.mx/data/questions.json`).
 
 Add entries to any of them and every game picks them up automatically — each new item joins the mastery pipeline (5/5 to lock in).
 
-> The app **starts on B1** (the lab's default level). A1/A2 are there as warm-ups — switch pills whenever you want to drill older material.
+### A2 reference PDFs
+
+The A2 deck uses a curated, de-duplicated selection from the verb and sentence-builder references below. Spanish forms and accents are normalized, and the app's practice sentences are original:
+
+- [`Spanish_Verb_Trainer.pdf`](Spanish_Verb_Trainer.pdf) — *100 Verbs + 11 Magic Verbs + Simple Past*, by Peter McCaslin / Fast Conversational Spanish, LLC.
+- [`30DAY_-_DAY_10_-_VERBS_100_MAGIC_VERBS.pdf`](30DAY_-_DAY_10_-_VERBS_100_MAGIC_VERBS.pdf) and [`100 verbs.pdf`](100%20verbs.pdf) — 100-verb handout (these two uploads are identical copies).
+- [`30DAY_-_DAY_11_-_VERBS_200_MAGIC_VERBS.pdf`](30DAY_-_DAY_11_-_VERBS_200_MAGIC_VERBS.pdf) — the next 100 verbs, numbered 101–200.
+- [`f639fbd0-06e1-480a-956a-a9749f4fd849.pdf`](f639fbd0-06e1-480a-956a-a9749f4fd849.pdf) — **Glue Words**, a sentence-builder reference for possessives, demonstratives, location/time words, adverbs, quantities, comparisons, prepositions, and conjunctions.
+
+The A2 activities practice the 11 verb frames (for example, *tener que + infinitive*, *acabar de + infinitive*, and *soler + infinitive*), regular and irregular preterite forms, and the glue-word categories above.
+
+> The app **starts on B1** (the lab's default level). A1 is a warm-up; A2 is the conversational bridge. Switch pills whenever you want to choose your level.
 
 ## 15-minute daily routine
 
