@@ -42,10 +42,10 @@ Exam badges: 🎙️ all 10 interview questions · 📖 all 16 passages · 🇲�
 
 ## Content
 
-**1,617 game items across the four language levels** (the 938-item EXAM level is a separate track and not counted here):
+**1,790 game items across the four language levels** (the 938-item EXAM level is a separate track and not counted here):
 
 - **A1 (76 items):** 42 words · 12 sentences · 6 grammar rules · conversations: taxi, taquería
-- **A2 (445 items):** 334 words (including 181 additional verbs, all 11 verb frames, and a curated glue-word set) · 55 sentences · 38 grammar rules · 2 conversations (doctor visit, weekend plans). Practice covers verb frames, preterite forms, possessives, demonstratives, comparisons, quantities, and connectors.
+- **A2 (618 items):** 439 words (all 190 distinct lemmas from the two 100-verb handouts, all 11 magic-verb frames, and 213 added glue-word cards) · 92 sentence builders · 59 grammar questions · 3 conversations (doctor visit, weekend plans, meal planning; 28 dialogue lines). The expanded practice adds 37 sentence builders, 21 grammar checks, and a new 10-line dialogue.
 - **B1 (887 items — the main stage, default level, full B1 course):** 545 words across 27 categories (clothes, body, weather, home, food, housework, appearance, personality, feelings, city & transport, work, shopping, time, education, nature, daily life, communication, idioms, formal register, bureaucracy…) · 180 sentences (subjunctive, relatives, past unreal conditionals, clitics, everyday domains) · 45 grammar rules (the complete B1 map: pluperfect, clitics, ser/estar, reported speech, subjunctive triggers) · 12 real conversations: your boss, the job interview, the restaurant complaint, the bank errand, the market, the pharmacy, the phone call, café small talk, asking directions, the store warranty claim, planning a trip, describing a photo
 - **B2 (209 items — a step ahead):** 115 words (sophisticated idioms, discourse connectives, society, psychology, economy, medicine, law) · 50 advanced sentences (conditional perfect, reported speech, formal subjunctive, generalizations) · 18 grammar rules · 2 conversations: the university thesis, the lawyer's office
 - **EXAM (938 items, separate track):** 196 words · 16 sentences · 9 grammar rules · 8 dialogue lines · 10 interview questions · 16 passages (96 questions) · 683 bank questions
@@ -64,7 +64,7 @@ python3 -m http.server 8080
 
 ## Content lives in three files
 
-- [`js/data.js`](js/data.js) — A1/A2/B1/B2 words, sentences, grammar, dialogues (1,617 items).
+- [`js/data.js`](js/data.js) — A1/A2/B1/B2 words, sentences, grammar, dialogues (1,790 items).
 - [`js/data-exam.js`](js/data-exam.js) — the EXAM level: exam words, interview phrases, exam grammar, the consulate dialogue, the 10 interview questions (with tips, model answers, keyword lists), and the 16 reading passages.
 - [`js/data-bank.js`](js/data-bank.js) — the real 683-question bank (generated from `naturalizacion.mx/data/questions.json`).
 
@@ -72,14 +72,14 @@ Add entries to any of them and every game picks them up automatically — each n
 
 ### A2 reference PDFs
 
-The A2 deck uses a curated, de-duplicated selection from the verb and sentence-builder references below. Spanish forms and accents are normalized, and the app's practice sentences are original:
+The A2 verb audit includes all **190 distinct Spanish lemmas** in the two numbered 100-verb lists (200 rows, with repeated lemmas de-duplicated) and all **11 magic-verb frames**. The glue-word deck now has **213 added cards** across pronouns, possessives, question words, demonstratives, location/time, adverbs, quantity, comparisons, prepositions, and conjunctions. Spanish forms and accents are checked, and the practice sentences are original:
 
 - [`Spanish_Verb_Trainer.pdf`](Spanish_Verb_Trainer.pdf) — *100 Verbs + 11 Magic Verbs + Simple Past*, by Peter McCaslin / Fast Conversational Spanish, LLC.
 - [`30DAY_-_DAY_10_-_VERBS_100_MAGIC_VERBS.pdf`](30DAY_-_DAY_10_-_VERBS_100_MAGIC_VERBS.pdf) and [`100 verbs.pdf`](100%20verbs.pdf) — 100-verb handout (these two uploads are identical copies).
 - [`30DAY_-_DAY_11_-_VERBS_200_MAGIC_VERBS.pdf`](30DAY_-_DAY_11_-_VERBS_200_MAGIC_VERBS.pdf) — the next 100 verbs, numbered 101–200.
 - [`f639fbd0-06e1-480a-956a-a9749f4fd849.pdf`](f639fbd0-06e1-480a-956a-a9749f4fd849.pdf) — **Glue Words**, a sentence-builder reference for possessives, demonstratives, location/time words, adverbs, quantities, comparisons, prepositions, and conjunctions.
 
-The A2 activities practice the 11 verb frames (for example, *tener que + infinitive*, *acabar de + infinitive*, and *soler + infinitive*), regular and irregular preterite forms, and the glue-word categories above.
+The expansion adds **37 sentence builders**, **21 grammar checks**, and a **10-line meal-planning dialogue**. Each magic frame has at least two sentence-builder examples plus a grammar quiz. The full 62-page Glue Words PDF also contains higher-level subjunctive and prefix/suffix material, and some questionable examples, so this is a checked, A2-level selection rather than a line-by-line transcription.
 
 > The app **starts on B1** (the lab's default level). A1 is a warm-up; A2 is the conversational bridge. Switch pills whenever you want to choose your level.
 

@@ -2,7 +2,7 @@
 /* ============ All learning content ============
    kinds: words · sentences · grammar · dialogues
    Levels: A1 (warm-up) · A2 (conversational) · B1 (the main stage) · B2 (early)
-   1,617 game items total across the four language levels (counts checked in test/smoke.js).
+   1,790 game items total across the four language levels (counts checked in test/smoke.js).
    (The EXAM level — naturalization exam — lives in data-exam.js /
    data-bank.js and is NOT counted here.)
    Mastery (5 correct in a row) is tracked by engine.js per item. */
@@ -124,12 +124,12 @@ window.DATA = (function () {
     { en: 'Yesterday I ate a lot.', es: 'Ayer comí mucho.', ans: ['Ayer', 'comí', 'mucho'], distr: ['Hoy', 'como', 'siempre'], explain: 'Preterite of <i>comer</i>: <b>comí</b> (I ate) — a finished action in the past.' },
     { en: 'If I had time, I would travel.', es: 'Si tuviera tiempo, viajaría.', ans: ['Si', 'tuviera', 'tiempo', 'viajaría'], distr: ['tengo', 'viajo', 'el'], explain: 'Hypothetical: <b>si tuviera</b> (subjunctive) + <b>viajaría</b> (conditional).' },
     { en: 'I have been studying Spanish for two years.', es: 'Llevo dos años estudiando español.', ans: ['Llevo', 'dos', 'años', 'estudiando', 'español'], distr: ['desde', 'tengo', 'estudio'], explain: '"I\'ve been… for X time" = <b>llevo</b> + time + -ing.' },
-    { en: 'It looks like it is going to rain.', es: 'Parece que va a llover.', ans: ['Parece', 'que', 'va', 'a', 'llover'], distr: ['llueve', 'es', 'va'], explain: '<b>Va a + infinitive</b> = "going to". <i>Parece que…</i> = "it seems that…"' },
-    { en: 'Could I have the bill, please?', es: '¿Me trae la cuenta, por favor?', ans: ['¿Me', 'trae', 'la', 'cuenta,', 'por', 'favor?'], distr: ['¿Qué', 'es', 'la'], explain: 'Polite request: <b>¿Me trae…?</b> — "the bill" = <i>la cuenta</i>.' },
+    { en: 'It looks like it is going to rain.', es: 'Parece que va a llover.', ans: ['Parece', 'que', 'va', 'a', 'llover'], distr: ['llueve', 'es', 'quiero'], explain: '<b>Va a + infinitive</b> = "going to". <i>Parece que…</i> = "it seems that…"' },
+    { en: 'Could I have the bill, please?', es: '¿Me trae la cuenta, por favor?', ans: ['¿Me', 'trae', 'la', 'cuenta,', 'por', 'favor?'], distr: ['¿Qué', 'es', 'para'], explain: 'Polite request: <b>¿Me trae…?</b> — "the bill" = <i>la cuenta</i>.' },
     { en: 'I prefer to walk.', es: 'Prefiero caminar.', ans: ['Prefiero', 'caminar'], distr: ['paseo', 'puedo', 'a'], explain: '<b>preferir + infinitive</b>: <i>prefiero caminar</i>.' },
-    { en: 'We are waiting for the train.', es: 'Estamos esperando el tren.', ans: ['Estamos', 'esperando', 'el', 'tren'], distr: ['esperamos', 'es', 'el'], explain: '"We\'re waiting" = <b>estamos esperando</b> (estar + -iendo).' },
-    { en: 'I do not think it is worth it.', es: 'No creo que valga la pena.', ans: ['No', 'creo', 'que', 'valga', 'la', 'pena'], distr: ['vale', 'creo', 'es'], explain: 'Negated <b>creer + que</b> → subjunctive: <i>no creo que valga</i>.' },
-    { en: 'I will be back in one hour.', es: 'Volveré en una hora.', ans: ['Volveré', 'en', 'una', 'hora'], distr: ['vuelvo', 'estoy', 'una'], explain: 'Future tense: <b>volveré</b> = "I will return".' },
+    { en: 'We are waiting for the train.', es: 'Estamos esperando el tren.', ans: ['Estamos', 'esperando', 'el', 'tren'], distr: ['esperamos', 'es', 'ayer'], explain: '"We\'re waiting" = <b>estamos esperando</b> (estar + -iendo).' },
+    { en: 'I do not think it is worth it.', es: 'No creo que valga la pena.', ans: ['No', 'creo', 'que', 'valga', 'la', 'pena'], distr: ['vale', 'pienso', 'es'], explain: 'Negated <b>creer + que</b> → subjunctive: <i>no creo que valga</i>.' },
+    { en: 'I will be back in one hour.', es: 'Volveré en una hora.', ans: ['Volveré', 'en', 'una', 'hora'], distr: ['vuelvo', 'estoy', 'mañana'], explain: 'Future tense: <b>volveré</b> = "I will return".' },
   ];
 
   const A2G = [
@@ -458,6 +458,127 @@ window.DATA = (function () {
     { es: 'porque', en: 'because', cat: 'conjunctions' },
   );
 
+  /* Extra A2 glue-word inventory: object pronouns, question words, location,
+     calendar/time terms, high-frequency adverbs, amounts, comparisons, and
+     preposition/conjunction frames. Advanced examples are kept out of A2 drills. */
+  A2W.push(
+    // Object and reflexive pronouns
+    { es: 'me', en: 'me / to me (object pronoun)', cat: 'pronouns' },
+    { es: 'te', en: 'you / to you, informal (object pronoun)', cat: 'pronouns' },
+    { es: 'lo', en: 'him / it, masculine (direct object pronoun)', cat: 'pronouns' },
+    { es: 'la', en: 'her / it, feminine (direct object pronoun)', cat: 'pronouns' },
+    { es: 'los', en: 'them, masculine (direct object pronoun)', cat: 'pronouns' },
+    { es: 'las', en: 'them, feminine (direct object pronoun)', cat: 'pronouns' },
+    { es: 'le', en: 'to / for him, her, or you formal (indirect object pronoun)', cat: 'pronouns' },
+    { es: 'les', en: 'to / for them or you all (indirect object pronoun)', cat: 'pronouns' },
+    { es: 'nos', en: 'us / to us (object pronoun)', cat: 'pronouns' },
+    { es: 'se', en: 'reflexive pronoun; also replaces le/les before lo/la/los/las', cat: 'pronouns' },
+    { es: 'conmigo', en: 'with me', cat: 'pronouns' },
+    { es: 'contigo', en: 'with you (informal)', cat: 'pronouns' },
+    // Question words
+    { es: 'qué', en: 'what (question word)', cat: 'question words' },
+    { es: 'cuál', en: 'which / what one (singular)', cat: 'question words' },
+    { es: 'cuáles', en: 'which ones (plural)', cat: 'question words' },
+    { es: 'quién', en: 'who', cat: 'question words' },
+    // More location words and phrases
+    { es: 'por aquí', en: 'around here', cat: 'location' },
+    { es: 'por acá', en: 'around this area', cat: 'location' },
+    { es: 'por ahí', en: 'around there', cat: 'location' },
+    { es: 'por allí', en: 'around there (over there)', cat: 'location' },
+    { es: 'por allá', en: 'around over there (farther away)', cat: 'location' },
+    { es: 'donde sea', en: 'wherever', cat: 'location' },
+    { es: 'cerca', en: 'nearby', cat: 'location' },
+    { es: 'lejos', en: 'far away', cat: 'location' },
+    // Calendar and time phrases
+    { es: 'hoy', en: 'today', cat: 'time' },
+    { es: 'pasado mañana', en: 'the day after tomorrow', cat: 'time' },
+    { es: 'anteayer', en: 'the day before yesterday', cat: 'time' },
+    { es: 'ahora mismo', en: 'right now', cat: 'time' },
+    { es: 'enseguida', en: 'right away / shortly', cat: 'time' },
+    { es: 'entonces', en: 'then / at that time', cat: 'time' },
+    { es: 'cada día', en: 'each day / every day', cat: 'time' },
+    { es: 'cada semana', en: 'each week / every week', cat: 'time' },
+    { es: 'el fin de semana', en: 'on the weekend / the weekend', cat: 'time' },
+    { es: 'anoche', en: 'last night', cat: 'time' },
+    { es: 'el lunes', en: 'on Monday', cat: 'time' },
+    { es: 'el martes', en: 'on Tuesday', cat: 'time' },
+    { es: 'el miércoles', en: 'on Wednesday', cat: 'time' },
+    { es: 'el jueves', en: 'on Thursday', cat: 'time' },
+    { es: 'el viernes', en: 'on Friday', cat: 'time' },
+    { es: 'el sábado', en: 'on Saturday', cat: 'time' },
+    { es: 'el domingo', en: 'on Sunday', cat: 'time' },
+    // Additional adverbs
+    { es: 'muy bien', en: 'very well', cat: 'adverbs' },
+    { es: 'realmente', en: 'really', cat: 'adverbs' },
+    { es: 'solamente', en: 'only', cat: 'adverbs' },
+    { es: 'generalmente', en: 'generally / usually', cat: 'adverbs' },
+    { es: 'en general', en: 'in general', cat: 'adverbs' },
+    { es: 'felizmente', en: 'happily', cat: 'adverbs' },
+    { es: 'sanamente', en: 'in a healthy way', cat: 'adverbs' },
+    { es: 'honestamente', en: 'honestly', cat: 'adverbs' },
+    { es: 'afortunadamente', en: 'fortunately', cat: 'adverbs' },
+    { es: 'naturalmente', en: 'naturally', cat: 'adverbs' },
+    { es: 'normalmente', en: 'normally', cat: 'adverbs' },
+    { es: 'cuidadosamente', en: 'carefully', cat: 'adverbs' },
+    { es: 'tranquilamente', en: 'calmly', cat: 'adverbs' },
+    // Amount and quantity
+    { es: 'algunos', en: 'some / a few (masculine plural)', cat: 'quantity' },
+    { es: 'algunas', en: 'some / a few (feminine plural)', cat: 'quantity' },
+    { es: 'ningún', en: 'no / not any (before a masculine singular noun)', cat: 'quantity' },
+    { es: 'ninguna', en: 'no / not any (feminine singular)', cat: 'quantity' },
+    { es: 'cualquiera', en: 'any one / whoever', cat: 'quantity' },
+    { es: 'cualquier cosa', en: 'anything / whatever', cat: 'quantity' },
+    { es: 'medio', en: 'half (masculine; e.g. medio kilo)', cat: 'quantity' },
+    { es: 'media', en: 'half (feminine; e.g. media pizza)', cat: 'quantity' },
+    { es: 'los dos', en: 'both (masculine)', cat: 'quantity' },
+    { es: 'las dos', en: 'both (feminine)', cat: 'quantity' },
+    { es: 'una parte', en: 'a part / a portion', cat: 'quantity' },
+    { es: 'la mayoría', en: 'most / the majority', cat: 'quantity' },
+    // Comparison frames and adjective comparisons
+    { es: 'igual de ... que', en: 'just as ... as', cat: 'comparisons' },
+    { es: 'más alto que', en: 'taller than', cat: 'comparisons' },
+    { es: 'más bajo que', en: 'shorter / lower than', cat: 'comparisons' },
+    { es: 'más feliz que', en: 'happier than', cat: 'comparisons' },
+    { es: 'menos triste que', en: 'less sad than', cat: 'comparisons' },
+    // Position, direction, and other prepositions
+    { es: 'a', en: 'to / at (direction or destination)', cat: 'prepositions' },
+    { es: 'de', en: 'of / from', cat: 'prepositions' },
+    { es: 'en', en: 'in / on / at', cat: 'prepositions' },
+    { es: 'hacia', en: 'toward', cat: 'prepositions' },
+    { es: 'hasta', en: 'until / as far as', cat: 'prepositions' },
+    { es: 'desde', en: 'from / since', cat: 'prepositions' },
+    { es: 'sobre', en: 'on / over / about', cat: 'prepositions' },
+    { es: 'contra', en: 'against', cat: 'prepositions' },
+    { es: 'junto a', en: 'next to / together with', cat: 'prepositions' },
+    { es: 'encima de', en: 'on top of / above', cat: 'prepositions' },
+    { es: 'debajo de', en: 'under / beneath', cat: 'prepositions' },
+    { es: 'detrás de', en: 'behind', cat: 'prepositions' },
+    { es: 'delante de', en: 'in front of', cat: 'prepositions' },
+    { es: 'enfrente de', en: 'across from / opposite', cat: 'prepositions' },
+    { es: 'dentro de', en: 'inside / within', cat: 'prepositions' },
+    { es: 'fuera de', en: 'outside of', cat: 'prepositions' },
+    { es: 'entre', en: 'between / among', cat: 'prepositions' },
+    { es: 'al lado de', en: 'next to / beside', cat: 'prepositions' },
+    { es: 'cerca de', en: 'near', cat: 'prepositions' },
+    { es: 'lejos de', en: 'far from', cat: 'prepositions' },
+    { es: 'al otro lado de', en: 'on the other side of', cat: 'prepositions' },
+    { es: 'a través de', en: 'through / across', cat: 'prepositions' },
+    // More conjunctions and sentence links
+    { es: 'ni', en: 'nor / not even', cat: 'conjunctions' },
+    { es: 'ni ... ni', en: 'neither ... nor', cat: 'conjunctions' },
+    { es: 'e', en: 'and (before an i- or hi- sound)', cat: 'conjunctions' },
+    { es: 'u', en: 'or (before an o- or ho- sound)', cat: 'conjunctions' },
+    { es: 'así que', en: 'so / therefore', cat: 'conjunctions' },
+    { es: 'aunque', en: 'although / even though', cat: 'conjunctions' },
+    { es: 'cuando', en: 'when', cat: 'conjunctions' },
+    { es: 'donde', en: 'where (introducing a clause)', cat: 'conjunctions' },
+    { es: 'como', en: 'as / how (introducing a clause)', cat: 'conjunctions' },
+    { es: 'quien', en: 'who / whom (introducing a clause)', cat: 'conjunctions' },
+    { es: 'mientras', en: 'while', cat: 'conjunctions' },
+    { es: 'que', en: 'that (introducing a clause)', cat: 'conjunctions' },
+  );
+
+
   A2S.push(
     { en: 'I need to answer the phone.', es: 'Necesito contestar el teléfono.', ans: ['Necesito', 'contestar', 'el', 'teléfono.'], distr: ['hay', 'contesté', 'para'], explain: '<b>Necesitar + infinitive</b>: conjugate necesitar, then keep the next verb in the infinitive.' },
     { en: 'I have to finish the homework.', es: 'Tengo que terminar la tarea.', ans: ['Tengo', 'que', 'terminar', 'la', 'tarea.'], distr: ['para', 'terminé', 'por'], explain: '<b>Tener que + infinitive</b> means “have to.” Do not add <i>a</i> before the infinitive.' },
@@ -506,6 +627,47 @@ window.DATA = (function () {
     { en: 'We are almost at the airport.', es: 'Ya casi llegamos al aeropuerto.', ans: ['Ya', 'casi', 'llegamos', 'al', 'aeropuerto.'], distr: ['todavía', 'llegaron', 'por'], explain: '<b>Ya casi</b> means “almost / nearly” in this context.' },
   );
 
+  A2S.push(
+    { en: 'I need to cook before eight.', es: 'Necesito cocinar antes de las ocho.', ans: ['Necesito', 'cocinar', 'antes', 'de', 'las', 'ocho.'], distr: ['necesitar', 'cocino', 'para'], explain: '<b>Necesitar + infinitive</b>: keep the second verb in the infinitive.' },
+    { en: 'You have to put the keys in the drawer.', es: 'Tienes que poner las llaves en el cajón.', ans: ['Tienes', 'que', 'poner', 'las', 'llaves', 'en', 'el', 'cajón.'], distr: ['tiene', 'pones', 'pero'], explain: '<b>Tener que + infinitive</b>: conjugate <i>tener</i>, then use the infinitive.' },
+    { en: 'They want to rent a house near the beach.', es: 'Quieren alquilar una casa cerca de la playa.', ans: ['Quieren', 'alquilar', 'una', 'casa', 'cerca', 'de', 'la', 'playa.'], distr: ['quiere', 'alquilan', 'por'], explain: '<b>Querer + infinitive</b>: <i>quieren alquilar</i>, not <i>quieren alquilan</i>.' },
+    { en: 'We are going to meet near the station.', es: 'Vamos a encontrarnos cerca de la estación.', ans: ['Vamos', 'a', 'encontrarnos', 'cerca', 'de', 'la', 'estación.'], distr: ['van', 'encontramos', 'porque'], explain: '<b>Ir a + infinitive</b>: place <i>a</i> after the conjugated form of <i>ir</i>.' },
+    { en: 'Can you bring me the bill, please?', es: '¿Puedes traerme la cuenta, por favor?', ans: ['¿Puedes', 'traerme', 'la', 'cuenta,', 'por', 'favor?'], distr: ['podemos', 'traes', 'ayer'], explain: '<b>Poder + infinitive</b>: attach the object pronoun to the infinitive, or place it before the conjugated verb.' },
+    { en: 'I just received a phone call.', es: 'Acabo de recibir una llamada.', ans: ['Acabo', 'de', 'recibir', 'una', 'llamada.'], distr: ['acabar', 'recibo', 'para'], explain: '<b>Acabar de + infinitive</b> describes a recent action.' },
+    { en: 'We could stay at home tonight.', es: 'Podríamos quedarnos en casa esta noche.', ans: ['Podríamos', 'quedarnos', 'en', 'casa', 'esta', 'noche.'], distr: ['Podemos', 'quedamos', 'mañana'], explain: '<b>Podríamos + infinitive</b> expresses a possibility; the reflexive pronoun attaches to the infinitive.' },
+    { en: 'You should write down the address.', es: 'Deberías apuntar la dirección.', ans: ['Deberías', 'apuntar', 'la', 'dirección.'], distr: ['debería', 'apuntas', 'por'], explain: '<b>Deberías + infinitive</b> gives advice.' },
+    { en: 'I usually speak with my neighbors in the afternoon.', es: 'Suelo hablar con mis vecinos por la tarde.', ans: ['Suelo', 'hablar', 'con', 'mis', 'vecinos', 'por', 'la', 'tarde.'], distr: ['suelen', 'hablo', 'ahora'], explain: '<b>Soler + infinitive</b> describes a habit.' },
+    { en: 'I like to learn new words.', es: 'Me gusta aprender palabras nuevas.', ans: ['Me', 'gusta', 'aprender', 'palabras', 'nuevas.'], distr: ['yo', 'gustan', 'aprendo'], explain: 'An infinitive acts as a singular idea with <b>gustar</b>: <i>me gusta aprender</i>.' },
+    { en: 'I would like to travel to Oaxaca in July.', es: 'Me gustaría viajar a Oaxaca en julio.', ans: ['Me', 'gustaría', 'viajar', 'a', 'Oaxaca', 'en', 'julio.'], distr: ['mi', 'gustaré', 'viajo'], explain: '<b>Me gustaría + infinitive</b> is a polite way to express a wish.' },
+    { en: 'We accepted the invitation and celebrated at home.', es: 'Aceptamos la invitación y celebramos en casa.', ans: ['Aceptamos', 'la', 'invitación', 'y', 'celebramos', 'en', 'casa.'], distr: ['Aceptan', 'pero', 'celebraré'], explain: 'Use the preterite for completed past actions: <i>aceptamos</i>, <i>celebramos</i>.' },
+    { en: 'He entered, closed the door, and turned on the light.', es: 'Entró, cerró la puerta y prendió la luz.', ans: ['Entró', 'cerró', 'la', 'puerta', 'y', 'prendió', 'la', 'luz.'], distr: ['Entraba', 'cierra', 'pero'], explain: 'These completed actions use the preterite: <i>entró</i>, <i>cerró</i>, <i>prendió</i>.' },
+    { en: 'She chose a book and read it on the bus.', es: 'Ella eligió un libro y lo leyó en el autobús.', ans: ['Ella', 'eligió', 'un', 'libro', 'y', 'lo', 'leyó', 'en', 'el', 'autobús.'], distr: ['elige', 'leió', 'por'], explain: '<i>Eligió</i> and <i>leyó</i> are third-person preterite forms; the direct object pronoun <b>lo</b> goes before the conjugated verb.' },
+    { en: 'I called the doctor and canceled the appointment.', es: 'Llamé al médico y cancelé la cita.', ans: ['Llamé', 'al', 'médico', 'y', 'cancelé', 'la', 'cita.'], distr: ['Llamo', 'canceló', 'mañana'], explain: 'Both verbs describe completed actions: <i>llamé</i>, <i>cancelé</i>.' },
+    { en: 'We rented an apartment and moved in June.', es: 'Alquilamos un departamento y nos mudamos en junio.', ans: ['Alquilamos', 'un', 'departamento', 'y', 'nos', 'mudamos', 'en', 'junio.'], distr: ['alquilan', 'mudan', 'pero'], explain: 'The reflexive pronoun in <i>nos mudamos</i> refers to the people who move.' },
+    { en: 'I wrote down the number and wrote to my friend.', es: 'Apunté el número y le escribí a mi amiga.', ans: ['Apunté', 'el', 'número', 'y', 'le', 'escribí', 'a', 'mi', 'amiga.'], distr: ['Apunto', 'lo', 'ayer'], explain: 'With a person receiving the message, use the indirect object pronoun <b>le</b>.' },
+    { en: 'We followed the directions and arrived early.', es: 'Seguimos las indicaciones y llegamos temprano.', ans: ['Seguimos', 'las', 'indicaciones', 'y', 'llegamos', 'temprano.'], distr: ['Siguen', 'llegan', 'por'], explain: '<i>Seguimos</i> and <i>llegamos</i> are completed past actions in this context.' },
+    { en: 'I washed the dishes, and my brother cooked dinner.', es: 'Lavé los platos y mi hermano cocinó la cena.', ans: ['Lavé', 'los', 'platos', 'y', 'mi', 'hermano', 'cocinó', 'la', 'cena.'], distr: ['Lavo', 'cocina', 'porque'], explain: 'Use preterite forms for the finished actions: <i>lavé</i> and <i>cocinó</i>.' },
+    { en: 'She recommended the restaurant, and we tried the dessert.', es: 'Ella recomendó el restaurante y probamos el postre.', ans: ['Ella', 'recomendó', 'el', 'restaurante', 'y', 'probamos', 'el', 'postre.'], distr: ['recomienda', 'prueba', 'pero'], explain: 'The context makes these completed past actions: <i>recomendó</i>, <i>probamos</i>.' },
+    { en: 'I invited my neighbors and shared the food.', es: 'Invité a mis vecinos y compartí la comida.', ans: ['Invité', 'a', 'mis', 'vecinos', 'y', 'compartí', 'la', 'comida.'], distr: ['Invito', 'compartimos', 'por'], explain: 'Completed past actions: <i>invité</i>, <i>compartí</i>.' },
+    { en: 'The taxi stopped, and we got off downtown.', es: 'El taxi paró y nos bajamos en el centro.', ans: ['El', 'taxi', 'paró', 'y', 'nos', 'bajamos', 'en', 'el', 'centro.'], distr: ['para', 'baja', 'después'], explain: '<i>Nos bajamos</i> is the nosotros preterite of <i>bajarse</i>.' },
+    { en: 'I looked for the keys, but I did not find them.', es: 'Busqué las llaves, pero no las encontré.', ans: ['Busqué', 'las', 'llaves,', 'pero', 'no', 'las', 'encontré.'], distr: ['Busco', 'porque', 'encontraba'], explain: 'In <i>no las encontré</i>, the direct object pronoun <b>las</b> comes before the verb.' },
+    { en: 'I broke a glass and picked up the pieces.', es: 'Rompí un vaso y recogí los pedazos.', ans: ['Rompí', 'un', 'vaso', 'y', 'recogí', 'los', 'pedazos.'], distr: ['Rompo', 'recogía', 'pero'], explain: 'Two completed actions use preterite forms: <i>rompí</i>, <i>recogí</i>.' },
+    { en: 'She learned to drive and traveled to Mexico.', es: 'Aprendió a manejar y viajó a México.', ans: ['Aprendió', 'a', 'manejar', 'y', 'viajó', 'a', 'México.'], distr: ['Aprende', 'maneja', 'ayer'], explain: 'Use the infinitive after <i>aprender a</i>; the completed actions are <i>aprendió</i> and <i>viajó</i>.' },
+    { en: 'They got dressed quickly and went to work.', es: 'Se vistieron rápidamente y fueron al trabajo.', ans: ['Se', 'vistieron', 'rápidamente', 'y', 'fueron', 'al', 'trabajo.'], distr: ['les', 'visten', 'mañana'], explain: 'The reflexive pronoun comes before the conjugated verb: <i>se vistieron</i>.' },
+    { en: 'I gave it to my sister, and she thanked me.', es: 'Se lo di a mi hermana y ella me dio las gracias.', ans: ['Se', 'lo', 'di', 'a', 'mi', 'hermana', 'y', 'ella', 'me', 'dio', 'las', 'gracias.'], distr: ['Le', 'ellos', 'doy', 'pero'], explain: '<i>Se lo di</i> means “I gave it to her.” Before <i>lo/la/los/las</i>, <i>le/les</i> changes to <b>se</b>.' },
+    { en: 'Which of these books do you want?', es: '¿Cuál de estos libros quieres?', ans: ['¿Cuál', 'de', 'estos', 'libros', 'quieres?'], distr: ['Qué', 'este', 'querer'], explain: 'Use <b>cuál</b> when choosing among items: <i>¿Cuál de estos libros…?</i>' },
+    { en: 'We are looking around here, but we do not see anything.', es: 'Buscamos por aquí, pero no vemos nada.', ans: ['Buscamos', 'por', 'aquí,', 'pero', 'no', 'vemos', 'nada.'], distr: ['buscan', 'lejos', 'y'], explain: '<b>Por aquí</b> means “around here”; <i>nada</i> means “nothing.”' },
+    { en: 'We eat very well when we visit our family.', es: 'Comemos muy bien cuando visitamos a nuestra familia.', ans: ['Comemos', 'muy', 'bien', 'cuando', 'visitamos', 'a', 'nuestra', 'familia.'], distr: ['comen', 'mal', 'pero'], explain: '<b>Muy bien</b> means “very well”; <i>cuando</i> links the two clauses.' },
+    { en: 'I only have half a pizza.', es: 'Solo tengo media pizza.', ans: ['Solo', 'tengo', 'media', 'pizza.'], distr: ['solamente', 'tienes', 'medio'], explain: '<b>Media</b> agrees with the feminine noun <i>pizza</i>.' },
+    { en: 'I have as many books as you.', es: 'Tengo tantos libros como tú.', ans: ['Tengo', 'tantos', 'libros', 'como', 'tú.'], distr: ['tienes', 'tan', 'que'], explain: 'Use <b>tanto/a/os/as + noun + como</b> for a quantity comparison.' },
+    { en: 'The pharmacy is behind the bank and next to the bakery.', es: 'La farmacia está detrás del banco y al lado de la panadería.', ans: ['La', 'farmacia', 'está', 'detrás', 'del', 'banco', 'y', 'al', 'lado', 'de', 'la', 'panadería.'], distr: ['una', 'tienda', 'es', 'pero'], explain: '<b>Detrás de</b> means “behind”; <b>al lado de</b> means “next to.”' },
+    { en: 'We sat across from the window, far from the door.', es: 'Nos sentamos enfrente de la ventana, lejos de la puerta.', ans: ['Nos', 'sentamos', 'enfrente', 'de', 'la', 'ventana,', 'lejos', 'de', 'la', 'puerta.'], distr: ['ellos', 'sientan', 'debajo', 'pero'], explain: '<b>Enfrente de</b> means “across from”; <b>lejos de</b> means “far from.”' },
+    { en: 'On Monday we will go to the museum, and on Tuesday we will rest.', es: 'El lunes iremos al museo y el martes descansaremos.', ans: ['El', 'lunes', 'iremos', 'al', 'museo', 'y', 'el', 'martes', 'descansaremos.'], distr: ['Ayer', 'fuimos', 'pero'], explain: 'Use <b>el + weekday</b> for a specific day and the future forms <i>iremos</i>, <i>descansaremos</i>.' },
+    { en: 'I want neither coffee nor tea, so I will order water.', es: 'No quiero ni café ni té, así que pediré agua.', ans: ['No', 'quiero', 'ni', 'café', 'ni', 'té,', 'así', 'que', 'pediré', 'agua.'], distr: ['sí', 'quieres', 'o', 'pero'], explain: '<b>Ni ... ni</b> means “neither ... nor”; <b>así que</b> means “so.”' },
+    { en: 'Although the station is far away, we can walk there.', es: 'Aunque la estación está lejos, podemos caminar hasta allí.', ans: ['Aunque', 'la', 'estación', 'está', 'lejos,', 'podemos', 'caminar', 'hasta', 'allí.'], distr: ['porque', 'el', 'banco', 'pero'], explain: '<b>Aunque</b> introduces a contrast; <b>hasta allí</b> means “as far as there.”' },
+  );
+
+
   A2G.push(
     { id: 'g-a2-magic-1', en: 'I need to call the doctor.', correct: 'Necesito llamar al médico.', wrongs: ['Necesito a llamar al médico.', 'Necesito llamo al médico.'], explain: '<b>Necesitar + infinitive</b>: do not put <i>a</i> between the two verbs, and leave the second verb unconjugated.' },
     { id: 'g-a2-magic-2', en: 'I am going to arrive early.', correct: 'Voy a llegar temprano.', wrongs: ['Voy llegar temprano.', 'Voy a llego temprano.'], explain: '<b>Ir a + infinitive</b> does use <i>a</i>; the second verb stays in the infinitive.' },
@@ -538,6 +700,31 @@ window.DATA = (function () {
     { id: 'g-a2-glue-15', en: 'I am tired, but I want to go.', correct: 'Estoy cansado, pero quiero ir.', wrongs: ['Estoy cansado porque quiero ir.', 'Estoy cansado y quiero ir.'], explain: '<b>Pero</b> expresses contrast; <i>y</i> adds information and <i>porque</i> gives a reason.' },
     { id: 'g-a2-glue-16', en: 'The pizza is very tasty.', correct: 'La pizza está muy rica.', wrongs: ['La pizza está mucho rica.', 'La pizza está mucha rica.'], explain: '<b>Muy</b> modifies an adjective or adverb; <i>mucho</i> is used with nouns and verbs, as in <i>me gusta mucho</i>.' },
   );
+
+  A2G.push(
+    { id: 'g-a2-magic-7', en: 'You have to leave now.', correct: 'Tienes que salir ahora.', wrongs: ['Tienes salir ahora.', 'Tienes a salir ahora.'], explain: '<b>Tener que + infinitive</b> takes <i>que</i> before the infinitive.' },
+    { id: 'g-a2-magic-8', en: 'I want to ask a question.', correct: 'Quiero hacer una pregunta.', wrongs: ['Quiero hago una pregunta.', 'Quiero a hacer una pregunta.'], explain: '<b>Querer + infinitive</b>: conjugate <i>querer</i> and leave the next verb in the infinitive.' },
+    { id: 'g-a2-magic-9', en: 'We can open the window.', correct: 'Podemos abrir la ventana.', wrongs: ['Podemos abrimos la ventana.', 'Podemos a abrir la ventana.'], explain: '<b>Poder + infinitive</b>: <i>podemos abrir</i>, not <i>podemos abrimos</i>.' },
+    { id: 'g-a2-magic-10', en: 'We could stay at home.', correct: 'Podríamos quedarnos en casa.', wrongs: ['Podríamos quedamos en casa.', 'Podríamos a quedarnos en casa.'], explain: '<b>Podríamos + infinitive</b> expresses possibility; attach the reflexive pronoun to the infinitive.' },
+    { id: 'g-a2-magic-11', en: 'I like to read at night.', correct: 'Me gusta leer por la noche.', wrongs: ['Me gusto leer por la noche.', 'Me gustan leer por la noche.'], explain: 'An infinitive is a singular idea with <b>gustar</b>: <i>me gusta leer</i>.' },
+    { id: 'g-a2-magic-12', en: 'She needs to study today.', correct: 'Necesita estudiar hoy.', wrongs: ['Necesita a estudiar hoy.', 'Necesita estudia hoy.'], explain: '<b>Necesitar + infinitive</b> does not take an extra <i>a</i>.' },
+    { id: 'g-a2-magic-13', en: 'We are going to leave early.', correct: 'Vamos a salir temprano.', wrongs: ['Vamos salir temprano.', 'Vamos a salimos temprano.'], explain: '<b>Ir a + infinitive</b> includes <i>a</i>; the second verb stays in the infinitive.' },
+    { id: 'g-a2-magic-14', en: 'I just received a phone call.', correct: 'Acabo de recibir una llamada.', wrongs: ['Acabo recibir una llamada.', 'Acabo de recibí una llamada.'], explain: '<b>Acabar de + infinitive</b> uses <i>de</i> and an infinitive.' },
+    { id: 'g-a2-magic-15', en: 'You should call the pharmacy.', correct: 'Deberías llamar a la farmacia.', wrongs: ['Deberías llamas a la farmacia.', 'Deberías a llamar a la farmacia.'], explain: '<b>Deberías + infinitive</b>: do not conjugate the second verb.' },
+    { id: 'g-a2-magic-16', en: 'He usually walks to work.', correct: 'Suele caminar al trabajo.', wrongs: ['Suele camina al trabajo.', 'Suele a caminar al trabajo.'], explain: '<b>Soler + infinitive</b> describes a habit; the second verb stays in the infinitive.' },
+    { id: 'g-a2-magic-17', en: 'I would like to travel tomorrow.', correct: 'Me gustaría viajar mañana.', wrongs: ['Me gustaría viajo mañana.', 'Me gustaré viajar mañana.'], explain: '<b>Me gustaría + infinitive</b> means “I would like to”; use <i>viajar</i>, not <i>viajo</i>.' },
+    { id: 'g-a2-glue-17', en: 'I gave it to Ana.', correct: 'Se lo di a Ana.', wrongs: ['Le lo di a Ana.', 'Lo le di a Ana.'], explain: 'Before <i>lo/la/los/las</i>, <b>le/les</b> changes to <b>se</b>: <i>se lo di</i>.' },
+    { id: 'g-a2-glue-18', en: 'The pharmacy is across from the bank.', correct: 'La farmacia está enfrente del banco.', wrongs: ['La farmacia es enfrente del banco.', 'La farmacia está dentro del banco.'], explain: 'Use <b>estar</b> for location; <i>enfrente de</i> means “across from.”' },
+    { id: 'g-a2-glue-19', en: 'I work on Mondays and rest on Sundays.', correct: 'Trabajo los lunes y descanso los domingos.', wrongs: ['Trabajo en los lunes y descanso los domingos.', 'Trabajo los lunes y descanso en los domingos.'], explain: 'For recurring weekly activities, use <b>los + weekday</b> without <i>en</i>.' },
+    { id: 'g-a2-glue-20', en: 'I want neither coffee nor tea.', correct: 'No quiero ni café ni té.', wrongs: ['No quiero o café o té.', 'No quiero ni café o té.'], explain: '<b>Ni ... ni</b> expresses “neither ... nor.”' },
+    { id: 'g-a2-glue-21', en: 'I also want to go.', correct: 'Yo también quiero ir.', wrongs: ['Me también quiero ir.', 'Yo tampoco quiero ir.'], explain: 'Use <b>también</b> to add a positive idea; <i>tampoco</i> is used with a negative idea.' },
+    { id: 'g-a2-glue-22', en: 'I have half a pizza.', correct: 'Tengo media pizza.', wrongs: ['Tengo medio pizza.', 'Tengo mitad pizza.'], explain: '<b>Medio/a</b> agrees with the noun: feminine <i>pizza</i> → <i>media pizza</i>.' },
+    { id: 'g-a2-glue-23', en: 'The train is faster than the bus.', correct: 'El tren es más rápido que el autobús.', wrongs: ['El tren es más rápido como el autobús.', 'El tren es tan rápido que el autobús.'], explain: 'For “more ... than,” use <b>más + adjective + que</b>.' },
+    { id: 'g-a2-glue-24', en: 'We have as many books as you all.', correct: 'Tenemos tantos libros como ustedes.', wrongs: ['Tenemos tan libros como ustedes.', 'Tenemos tanta libros como ustedes.'], explain: 'With a noun, use <b>tanto/a/os/as + noun + como</b>; agree with the noun.' },
+    { id: 'g-a2-glue-25', en: 'After eating, we are going to walk.', correct: 'Después de comer, vamos a caminar.', wrongs: ['Después comer, vamos a caminar.', 'Después de comemos, vamos a caminar.'], explain: '<b>Después de</b> is followed by a noun or infinitive: <i>después de comer</i>.' },
+    { id: 'g-a2-glue-26', en: 'This gift is for you, not for me.', correct: 'Este regalo es para ti, no para mí.', wrongs: ['Este regalo es por ti, no por mí.', 'Este regalo es para tú, no para yo.'], explain: 'Use <b>para</b> for the recipient; after a preposition, use <i>ti</i> and <i>mí</i>.' },
+  );
+
 
   const A1D = [
     {
@@ -595,6 +782,22 @@ window.DATA = (function () {
       { who: 'them', es: '¿Podemos tomar el autobús?', en: 'Can we take the bus?', kw: ['tomar', 'autobús'] },
       { who: 'you', es: 'Sí, y después podemos caminar por el parque.', en: 'Yes, and afterward we can walk through the park.', kw: ['caminar', 'parque'] },
       { who: 'them', es: '¡De acuerdo! Ya compré los boletos.', en: 'Sounds good! I already bought the tickets.', kw: ['compré', 'boletos'] },
+    ],
+  });
+
+  A2D.push({
+    id: 'mercado', icon: '🛒', title: 'Preparando la comida', intro: 'Two friends make plans for a meal together.',
+    lines: [
+      { who: 'you', es: '¿Dónde nos vemos el sábado?', en: 'Where shall we meet on Saturday?', kw: ['dónde', 'vemos', 'sábado'] },
+      { who: 'them', es: 'Podemos vernos aquí, cerca del mercado.', en: 'We can meet here, near the market.', kw: ['vernos', 'aquí', 'cerca'] },
+      { who: 'you', es: 'Yo voy a comprar la fruta y tú puedes traer el pan.', en: 'I am going to buy the fruit, and you can bring the bread.', kw: ['voy', 'comprar', 'traer'] },
+      { who: 'them', es: 'De acuerdo. También voy a llevar agua y café.', en: 'Sounds good. I am also going to bring water and coffee.', kw: ['también', 'llevar', 'agua'] },
+      { who: 'you', es: '¿Quieres algo más, como queso o jugo?', en: 'Do you want anything else, like cheese or juice?', kw: ['algo', 'como', 'queso'] },
+      { who: 'them', es: 'No quiero ni queso ni café; solo un poco de agua.', en: 'I want neither cheese nor coffee; just a little water.', kw: ['ni', 'solo', 'agua'] },
+      { who: 'you', es: 'Tengo que llegar temprano porque después trabajo.', en: 'I have to arrive early because I work afterward.', kw: ['tengo que', 'llegar', 'trabajo'] },
+      { who: 'them', es: 'Entonces suelo preparar la comida en casa.', en: 'Then I usually prepare the meal at home.', kw: ['entonces', 'suelo', 'casa'] },
+      { who: 'you', es: 'Me gustaría cocinar contigo, pero hoy no puedo.', en: 'I would like to cook with you, but I cannot today.', kw: ['gustaría', 'contigo', 'pero'] },
+      { who: 'them', es: 'No te preocupes; nos vemos el sábado a las diez.', en: 'Do not worry; see you on Saturday at ten.', kw: ['preocupes', 'vemos', 'sábado'] },
     ],
   });
 
