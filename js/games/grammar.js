@@ -6,13 +6,14 @@
     icon: '📐',
     title: 'Grammar Judge',
     tag: 'Fix your mistakes',
-    desc: '¿Cuál es? Real error variants — ser/estar, gender, subjunctive, tenses. Every rule locks in at 5/5, then it never bothers you again.',
+    desc: '¿Cuál es? Real error variants — ser/estar, gender, subjunctive, tenses. Every rule locks in at 5/5, then it never bothers you again. Endless: questions keep coming until you head back to the games page.',
     xpHint: '12 XP per rule',
     remaining: level => engine.unmastered(level, 'grammar').length,
     start(view, level) {
       runRound(view, {
         id: 'grammar', icon: '📐', title: 'Grammar Judge', level,
-        kind: 'grammar', kindLabel: 'grammar rule', size: 8,
+        kind: 'grammar', kindLabel: 'grammar rule',
+        remainingFn: () => engine.unmastered(level, 'grammar').length,
       });
     },
   });

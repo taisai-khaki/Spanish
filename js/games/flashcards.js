@@ -47,8 +47,8 @@
         level,
         kind: 'flashcard',
         kindLabel: 'flashcard',
-        size: 10,
         poolFn: () => filteredPool(level, activeFilter),
+        allFn: () => engine.pool(level, 'flashcard').filter(e => matchesFilter(e.item, activeFilter)),
         remainingFn: () => engine.unmastered(level, 'flashcard').length,
         formatFn: () => 'flashcard',
       });
