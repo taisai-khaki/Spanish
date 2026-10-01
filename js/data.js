@@ -2,10 +2,11 @@
 /* ============ All learning content ============
    kinds: words · sentences · grammar · dialogues
    Levels: A1 (warm-up) · A2 (conversational) · B1 (the main stage) · B2 (early)
-   1,790 game items total across the four language levels (counts checked in test/smoke.js).
+   1,790 curated game items across the four language levels; the 12,540
+   generated A2 verb variations are built in data-sentences.js.
    (The EXAM level — naturalization exam — lives in data-exam.js /
    data-bank.js and is NOT counted here.)
-   Mastery (5 correct in a row) is tracked by engine.js per item. */
+   Regular mastery (5 correct in a row) is tracked by engine.js per item. */
 window.DATA = (function () {
   const A1W = [
     // greetings
@@ -2052,7 +2053,14 @@ window.DATA = (function () {
     levels: ['A1', 'A2', 'B1', 'B2'],
     levelNames: { A1: 'A1 · Beginner', A2: 'A2 · Conversational', B1: 'B1 · Independent', B2: 'B2 · Advanced' },
     A1: { words: A1W, sentences: A1S, grammar: A1G, dialogues: A1D },
-    A2: { words: A2W, sentences: A2S, grammar: A2G, dialogues: A2D },
+    A2: {
+      words: A2W, sentences: A2S, grammar: A2G, dialogues: A2D,
+      // The two handouts' verbs are mostly in the "verbs" category; keep pagar/viajar
+      // in the verb practice list even though their vocabulary categories are topical.
+      verbs: Array.from(new Map(A2W
+        .filter(w => w.cat === 'verbs' || w.es === 'pagar' || w.es === 'viajar')
+        .map(w => [w.es, w])).values()),
+    },
     B1: { words: B1W, sentences: B1S, grammar: B1G, dialogues: B1D },
     B2: { words: B2W, sentences: B2S, grammar: B2G, dialogues: B2D },
   };

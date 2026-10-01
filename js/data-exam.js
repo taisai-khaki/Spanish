@@ -7,7 +7,7 @@
    · grammar    — the structures the 80–120 word essay demands
    · dialogues  — a real exam-vocabulary conversation (the consulate)
    · reading    — the 16 real reading passages, 6 questions each (96 total)
-   Same rule as the rest of the lab: 5 correct in a row = yours forever. ============ */
+   EXAM items use the regular rule: 5 correct in a row = yours forever. ============ */
 (function () {
   const W = (es, en, cat) => ({ es, en, cat });
   const S = (en, es, ans, distr, explain) => ({ en, es, ans, distr, explain });
@@ -336,7 +336,7 @@
   DATA.levelNames.EXAM = 'EXAM · Naturalización';
   DATA.EXAM = {
     words: EW,
-    sentences: (window.GENERATED_SENTENCES || []).concat(ES_),
+    sentences: ES_,
     grammar: EG,
     dialogues: ED,
     reading: READING,

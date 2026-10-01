@@ -430,3 +430,21 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .passage-audio { margin: 10px 0; }
 .q-title { font-size: 18px; margin: 14px 0 4px; text-align: left; }
 .q-en { display: block; font-size: 13px; font-weight: 400; margin-top: 4px; }
+
+/* ---------- per-verb sentence coverage ---------- */
+.verb-progress-card { margin-top: 18px; }
+.verb-progress-card h3 { margin: 0 0 4px; }
+.verb-search-label { display: flex; flex-direction: column; gap: 5px; margin: 12px 0; color: var(--muted); font-size: 13px; font-weight: 600; }
+.verb-search { width: min(100%, 420px); min-width: 0; font-size: 15px; }
+.verb-progress-list { max-height: 460px; overflow-y: auto; border-top: 1px solid var(--line); }
+.verb-progress-row { padding: 9px 4px; border-bottom: 1px solid var(--line); }
+.verb-progress-row[hidden] { display: none; }
+.verb-progress-head { display: grid; grid-template-columns: minmax(90px, 1fr) minmax(120px, 1.5fr) 110px; gap: 10px; align-items: center; margin-bottom: 5px; }
+.verb-progress-head > b { font-size: 14px; }
+.verb-status { color: var(--muted); font-size: 12px; text-align: right; white-space: nowrap; }
+.verb-status.done { color: var(--good); font-weight: 700; }
+@media (max-width: 600px) {
+  .verb-progress-head { grid-template-columns: 1fr auto; gap: 2px 8px; }
+  .verb-progress-head .muted { grid-column: 1; }
+  .verb-progress-head .verb-status { grid-column: 2; grid-row: 1 / span 2; }
+}

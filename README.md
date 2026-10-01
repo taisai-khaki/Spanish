@@ -5,10 +5,9 @@ Progress is saved in your browser (localStorage).
 
 ## The rule (from naturalizacion.mx)
 
-**5 correct in a row = the item is learned and retired FOREVER.**
-One wrong answer = the streak resets and the item comes back.
-Queues **only ever contain items you haven't learned** — nothing you already know is ever drilled.
-And every retry comes back in a **different exercise format** (write it → hear it → pick it → build it), so the five reps are five different reps.
+**Regular items:** 5 correct in a row learns and retires the item; one wrong answer resets its streak.
+**A2 verb variations:** each verb has 66 linked sentence builders (11 magic frames × 6 person forms). A sentence counts after one correct answer, and the verb is learned only when all 66 are complete. Wrong answers stay in the queue.
+Queues contain only items that are not yet learned.
 
 ## 🇲🇽 Exam coverage (EXAM level)
 
@@ -42,10 +41,10 @@ Exam badges: 🎙️ all 10 interview questions · 📖 all 16 passages · 🇲�
 
 ## Content
 
-**1,790 game items across the four language levels** (the 938-item EXAM level is a separate track and not counted here):
+**14,330 game items across A1–B2** (including 12,540 tagged A2 verb-variation sentences; the EXAM level is a separate track):
 
 - **A1 (76 items):** 42 words · 12 sentences · 6 grammar rules · conversations: taxi, taquería
-- **A2 (618 items):** 439 words (all 190 distinct lemmas from the two 100-verb handouts, all 11 magic-verb frames, and 213 added glue-word cards) · 92 sentence builders · 59 grammar questions · 3 conversations (doctor visit, weekend plans, meal planning; 28 dialogue lines). The expanded practice adds 37 sentence builders, 21 grammar checks, and a new 10-line dialogue.
+- **A2 (13,158 items):** 439 vocabulary cards including all 190 unique verb lemmas from the handouts, 11 magic-verb frames, and 214 glue-word cards · 92 curated sentence builders plus 12,540 tagged verb variations (66 per verb: 11 frames × 6 person forms, one correct answer per sentence) · 59 grammar questions · 3 conversations (28 dialogue lines).
 - **B1 (887 items — the main stage, default level, full B1 course):** 545 words across 27 categories (clothes, body, weather, home, food, housework, appearance, personality, feelings, city & transport, work, shopping, time, education, nature, daily life, communication, idioms, formal register, bureaucracy…) · 180 sentences (subjunctive, relatives, past unreal conditionals, clitics, everyday domains) · 45 grammar rules (the complete B1 map: pluperfect, clitics, ser/estar, reported speech, subjunctive triggers) · 12 real conversations: your boss, the job interview, the restaurant complaint, the bank errand, the market, the pharmacy, the phone call, café small talk, asking directions, the store warranty claim, planning a trip, describing a photo
 - **B2 (209 items — a step ahead):** 115 words (sophisticated idioms, discourse connectives, society, psychology, economy, medicine, law) · 50 advanced sentences (conditional perfect, reported speech, formal subjunctive, generalizations) · 18 grammar rules · 2 conversations: the university thesis, the lawyer's office
 - **EXAM (938 items, separate track):** 196 words · 16 sentences · 9 grammar rules · 8 dialogue lines · 10 interview questions · 16 passages (96 questions) · 683 bank questions
@@ -60,19 +59,20 @@ python3 -m http.server 8080
 
 - **Mic** (speaking + scoring) needs a secure context and works best in **Chrome or Edge**; other browsers fall back to self-rating / reply-picking.
 - All speech audio is your browser's built-in Spanish TTS.
-- Tests: `node test/smoke.js` (boots the whole app in a sandbox and checks the mastery engine, content inventory, and every game at every level).
+- Focused tests: `node test/a2-verb-practice.js` and `node test/round-selection.js`. The legacy `node test/smoke.js` currently has a stale EXAM interview-data expectation.
 
-## Content lives in three files
+## Content files
 
-- [`js/data.js`](js/data.js) — A1/A2/B1/B2 words, sentences, grammar, dialogues (1,790 items).
-- [`js/data-exam.js`](js/data-exam.js) — the EXAM level: exam words, interview phrases, exam grammar, the consulate dialogue, the 10 interview questions (with tips, model answers, keyword lists), and the 16 reading passages.
+- [`js/data.js`](js/data.js) — A1/A2/B1/B2 vocabulary, curated sentences, grammar, and dialogues (1,790 base items).
+- [`js/data-sentences.js`](js/data-sentences.js) — builds tagged A2 verb practice: 190 verbs × 11 frames × 6 person forms = 12,540 sentences. Add a `verbs` list to B1 or B2 later to use the same generator there.
+- [`js/data-exam.js`](js/data-exam.js) — EXAM words, grammar, the consulate dialogue, and reading passages.
 - [`js/data-bank.js`](js/data-bank.js) — the real 683-question bank (generated from `naturalizacion.mx/data/questions.json`).
 
-Add entries to any of them and every game picks them up automatically — each new item joins the mastery pipeline (5/5 to lock in).
+Regular items use 5/5 mastery. Each tagged verb sentence counts after one correct answer; its verb is learned when all linked sentences are complete.
 
 ### A2 reference PDFs
 
-The A2 verb audit includes all **190 distinct Spanish lemmas** in the two numbered 100-verb lists (200 rows, with repeated lemmas de-duplicated) and all **11 magic-verb frames**. The glue-word deck now has **213 added cards** across pronouns, possessives, question words, demonstratives, location/time, adverbs, quantity, comparisons, prepositions, and conjunctions. Spanish forms and accents are checked, and the practice sentences are original:
+The A2 verb audit includes all **190 distinct Spanish lemmas** in the two numbered 100-verb lists (200 rows, with repeated lemmas de-duplicated) and all **11 magic-verb frames**. The glue-word deck has **214 cards** across pronouns, possessives, question words, demonstratives, location/time, adverbs, quantity, comparisons, prepositions, and conjunctions. The tagged verb variations use explicit IDs so the app can track completion sentence by sentence:
 
 - [`Spanish_Verb_Trainer.pdf`](Spanish_Verb_Trainer.pdf) — *100 Verbs + 11 Magic Verbs + Simple Past*, by Peter McCaslin / Fast Conversational Spanish, LLC.
 - [`30DAY_-_DAY_10_-_VERBS_100_MAGIC_VERBS.pdf`](30DAY_-_DAY_10_-_VERBS_100_MAGIC_VERBS.pdf) and [`100 verbs.pdf`](100%20verbs.pdf) — 100-verb handout (these two uploads are identical copies).
