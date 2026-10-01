@@ -41,11 +41,12 @@ const inventory = JSON.parse(run(`JSON.stringify({
       && new Set(examples.map(s => s.personId)).size === 6
       && new Set(examples.map(s => s.frameId + '/' + s.personId)).size === 66;
   }),
-  shapeCorrect: DATA.A2.verbSentences.every(s => norm(s.ans.join(' ')) === norm(s.es)),
-  safeDistractors: DATA.A2.verbSentences.every(s => s.distr.length === 4 && s.distr.every(d => !s.ans.some(a => norm(a) === norm(d)))),
+  shapeCorrect: DATA.A2.verbSentences.every(s => norm(s.ans.join(' ')) === norm(s.es) && s.ans.every(a => !/[¿?¡!.,]/.test(a))),
+  safeDistractors: DATA.A2.verbSentences.every(s => s.distr.length === 8 && s.distr.every(d => !s.ans.some(a => norm(a) === norm(d)))),
   clearPrompts: DATA.A2.verbSentences.every(s => /^[A-Z“]/.test(s.en))
     && DATA.A2.verbSentences.find(s => s.frameId === 'necesitar' && s.personId === 'tu').en !== DATA.A2.verbSentences.find(s => s.frameId === 'necesitar' && s.personId === 'ustedes').en,
   curatedSentences: DATA.A2.sentences.length,
+  curatedDistractorsOk: DATA.A2.sentences.every(s => s.distr.length >= 8 && s.ans.every(a => !/[¿?¡!.,]/.test(a)) && s.distr.every(d => !s.ans.some(a => norm(a) === norm(d)))),
   glueWords: DATA.A2.words.filter(w => ['possessives','demonstratives','location','time','adverbs','quantity','comparisons','prepositions','conjunctions','pronouns','question words'].includes(w.cat)).length,
   glueExamples: ['¿De quién es esta mochila? Es mía.','Mi hermana es tan alta como mi madre.','Necesito un poco de agua antes de salir.','No me gusta el café y tampoco quiero té.']
     .every(es => DATA.A2.sentences.some(s => s.es === es)),
@@ -57,7 +58,7 @@ test('12,540 unique generated examples link to all 190 verbs', inventory.sentenc
   && inventory.uniqueSentenceIds === 12540 && inventory.uniqueLinkedVerbs === 190 && inventory.frames === 11 && inventory.framesPerVerb);
 test('generated answer tokens reconstruct each Spanish sentence without duplicate distractors', inventory.shapeCorrect && inventory.safeDistractors);
 test('English prompts are capitalized and distinguish tú from ustedes', inventory.clearPrompts);
-test('curated A2 sentences and all glue-word practice remain; generated sentences do not leak into EXAM', inventory.curatedSentences === 92 && inventory.glueWords === 214 && inventory.glueExamples && inventory.examSentences === 16);
+test('curated A2 sentences and all glue-word practice remain; generated sentences do not leak into EXAM', inventory.curatedSentences >= 92 && inventory.curatedDistractorsOk && inventory.glueWords === 214 && inventory.glueExamples && inventory.examSentences === 16);
 
 test('the same generator can build a tagged future-level set', run(`
   (function(){

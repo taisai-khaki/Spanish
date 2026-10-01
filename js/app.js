@@ -86,42 +86,8 @@
   }
 
   function playerPanel() {
-    const d = player.data, r = player.rank();
-    const pct = d.level >= 10 ? 100 : Math.round((d.xp / player.xpNext()) * 100);
-    const streakHot = d.lastDay === todayStr() && d.daily.xp > 0;
+    const d = player.data;
     return `
-      <div class="panel-row">
-        <div class="card player-card">
-          <div class="avatar-big">${r.icon}</div>
-          <div class="player-info">
-            <div class="rank-line"><b>${r.name}</b><span class="lvl">Lv ${d.level}</span></div>
-            <div class="xpbar"><div class="xpbar-fill" style="width:${pct}%"></div></div>
-            <div class="muted small">${d.level >= 10
-              ? 'MAX LEVEL — you ARE Pico the parrot 🦜'
-              : `${d.xp} / ${player.xpNext()} XP to Lv ${d.level + 1} · ${d.xpTotal} XP total`}</div>
-            <div class="muted small rank-note">${r.note}</div>
-          </div>
-          <div class="player-side">
-            <div class="streak ${streakHot ? 'hot' : ''}">🔥 ${d.streak}<div class="small muted">day streak</div></div>
-            <button class="btn ghost mini" id="soundToggle" type="button">${player.sound ? '🔊 Sound on' : '🔇 Sound off'}</button>
-          </div>
-        </div>
-        <div class="card quest-card">
-          <h3>🎯 Today's quests</h3>
-          ${QUESTS.map(q => {
-            const prog = q.id === 'xp80' ? d.daily.xp : (q.id === 'games3' ? d.daily.games : (d.daily.exam || 0));
-            const p = Math.min(prog, q.goal);
-            const done = d.daily.claimed[q.id];
-            return `
-              <div class="quest ${done ? 'done' : ''}">
-                <div class="quest-top"><span>${done ? '✅' : '🎯'} ${q.label}</span><b>${p}/${q.goal}</b></div>
-                <div class="qbar"><div class="qbar-fill" style="width:${Math.round((p / q.goal) * 100)}%"></div></div>
-                <div class="muted small">${done ? 'Claimed — nice.' : `Reward: +${q.reward} XP`}</div>
-              </div>`;
-          }).join('')}
-          <p class="muted small quest-note">Complete both = a very happy bird. 🐥</p>
-        </div>
-      </div>
       ${levelProgress()}
       <div class="card badge-card">
         <h3>🏅 Badges <span class="muted small">(${Object.keys(d.badges).length}/${BADGES.length})</span></h3>
@@ -154,8 +120,6 @@
       <section class="home">
         <div class="hero">
           <h1>Habla español <span class="accent">fast</span>.</h1>
-          <p>Six games. Regular items need <b>5 correct in a row</b>. A2 verb practice has 66 sentences per verb across 11 magic frames and six persons; answer every linked sentence correctly once to learn that verb. Missed items return for practice.</p>
-          <p class="muted small">🇲🇽 The <b>EXAM</b> level covers your naturalization exam: the 16 reading passages, the 683-question bank, and the exam vocabulary.</p>
         </div>
         ${playerPanel()}
         <div class="grid">
@@ -164,7 +128,8 @@
         ${verbProgressPanel()}
 
       </section>`;
-    $('#soundToggle', view).onclick = () => { player.toggleSound(); route(); };
+    const st = $('#soundToggle', view);
+    if (st) st.onclick = () => { player.toggleSound(); route(); };
     bindVerbProgressFilter();
     startMascot();
   }

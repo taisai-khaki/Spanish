@@ -15,10 +15,16 @@
       runRound(view, {
         id: 'sentences', icon: '🧩', title: 'Word Order', level,
         kind: 'sentence', kindLabel: 'sentence', size: 10,
-        poolFn: () => engine.order(
-          engine.unmastered(level, 'sentence').concat(engine.unmastered(level, 'verbSentence')),
-          level
-        ),
+        poolFn: () => {
+          const curated = engine.order(engine.unmastered(level, 'sentence'), level);
+          const verbs = engine.order(engine.unmastered(level, 'verbSentence'), level);
+          if (!verbs.length) return curated;
+          if (!curated.length) return verbs;
+          const takeCurated = Math.min(4, curated.length);
+          const takeVerbs = Math.min(10 - takeCurated, verbs.length);
+          return shuffle(curated.slice(0, takeCurated).concat(verbs.slice(0, takeVerbs)))
+            .concat(curated.slice(takeCurated), verbs.slice(takeVerbs));
+        },
         remainingFn: remaining,
         completionVerb: 'completed',
         completeText: level === 'A2'

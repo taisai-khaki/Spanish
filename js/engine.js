@@ -7,12 +7,13 @@
 const MASTERED_AT = 5;
 
 const FORMATS = {
-  word: ['type-en', 'type-es', 'listen-pick', 'pick-es'],
-  sentence: ['word-order', 'type-es', 'listen-pick', 'fill-blank'],
+  word: ['listen-pick', 'pick-es'],
+  sentence: ['listen-pick', 'fill-blank'],
   grammar: ['pick-correct', 'pick-wrong'],
-  dialogue: ['keyword', 'listen-pick', 'fill-blank', 'speak'],
+  dialogue: ['keyword', 'listen-pick', 'fill-blank'],
   reading: ['read-quiz', 'listen-quiz'],
   verbSentence: ['word-order'],
+  flashcard: ['flashcard'],
 };
 
 const engine = {
@@ -52,7 +53,7 @@ const engine = {
     return this.load(level)[this.key(level, kind, id)] || { streak: 0, last: null, seen: 0 };
   },
 
-  masteryTarget(kind) { return kind === 'verbSentence' ? 1 : MASTERED_AT; },
+  masteryTarget(kind) { return (kind === 'verbSentence' || kind === 'flashcard') ? 1 : MASTERED_AT; },
 
   result(level, kind, id, ok, format) {
     const st = this.load(level);
@@ -80,6 +81,7 @@ const engine = {
     if (!kind || kind === 'dialogue') (d.dialogues || []).forEach(dlg => dlg.lines.forEach((ln, i) =>
       out.push({ kind: 'dialogue', id: dlg.id + ':' + i, item: ln, dlg, lineNo: i })));
     if (!kind || kind === 'reading') (d.reading || []).forEach(p => out.push({ kind: 'reading', id: p.id, item: p }));
+    if (kind === 'flashcard') (d.flashcards || []).forEach(fc => out.push({ kind: 'flashcard', id: fc.id, item: fc }));
     return out;
   },
 

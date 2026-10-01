@@ -95,44 +95,6 @@ function buildFillBlank(entry, level) {
 /* ================= tasks ================= */
 const tasks = {
 
-  'type-en'(mount, o) {
-    const it = o.entry.item;
-    mount.innerHTML = `
-      <div class="row center"><button class="btn ghost sound" id="tplay" type="button">🔊 Hear it</button></div>
-      <form class="ansform" id="tform" autocomplete="off">
-        <input class="answer-input" id="tinput" placeholder="English meaning…" aria-label="Your answer">
-        <button class="btn" type="submit">Check</button>
-      </form>`;
-    $('#tplay', mount).onclick = () => say(it.es, o.rate || 0.9);
-    $('#tinput', mount).focus();
-    $('#tform', mount).onsubmit = e => {
-      e.preventDefault();
-      const val = $('#tinput', mount).value;
-      const parts = meaningParts(it.en);
-      o.onSubmit(parts.some(p => similarity(val, p) >= 0.85));
-    };
-    return null;
-  },
-
-  'type-es'(mount, o) {
-    const it = o.entry.item;
-    mount.innerHTML = `
-      <form class="ansform" id="tform" autocomplete="off">
-        <input class="answer-input" id="tinput" placeholder="en español…" aria-label="Spanish">
-        <button class="btn" type="submit">Check</button>
-      </form>
-      <div class="row center"><button class="btn ghost sound" id="tplay" type="button">🔊 Hear it</button></div>`;
-    $('#tplay', mount).onclick = () => say(it.es, o.rate || 0.9);
-    $('#tinput', mount).focus();
-    $('#tform', mount).onsubmit = e => {
-      e.preventDefault();
-      const val = $('#tinput', mount).value;
-      const a = stripArticles(val), b = stripArticles(it.es);
-      o.onSubmit(!!a && (a === b || similarity(val, it.es) >= 0.9));
-    };
-    return null;
-  },
-
   'listen-pick'(mount, o) {
     const it = o.entry.item;
     const opts = makeMeaningOptions(o.entry, o.level);
@@ -152,7 +114,11 @@ const tasks = {
   'pick-es'(mount, o) {
     const it = o.entry.item;
     const opts = makeEsOptions(o.entry, o.level);
-    mount.innerHTML = `<div class="opts">${opts.map(x => `<button class="opt" type="button" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;
+    mount.innerHTML = `
+      <div class="row center"><button class="btn ghost big" id="tplay" type="button">🔊 Play</button></div>
+      <div class="opts">${opts.map(x => `<button class="opt" type="button" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;
+    say(it.es, o.rate || 1);
+    $('#tplay', mount).onclick = () => say(it.es, o.rate || 1);
     $$('.opt', mount).forEach(b => b.onclick = () => {
       $$('.opt', mount).forEach(x => { x.disabled = true; if (norm(x.dataset.v) === norm(it.es)) x.classList.add('right'); });
       if (norm(b.dataset.v) !== norm(it.es)) b.classList.add('wrong');
@@ -173,12 +139,18 @@ const tasks = {
     let placed = [];
     const refresh = () => {
       placed = Array.from(row.children);
-      $('#tcheck', mount).disabled = placed.length !== it.ans.length;
+      $('#tcheck', mount).disabled = placed.length === 0;
     };
     shuffle(it.ans.concat(it.distr)).forEach(word => {
       const b = document.createElement('button');
       b.className = 'chip'; b.type = 'button'; b.textContent = word;
-      b.onclick = () => { if (b.disabled) return; fx.sfx('pop'); b.classList.add('placed'); row.appendChild(b); refresh(); };
+      b.onclick = () => {
+        if (b.disabled || row.contains(b)) return;
+        fx.sfx('pop');
+        b.classList.add('placed');
+        row.appendChild(b);
+        refresh();
+      };
       bank.appendChild(b);
     });
     row.addEventListener('click', e => {
@@ -191,12 +163,23 @@ const tasks = {
     });
     $('#tclear', mount).onclick = () => {
       fx.sfx('tap');
-      Array.from(row.children).forEach(c => bank.appendChild(c));
+      Array.from(row.children).forEach(c => {
+        c.classList.remove('placed');
+        bank.appendChild(c);
+      });
       refresh();
     };
     $('#tcheck', mount).onclick = () => {
-      const ok = placed.map(c => c.textContent).join('|') === it.ans.join('|');
-      $$('.chip', mount).forEach(c => c.classList.add(ok ? 'right' : ''));
+      if (!placed.length) return;
+      const ok = placed.length === it.ans.length
+        && placed.every((c, i) => norm(c.textContent) === norm(it.ans[i]));
+      $$('.chip', mount).forEach(c => { c.disabled = true; });
+      placed.forEach((c, i) => {
+        const tokenOk = i < it.ans.length && norm(c.textContent) === norm(it.ans[i]);
+        c.classList.add(ok || tokenOk ? 'right' : 'wrong');
+      });
+      $('#tclear', mount).disabled = true;
+      $('#tcheck', mount).disabled = true;
       o.onSubmit(ok);
     };
     return null;
@@ -216,64 +199,6 @@ const tasks = {
       o.onSubmit(norm(b.dataset.v) === norm(fb.missing));
     });
     return null;
-  },
-
-  'speak'(mount, o) {
-    const it = o.entry.item;
-    mount.innerHTML = `
-      <div class="row center">
-        <button class="btn ghost big" id="tplay" type="button">🔊 Play</button>
-        ${o.hasMic ? '<button class="btn big mic" id="tmic" type="button">🎤 Say it</button>' : ''}
-      </div>
-      <p class="en-hint">${esc(it.en)}</p>
-      <div id="tsfb" class="feedback" aria-live="polite"></div>`;
-    say(it.es, 0.9);
-    $('#tplay', mount).onclick = () => say(it.es, 0.9);
-    if (!o.hasMic) {
-      mount.insertAdjacentHTML('beforeend', `<div class="selfrate">How close did it sound?
-        <button class="btn ghost star" data-v="3" type="button">🌟 Nailed it</button>
-        <button class="btn ghost star" data-v="2" type="button">👍 Close</button>
-        <button class="btn ghost star" data-v="1" type="button">🤔 Rough</button></div>`);
-      $$('.star', mount).forEach(b => b.onclick = () => {
-        const v = +b.dataset.v;
-        o.onSubmit(v >= 2, { pct: v === 3 ? 95 : 80 });
-      });
-      return null;
-    }
-    const rec = makeRecognizer();
-    let stopT = null, listening = false, done = false;
-    rec.onresult = e => {
-      if (done) return;
-      done = true;
-      const alts = Array.from(e.results[0]).map(a => a.transcript);
-      let best = 0, bestTxt = alts[0] || '';
-      alts.forEach(t => { const s = similarity(t, it.es); if (s > best) { best = s; bestTxt = t; } });
-      o.onSubmit(best >= 0.75, { pct: Math.round(best * 100), transcript: bestTxt });
-    };
-    rec.onend = () => {
-      listening = false;
-      const m = $('#tmic', mount);
-      if (m) { m.classList.remove('listening'); m.textContent = '🎤 Say it'; }
-    };
-    rec.onerror = e => {
-      listening = false;
-      if ((e.error === 'not-allowed' || e.error === 'service-not-allowed') && !$('#tsfb', mount).querySelector('.notice')) {
-        $('#tsfb', mount).insertAdjacentHTML('beforeend', '<div class="notice">🔇 Mic blocked — allow it in the browser bar and reload.</div>');
-      }
-    };
-    $('#tmic', mount).onclick = () => {
-      if (done) return;
-      if (listening) { try { rec.stop(); } catch {} return; }
-      if ('speechSynthesis' in window) speechSynthesis.cancel();
-      try {
-        rec.start();
-        listening = true;
-        const m = $('#tmic', mount);
-        if (m) { m.classList.add('listening'); m.textContent = '⏹ Listening…'; }
-        stopT = setTimeout(() => { if (listening) { try { rec.stop(); } catch {} } }, 4000);
-      } catch {}
-    };
-    return { cleanup() { if (stopT) clearTimeout(stopT); try { rec.abort(); } catch {} } };
   },
 
   'keyword'(mount, o) {
@@ -318,6 +243,58 @@ const tasks = {
       if (norm(chosen) === norm(it.correct)) b.classList.remove('right');
       if (norm(chosen) === norm(it.correct)) b.classList.add('wrong');
       o.onSubmit(norm(chosen) !== norm(it.correct));
+    });
+    return null;
+  },
+
+  'flashcard'(mount, o) {
+    const it = o.entry.item;
+    const opts = shuffle([it.es].concat(it.wrongs || []));
+    const detailsHtml = it.cardType === 'verb' && it.formsTable
+      ? `<div class="fc-table">
+          <div><b>Infinitivo:</b> ${esc(it.formsTable.infinitive)}</div>
+          <div><b>Presente:</b> ${esc(it.formsTable.presente)}</div>
+          <div><b>Pretérito:</b> ${esc(it.formsTable.preterito)}</div>
+          <div><b>Imperfecto:</b> ${esc(it.formsTable.imperfecto)}</div>
+          <div><b>Futuro:</b> ${esc(it.formsTable.futuro)}</div>
+          <div><b>Condicional:</b> ${esc(it.formsTable.condicional)}</div>
+          <div><b>Combinaciones:</b> ${esc(it.formsTable.combinaciones)}</div>
+        </div>`
+      : `<div class="fc-table">
+          <div><b>Forma:</b> ${esc(it.genderInfo || 'Noun')}</div>
+          <div><b>Combinaciones:</b> ${esc(it.comboExample || '')}</div>
+        </div>`;
+    mount.innerHTML = `
+      <div class="card fc-box">
+        <div class="row between">
+          <span class="tag">${esc(it.badge || 'Flashcard')}</span>
+          <button class="btn ghost mini" id="fcFlip" type="button">🔄 Flip card</button>
+        </div>
+        <div id="fcBack" class="fc-back" hidden>
+          <p class="word-es">${esc(it.es)} <button class="btn ghost mini" id="fcSay" type="button">🔊</button></p>
+          <p class="muted">${esc(it.en)}</p>
+          ${detailsHtml}
+        </div>
+      </div>
+      <div class="opts wide">${opts.map(s => `<button class="opt-line" type="button" data-v="${esc(s)}">${esc(s)}</button>`).join('')}</div>`;
+    const back = $('#fcBack', mount);
+    const flipBtn = $('#fcFlip', mount);
+    if (flipBtn && back) {
+      flipBtn.onclick = () => {
+        back.hidden = !back.hidden;
+        if (!back.hidden) say(it.es, o.rate || 1);
+      };
+    }
+    const sayBtn = $('#fcSay', mount);
+    if (sayBtn) sayBtn.onclick = () => say(it.es, o.rate || 1);
+    $$('.opt-line', mount).forEach(b => b.onclick = () => {
+      if (back) back.hidden = false;
+      $$('.opt-line', mount).forEach(x => {
+        x.disabled = true;
+        if (norm(x.dataset.v) === norm(it.es)) x.classList.add('right');
+      });
+      if (norm(b.dataset.v) !== norm(it.es)) b.classList.add('wrong');
+      o.onSubmit(norm(b.dataset.v) === norm(it.es));
     });
     return null;
   },

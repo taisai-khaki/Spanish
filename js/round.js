@@ -3,25 +3,24 @@
    rotating formats, mastery pips, lock-in celebration ============ */
 
 const XPMAP = {
-  'type-en': 10, 'type-es': 12, 'listen-pick': 8, 'pick-es': 6,
+  'listen-pick': 8, 'pick-es': 8,
   'word-order': 15, 'fill-blank': 10, 'pick-correct': 12, 'pick-wrong': 12,
-  'keyword': 10, 'speak': 15,
+  'keyword': 10,
   'read-quiz': 10, 'listen-quiz': 12,
+  'flashcard': 10,
 };
 
 const FORMAT_LABEL = {
-  'type-en': '✍️ Write the meaning',
-  'type-es': '✍️ Write it in Spanish',
   'listen-pick': '👂 Listen & pick',
-  'pick-es': '🔤 Pick the word',
+  'pick-es': '👂 Listen & pick word',
   'word-order': '🧩 Build the sentence',
-  'fill-blank': '🧩 Fill the gap',
+  'fill-blank': '👂 Listen & fill the gap',
   'pick-correct': '✅ Which is correct?',
   'pick-wrong': '❌ Spot the mistake',
   'keyword': '👂 Catch the keyword',
-  'speak': '🎤 Say it out loud',
   'read-quiz': '📖 Read & answer',
   'listen-quiz': '🎧 Listen & answer',
+  'flashcard': '🃏 Verb & Noun Flashcard',
 };
 
 function pipSpans(streak, target = MASTERED_AT) {
@@ -40,12 +39,10 @@ function promptFor(entry, format) {
   const it = entry.item;
   switch (format) {
     case 'type-en': return `<span class="prompt-k">¿Qué significa?</span><h1 class="word-es">${esc(it.es)}</h1>`;
-    case 'type-es': return `<span class="prompt-k">Escríbelo en español</span><h1 class="word-es enp">${esc(it.en)}</h1>`;
     case 'listen-pick': return `<span class="prompt-k">Escucha y elige el significado</span>`;
-    case 'pick-es': return `<span class="prompt-k">¿Cómo se dice?</span><h1 class="word-es enp">${esc(it.en)}</h1>`;
-    case 'word-order': return `<p class="prompt-en">"${esc(it.en)}"</p>${entry.kind === 'verbSentence'
-      ? `<p class="muted small">${esc(it.frameLabel)} · A2 verb: <b>${esc(it.verbId)}</b></p>` : ''}<p class="muted small">Tap the words in the right order.</p>`;
-    case 'fill-blank': return `<span class="prompt-k">Elige la palabra que falta</span>`;
+    case 'pick-es': return `<span class="prompt-k">¿Qué palabra escuchaste?</span>`;
+    case 'word-order': return `<p class="prompt-en">"${esc(it.en)}"</p><p class="muted small">Tap the words in the right order.</p>`;
+    case 'fill-blank': return `<span class="prompt-k">Escucha y elige la palabra que falta</span>`;
     case 'pick-correct': return it.prompt
       ? `<span class="prompt-k">¿Cuál es correcta?</span><h2 class="q-prompt">${esc(it.prompt)}</h2>`
       : `<span class="prompt-k">¿Cuál es correcta?</span><p class="muted">"${esc(it.en)}"</p>`;
@@ -53,8 +50,7 @@ function promptFor(entry, format) {
       ? `<span class="prompt-k">¿Cuál tiene un error?</span><h2 class="q-prompt">${esc(it.prompt)}</h2>`
       : `<span class="prompt-k">¿Cuál tiene un error?</span><p class="muted">"${esc(it.en)}"</p>`;
     case 'keyword': return `<span class="prompt-k">¿Qué palabra clave escuchaste?</span><p class="muted small">It's fast. Catch the keyword.</p>`;
-    case 'respond': return `<span class="prompt-k">¿Qué respondes?</span>`;
-    case 'speak': return `<span class="prompt-k">Dilo en voz alta 🗣️</span><h1 class="word-es">${esc(it.es)}</h1>`;
+    case 'flashcard': return `<span class="prompt-k">${esc(it.badge || 'Flashcard')}</span><h2 class="q-prompt">${esc(it.prompt || it.en)}</h2>`;
   }
   return '';
 }
@@ -103,14 +99,12 @@ function runRound(view, cfg) {
         if (ok) {
           combo++;
           gained = XPMAP[format] || 10;
-          if (format === 'speak' && meta && meta.pct >= 90) gained = 20;
-          if (format === 'speak' && meta && meta.pct >= 90) player.flag('speak90');
           if (combo % 3 === 0) {
             gained += 10;
             if (combo === 3) fx.stamp('¡RACHA!');
             fx.floatText($('.card', view), '🔥 racha x' + combo + ' +10 XP');
           }
-          fx.sfx(res.justMastered ? 'perfect' : (format === 'speak' && meta && meta.pct >= 90 ? 'perfect' : 'correct'));
+          fx.sfx(res.justMastered ? 'perfect' : 'correct');
           fx.floatText($('.card', view), '+' + gained + ' XP');
           if (res.justMastered) {
             locked++;
@@ -133,7 +127,9 @@ function runRound(view, cfg) {
         const headPips = $('#pips', view);
         if (headPips) headPips.innerHTML = pipSpans(st2.streak, masteryTarget);
         const explain = p.item.explain ? `<p class="explain">${p.item.explain}</p>` : '';
-        const correctText = p.kind === 'word' ? p.item.en : (p.kind === 'grammar' ? p.item.correct : p.item.es);
+        const correctText = format === 'listen-pick' ? p.item.en
+          : (format === 'keyword' ? p.item.kw[0]
+          : (p.kind === 'grammar' ? p.item.correct : p.item.es));
         const successText = p.kind === 'verbSentence'
           ? '✅ Sentence practiced (1/1); it counts toward this verb.'
           : (res.justMastered ? `🔒 ${res.streak}/${res.target} — locked in forever` : `${res.streak}/${res.target} to lock in`);
