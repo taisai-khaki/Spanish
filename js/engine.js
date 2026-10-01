@@ -1,8 +1,8 @@
 'use strict';
 /* ============ Mastery engine (naturalizacion.mx cycle) ============
-   5 consecutive correct = item locked in FOREVER (never drilled again).
-   1 wrong = streak resets. Only UNLEARNED items ever enter a queue.
-   Every retry comes back in a DIFFERENT exercise format. ============ */
+   Regular items: 5 consecutive correct = locked forever; a wrong answer resets the streak.
+   Tagged verbSentence items: one correct answer completes that sentence.
+   Only incomplete items enter queues. ============ */
 
 const MASTERED_AT = 5;
 
@@ -12,6 +12,7 @@ const FORMATS = {
   grammar: ['pick-correct', 'pick-wrong'],
   dialogue: ['keyword', 'listen-pick', 'fill-blank', 'speak'],
   reading: ['read-quiz', 'listen-quiz'],
+  verbSentence: ['word-order'],
 };
 
 const engine = {
@@ -51,6 +52,8 @@ const engine = {
     return this.load(level)[this.key(level, kind, id)] || { streak: 0, last: null, seen: 0 };
   },
 
+  masteryTarget(kind) { return kind === 'verbSentence' ? 1 : MASTERED_AT; },
+
   result(level, kind, id, ok, format) {
     const st = this.load(level);
     const k = this.key(level, kind, id);
@@ -58,10 +61,11 @@ const engine = {
     s.seen = (s.seen || 0) + 1;
     s.streak = ok ? s.streak + 1 : 0;
     s.last = format;
-    const justMastered = ok && s.streak >= MASTERED_AT;
+    const target = this.masteryTarget(kind);
+    const justMastered = ok && s.streak >= target;
     st[k] = s;
     this.save(level);
-    return { streak: Math.min(s.streak, MASTERED_AT), mastered: s.streak >= MASTERED_AT, justMastered };
+    return { streak: Math.min(s.streak, target), target, mastered: s.streak >= target, justMastered };
   },
 
   /* all items of a level (or one kind) as pool entries */
@@ -69,7 +73,9 @@ const engine = {
     const d = DATA[level];
     const out = [];
     if (!kind || kind === 'word') d.words.forEach(w => out.push({ kind: 'word', id: w.es, item: w }));
-    if (!kind || kind === 'sentence') d.sentences.forEach(s => out.push({ kind: 'sentence', id: s.es, item: s }));
+    if (!kind || kind === 'sentence') d.sentences.forEach(s => out.push({ kind: 'sentence', id: s.id || s.es, item: s }));
+    if (!kind || kind === 'verbSentence') (d.verbSentences || []).forEach(s =>
+      out.push({ kind: 'verbSentence', id: s.id, item: s }));
     if (!kind || kind === 'grammar') (d.grammar || []).forEach(g => out.push({ kind: 'grammar', id: g.id, item: g }));
     if (!kind || kind === 'dialogue') (d.dialogues || []).forEach(dlg => dlg.lines.forEach((ln, i) =>
       out.push({ kind: 'dialogue', id: dlg.id + ':' + i, item: ln, dlg, lineNo: i })));
@@ -78,7 +84,8 @@ const engine = {
   },
 
   unmastered(level, kind) {
-    return this.pool(level, kind).filter(p => this.get(level, p.kind, p.id).streak < MASTERED_AT);
+    return this.pool(level, kind).filter(p =>
+      this.get(level, p.kind, p.id).streak < this.masteryTarget(p.kind));
   },
 
   stats(level) {
@@ -86,21 +93,43 @@ const engine = {
     let locked = 0, progress = 0;
     all.forEach(p => {
       const s = this.get(level, p.kind, p.id).streak;
-      if (s >= MASTERED_AT) locked++;
+      const target = this.masteryTarget(p.kind);
+      if (s >= target) locked++;
       else if (s > 0) progress++;
     });
     return { total: all.length, locked, progress, fresh: all.length - locked - progress };
   },
 
+  verbProgress(level) {
+    const data = DATA[level] || {};
+    const sentences = data.verbSentences || [];
+    const state = this.load(level);
+    const grouped = new Map();
+    sentences.forEach(s => {
+      if (!grouped.has(s.verbId)) grouped.set(s.verbId, []);
+      grouped.get(s.verbId).push(s);
+    });
+    return (data.verbs || []).map(verb => {
+      const examples = grouped.get(verb.es) || [];
+      const done = examples.filter(s => {
+        const st = state[this.key(level, 'verbSentence', s.id)];
+        return st && st.streak >= 1;
+      }).length;
+      return { verb, done, total: examples.length, learned: examples.length > 0 && done === examples.length };
+    });
+  },
+
   /* queue order: almost-locked first (3–4, cheap wins), then brand new (0), then struggling (1–2) */
   order(entries, level) {
-    const tier = p => {
-      const s = this.get(level, p.kind, p.id).streak;
-      if (s >= 3) return 0;
-      if (s === 0) return 1;
-      return 2;
-    };
-    return entries.slice().sort((a, b) => tier(a) - tier(b) || Math.random() - 0.5);
+    const tiers = [[], [], []];
+    entries.forEach(p => {
+      const streak = this.get(level, p.kind, p.id).streak;
+      const target = this.masteryTarget(p.kind);
+      const tier = target > 1 && streak >= target - 2 ? 0 : (streak === 0 ? 1 : 2);
+      tiers[tier].push(p);
+    });
+    // Shuffle each tier with Fisher–Yates instead of using a random sort comparator.
+    return tiers.reduce((ordered, tier) => ordered.concat(shuffle(tier)), []);
   },
 
   /* pick an exercise format — always different from the last one used */

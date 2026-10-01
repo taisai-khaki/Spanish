@@ -24,11 +24,12 @@ const FORMAT_LABEL = {
   'listen-quiz': '🎧 Listen & answer',
 };
 
-function pipSpans(streak) {
-  return [0, 1, 2, 3, 4].map(i => `<span class="pip ${i < streak ? 'on' : ''}"></span>`).join('');
+function pipSpans(streak, target = MASTERED_AT) {
+  return Array.from({ length: target }, (_, i) => `<span class="pip ${i < streak ? 'on' : ''}"></span>`).join('');
 }
-function pipsHTML(streak, id) {
-  return `<div class="pips" ${id ? `id="${id}"` : ''} title="${streak}/5 correct in a row">${pipSpans(streak)}</div>`;
+function pipsHTML(streak, id, target = MASTERED_AT) {
+  const title = target === 1 ? 'one correct answer completes this sentence' : `${streak}/${target} correct in a row`;
+  return `<div class="pips" ${id ? `id="${id}"` : ''} title="${title}">${pipSpans(streak, target)}</div>`;
 }
 
 function labelOf(entry) {
@@ -42,7 +43,8 @@ function promptFor(entry, format) {
     case 'type-es': return `<span class="prompt-k">Escríbelo en español</span><h1 class="word-es enp">${esc(it.en)}</h1>`;
     case 'listen-pick': return `<span class="prompt-k">Escucha y elige el significado</span>`;
     case 'pick-es': return `<span class="prompt-k">¿Cómo se dice?</span><h1 class="word-es enp">${esc(it.en)}</h1>`;
-    case 'word-order': return `<p class="prompt-en">"${esc(it.en)}"</p><p class="muted small">Tap the words in the right order.</p>`;
+    case 'word-order': return `<p class="prompt-en">"${esc(it.en)}"</p>${entry.kind === 'verbSentence'
+      ? `<p class="muted small">${esc(it.frameLabel)} · A2 verb: <b>${esc(it.verbId)}</b></p>` : ''}<p class="muted small">Tap the words in the right order.</p>`;
     case 'fill-blank': return `<span class="prompt-k">Elige la palabra que falta</span>`;
     case 'pick-correct': return it.prompt
       ? `<span class="prompt-k">¿Cuál es correcta?</span><h2 class="q-prompt">${esc(it.prompt)}</h2>`
@@ -59,10 +61,10 @@ function promptFor(entry, format) {
 
 function runRound(view, cfg) {
   const { level, id, icon, title, size } = cfg;
-  const pool = (cfg.poolFn
+  const available = cfg.poolFn
     ? cfg.poolFn()
-    : engine.unmastered(level, cfg.kind)
-  ).slice(0, size);
+    : engine.order(engine.unmastered(level, cfg.kind), level);
+  const pool = available.slice(0, size);
 
   if (!pool.length) return showComplete(view, cfg);
 
@@ -74,6 +76,7 @@ function runRound(view, cfg) {
     if (qi >= pool.length) return done();
     const p = pool[qi];
     const st0 = engine.get(level, p.kind, p.id);
+    const masteryTarget = engine.masteryTarget(p.kind);
     const format = cfg.formatFn
       ? cfg.formatFn(p)
       : engine.format(p, level, { noMic: !hasMic });
@@ -81,7 +84,7 @@ function runRound(view, cfg) {
     view.innerHTML = `
       <div class="game-head">${backBtn()}
         <div class="head-progress"><span class="muted">${esc(title)} · <b>${qi + 1}</b> / ${pool.length}</span>${barHTML(qi, pool.length)}</div>
-        ${pipsHTML(st0.streak, 'pips')}
+        ${pipsHTML(st0.streak, 'pips', masteryTarget)}
       </div>
       <div class="card">
         <span class="chip-cat format-chip">${FORMAT_LABEL[format] || format}</span>
@@ -111,11 +114,13 @@ function runRound(view, cfg) {
           fx.floatText($('.card', view), '+' + gained + ' XP');
           if (res.justMastered) {
             locked++;
-            xp += 20;
-            fx.confetti(120);
-            fx.sfx('fanfare');
-            fx.stamp('¡APRENDIDO!');
-            player.toast(`<b>${esc(labelOf(p))}</b> — 5/5, it's yours now 🔒 (+20 XP)`, { icon: '🔒' });
+            if (p.kind !== 'verbSentence') {
+              xp += 20;
+              fx.confetti(120);
+              fx.sfx('fanfare');
+              fx.stamp('¡APRENDIDO!');
+              player.toast(`<b>${esc(labelOf(p))}</b> — ${res.streak}/${res.target}, it's yours now 🔒 (+20 XP)`, { icon: '🔒' });
+            }
           }
         } else {
           combo = 0;
@@ -126,15 +131,18 @@ function runRound(view, cfg) {
         xp += gained;
         const st2 = engine.get(level, p.kind, p.id);
         const headPips = $('#pips', view);
-        if (headPips) headPips.innerHTML = pipSpans(st2.streak);
+        if (headPips) headPips.innerHTML = pipSpans(st2.streak, masteryTarget);
         const explain = p.item.explain ? `<p class="explain">${p.item.explain}</p>` : '';
         const correctText = p.kind === 'word' ? p.item.en : (p.kind === 'grammar' ? p.item.correct : p.item.es);
+        const successText = p.kind === 'verbSentence'
+          ? '✅ Sentence practiced (1/1); it counts toward this verb.'
+          : (res.justMastered ? `🔒 ${res.streak}/${res.target} — locked in forever` : `${res.streak}/${res.target} to lock in`);
         $('#fb', view).innerHTML = `
-          ${ok ? `<div class="fb good">¡Correcto! <span class="small">${res.justMastered ? '🔒 5/5 — locked in forever' : res.streak + '/5 to lock in'}</span></div>`
+          ${ok ? `<div class="fb good">¡Correcto! <span class="small">${successText}</span></div>`
                : `<div class="fb bad">Not yet — <b>${esc(correctText)}</b></div>`}
           <div class="recall">🗣️ <b>${esc(labelOf(p))}</b>${p.item.en ? ` <span class="muted">— ${esc(p.item.en)}</span>` : ''}</div>
           ${explain}
-          ${pipsHTML(st2.streak)}
+          ${pipsHTML(st2.streak, null, masteryTarget)}
           <div class="fb-actions"><button class="btn" id="next" type="button">Next →</button></div>`;
         $('#next', view).onclick = next;
       },
@@ -149,14 +157,14 @@ function runRound(view, cfg) {
 
   function done() {
     if (clean && clean.cleanup) clean.cleanup();
-    const remaining = engine.unmastered(level, cfg.kind || null).length;
+    const remaining = cfg.remainingFn ? cfg.remainingFn() : engine.unmastered(level, cfg.kind || null).length;
     if (cfg.onDone) cfg.onDone({ xp, locked, poolSize: pool.length, missedCount: misses.length });
     player.award(xp, { game: title, exam: level === 'EXAM' });
     view.innerHTML = `
       <div class="card center endcard">
         <div class="end-emoji">${icon}</div>
         <h1>${locked > 0 ? '¡Buen avance!' : '¡Buen intento!'}</h1>
-        <p class="big"><b>${locked}</b> ${locked === 1 ? 'item' : 'items'} locked in (5/5) · <b>${xp}</b> XP</p>
+        <p class="big"><b>${locked}</b> ${locked === 1 ? 'item' : 'items'} ${esc(cfg.completionVerb || 'locked in (5/5)')} · <b>${xp}</b> XP</p>
         <p class="muted">${remaining} ${cfg.kindLabel || 'item'}${remaining === 1 ? '' : 's'} left in ${level}. Only what you haven't learned shows up — that's the rule.</p>
         ${misses.length ? `<h3>These come back — in a different shape:</h3><ul class="review">${misses.slice(0, 6).map(p =>
           `<li><b>${esc(labelOf(p))}</b>${p.item.en ? ` <span class="muted">— ${esc(p.item.en)}</span>` : ''}</li>`).join('')}</ul>` : ''}
@@ -190,7 +198,7 @@ function showComplete(view, cfg) {
     <div class="card center endcard">
       <div class="end-emoji">🏆</div>
       <h1>¡Todo aprendido!</h1>
-      <p class="big">Every ${esc(cfg.kindLabel || 'item')} in ${cfg.level} is locked in (5/5).</p>
+      <p class="big">${esc(cfg.completeText || `Every ${cfg.kindLabel || 'item'} in ${cfg.level} is locked in (5/5).`)}</p>
       <p class="muted">Nothing left to drill here — your brain keeps it forever. Try the next level or a different game.</p>
       <div class="row center">${backBtn()}</div>
     </div>`;

@@ -18,7 +18,7 @@ const BADGES = [
   { id: 'first', icon: '🎯', name: '¡Empezó!', desc: 'Finish your first game' },
   { id: 'xp100', icon: '⭐', name: '100 XP', desc: 'Earn 100 total XP' },
   { id: 'xp500', icon: '🌟', name: '500 XP', desc: 'Earn 500 total XP' },
-  { id: 'lock25', icon: '🔒', name: '25 locked in', desc: 'Master 25 items (5 correct in a row each)' },
+  { id: 'lock25', icon: '🔒', name: '25 locked in', desc: 'Complete 25 items using their mastery rule' },
   { id: 'lock75', icon: '🧠', name: '75 locked in', desc: 'Master 75 items' },
   { id: 'speak90', icon: '🎤', name: '¡Perfecto!', desc: 'Score 90%+ on a phrase' },
   { id: 'listen10', icon: '👂', name: 'Oído de oro', desc: 'A perfect 10/10 listening round' },
