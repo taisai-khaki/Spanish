@@ -448,3 +448,15 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   .verb-progress-head .muted { grid-column: 1; }
   .verb-progress-head .verb-status { grid-column: 2; grid-row: 1 / span 2; }
 }
+
+/* ---------- Level Flashcards ---------- */
+.fc-filter-bar { margin-bottom: 14px; text-align: left; }
+.fc-filters { margin-top: 8px; justify-content: flex-start; }
+.fc-box { margin: 10px 0 14px; text-align: left; background: #FFFDF8; }
+.fc-back { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.fc-table {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-top: 10px; padding: 10px 12px;
+  background: #FBF6EC; border: 1px solid var(--line); border-radius: 12px;
+  font-size: 14px; line-height: 1.45;
+}

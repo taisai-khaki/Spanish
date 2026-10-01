@@ -20,7 +20,6 @@ const BADGES = [
   { id: 'xp500', icon: '🌟', name: '500 XP', desc: 'Earn 500 total XP' },
   { id: 'lock25', icon: '🔒', name: '25 locked in', desc: 'Complete 25 items using their mastery rule' },
   { id: 'lock75', icon: '🧠', name: '75 locked in', desc: 'Master 75 items' },
-  { id: 'speak90', icon: '🎤', name: '¡Perfecto!', desc: 'Score 90%+ on a phrase' },
   { id: 'listen10', icon: '👂', name: 'Oído de oro', desc: 'A perfect 10/10 listening round' },
   { id: 'gram10', icon: '📐', name: 'Grammar crush', desc: 'Master 10 grammar rules' },
   { id: 'streak3', icon: '🔥', name: '3-day streak', desc: 'Play 3 days in a row' },
@@ -43,7 +42,7 @@ const MASCOT_LINES = [
   '¿Cómo estás? — Try saying that right now.',
   'Your mouth is a muscle — feed it daily. 🏋️',
   'Mistakes reset your streak of five. That\'s not a punishment, that\'s the price of admission.',
-  'Pro tip: in Vocab Smash, say the answer before you type it. It counts double in real life.',
+  'Pro tip: in Oído Sharp, repeat the word or phrase out loud right after you hear it. It counts double in real life.',
   'One passage a day, 6/6, and in two weeks you have read all 16 — five times. 📖',
   'Tú vas en B1 — practica donde duele, no donde es fácil. 🎯',
   'Tres seguidas y la racha sube: ¡+10 XP! El pájaro se pone contento. 🔥',
@@ -160,7 +159,6 @@ const player = {
     tryBadge('xp500', d.xpTotal >= 500);
     tryBadge('lock25', totalLocked >= 25);
     tryBadge('lock75', totalLocked >= 75);
-    tryBadge('speak90', d.flags.speak90);
     tryBadge('listen10', d.flags.listen10);
     tryBadge('gram10', gramLocked >= 10);
     tryBadge('streak3', d.streak >= 3);
