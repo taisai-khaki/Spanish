@@ -77,9 +77,28 @@ body {
   box-shadow: var(--shadow);
 }
 .card.center { text-align: center; }
-.game-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
-.head-progress { flex: 1; min-width: 140px; max-width: 300px; display: flex; flex-direction: column; gap: 4px; }
-.head-progress .muted { font-size: 12px; }
+.game-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.head-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.head-title { font-weight: 800; font-size: 15px; }
+.grow { flex: 1; }
+
+/* ---------- endless session scoreboard ---------- */
+.scoreboard {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 10px 14px; box-shadow: var(--shadow);
+}
+.sb-main { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font-size: 15px; }
+.sb-main b { font-size: 20px; }
+.sb-correct { color: var(--good); font-weight: 700; }
+.sb-correct b { color: var(--good); }
+.sb-wrong { color: var(--bad); }
+.sb-wrong b { color: var(--bad); font-size: 17px; }
+.sb-sep { color: var(--line); }
+.sb-bar { height: 8px; background: #EFE5D6; border-radius: 999px; overflow: hidden; margin: 8px 0 6px; }
+.sb-bar-fill { height: 100%; background: linear-gradient(90deg, var(--teal), #2FA98F); border-radius: 999px; transition: width .3s ease; }
+.sb-bar-fill.low { background: var(--gold); }
+.sb-side { display: flex; gap: 14px; flex-wrap: wrap; }
+.sb-side b { color: var(--ink); }
 .bar { height: 8px; background: #EFE5D6; border-radius: 999px; overflow: hidden; }
 .bar-fill { height: 100%; background: var(--brand); border-radius: 999px; transition: width .25s ease; }
 .badge {

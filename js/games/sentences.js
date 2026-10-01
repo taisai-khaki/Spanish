@@ -6,7 +6,7 @@
     icon: '🧩',
     title: 'Word Order',
     tag: 'Build the sentence',
-    desc: 'Build sentences from shuffled words. A2 covers all 190 unique source verbs across 11 magic-verb frames and six person forms; each linked sentence counts after one correct answer. Curated builders keep glue words in context.',
+    desc: 'Build sentences from shuffled words. A2 covers all 190 unique source verbs across 11 magic-verb frames and six person forms; each linked sentence counts after one correct answer. Curated builders keep glue words in context. Endless: sentences keep coming until you head back to the games page.',
     xpHint: '8–15 XP per sentence',
     remaining: level => engine.unmastered(level, 'sentence').length + engine.unmastered(level, 'verbSentence').length,
     start(view, level) {
@@ -14,17 +14,16 @@
         + engine.unmastered(level, 'verbSentence').length;
       runRound(view, {
         id: 'sentences', icon: '🧩', title: 'Word Order', level,
-        kind: 'sentence', kindLabel: 'sentence', size: 10,
+        kind: 'sentence', kindLabel: 'sentence',
+        /* curated builders up front, then the tagged verb variations — the
+           whole queue, not a slice of it, because the round never ends alone */
         poolFn: () => {
           const curated = engine.order(engine.unmastered(level, 'sentence'), level);
           const verbs = engine.order(engine.unmastered(level, 'verbSentence'), level);
-          if (!verbs.length) return curated;
-          if (!curated.length) return verbs;
-          const takeCurated = Math.min(4, curated.length);
-          const takeVerbs = Math.min(10 - takeCurated, verbs.length);
-          return shuffle(curated.slice(0, takeCurated).concat(verbs.slice(0, takeVerbs)))
-            .concat(curated.slice(takeCurated), verbs.slice(takeVerbs));
+          return shuffle(curated.slice(0, 4).concat(verbs.slice(0, 6)))
+            .concat(curated.slice(4), verbs.slice(6));
         },
+        allFn: () => engine.pool(level, 'sentence').concat(engine.pool(level, 'verbSentence')),
         remainingFn: remaining,
         completionVerb: 'completed',
         completeText: level === 'A2'

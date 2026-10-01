@@ -9,6 +9,18 @@ Progress is saved in your browser (localStorage).
 **A2 verb variations:** each verb has 66 linked sentence builders (11 magic frames × 6 person forms). A sentence counts after one correct answer, and the verb is learned only when all 66 are complete. Wrong answers stay in the queue.
 Queues contain only items that are not yet learned.
 
+## Endless rounds
+
+There is **no fixed round length and no end screen**. A game keeps serving questions —
+refilling from everything you have not learned yet, then from the whole level for free
+practice once it is all locked in — and it only stops when you go back to the games page
+(or close the tab). The header scoreboard tracks the whole session live:
+
+- **N correct** · **N to review** · **N answered**, with an accuracy bar
+- 🎯 accuracy · 🔥 racha (combo) · ⭐ session XP · 🔒 items locked in · 📚 items left in the level
+
+XP is banked every 10 answers and whenever you leave the game, so a long session is never lost.
+
 ## The games
 
 | Game | Skill | Formats |
@@ -16,6 +28,8 @@ Queues contain only items that are not yet learned.
 | 📐 **Grammar Judge** | Grammar | ¿cuál es correcta? · spot the mistake (covering all Word Order grammar rules across A1–B2) |
 | 🧩 **Word Order** | Grammar in context | build the sentence from shuffled words (with rich tense, subject, and similar-word distractors) |
 | 🃏 **Level Flashcards** | Verbs (Tenses & Combinations) + Nouns | flippable flashcards & active check for all level verbs across Presente, Pretérito, Imperfecto, Futuro, Condicional, and Combinations + all nouns in the level |
+
+Every game runs as one endless session — press **← Games** to end it.
 
 ## Content
 
@@ -36,7 +50,7 @@ python3 -m http.server 8080
 ```
 
 - All speech audio is your browser's built-in Spanish TTS.
-- Tests: `node test/smoke.js`, `node test/a2-verb-practice.js`, and `node test/round-selection.js`.
+- Tests: `node test/smoke.js`, `node test/a2-verb-practice.js`, `node test/round-selection.js`, and `node test/endless-session.js`.
 
 ## Content files
 
@@ -62,9 +76,11 @@ The expansion adds **37 sentence builders**, **21 grammar checks**, and a **10-l
 
 ## 15-minute daily routine
 
-1. 👂 Oído Sharp — one round (words, phrases, and conversation lines at native speed)
-2. 🧩 Word Order — 10 sentences
-3. 📐 Grammar Judge — 8 rules
+Rounds are endless now — play each game until the scoreboard feels good, then head back.
+
+1. 👂 Oído Sharp — words, phrases, and conversation lines at native speed
+2. 🧩 Word Order — build sentences until you want to stop
+3. 📐 Grammar Judge — drill rules until you want to stop
 4. 📖 Lectura — one passage, 6/6
 
 ### 🇲🇽 Exam-week routine (EXAM level)
