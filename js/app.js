@@ -116,35 +116,14 @@
       <section class="home">
         <div class="hero">
           <h1>Habla español <span class="accent">fast</span>.</h1>
-          <p>Ten games. One rule: <b>5 correct in a row and it's yours forever</b> — wrong once, it comes back in a different shape. Nothing you already know ever shows up again.</p>
-          <p class="muted small">🇲🇽 The <b>EXAM</b> level covers your naturalization exam: the 10 interview questions, the 16 reading passages, the 683-question bank, and the exam vocabulary.</p>
+          <p>Six games. One rule: <b>5 correct in a row and it's yours forever</b> — wrong once, it comes back in a different shape. Nothing you already know ever shows up again.</p>
+          <p class="muted small">🇲🇽 The <b>EXAM</b> level covers your naturalization exam: the 16 reading passages, the 683-question bank, and the exam vocabulary.</p>
         </div>
         ${playerPanel()}
         <div class="grid">
           ${GAMES.map(card).join('')}
         </div>
-        <div class="card routine">
-          <h3>⚡ The 15-minute daily quest</h3>
-          <ol>
-            <li>🎬 <b>Plática</b> — one full conversation (this is the point)</li>
-            <li>🎤 <b>Prono Repeat</b> — 5 phrases, out loud</li>
-            <li>🃏 <b>Vocab Smash</b> — 10 words</li>
-            <li>🧩 <b>Word Order</b> — 5 sentences</li>
-            <li>📐 <b>Grammar Judge</b> — 5 rules</li>
-            <li>👂 <b>Oído Sharp</b> — 1 round (native speed!)</li>
-            <li>⚡ <b>Word Race</b> — if 30 seconds are left (they are)</li>
-          </ol>
-        </div>
-        <div class="card routine exam-routine">
-          <h3>🇲🇽 Exam-week routine (EXAM level) — the naturalization exam</h3>
-          <ol>
-            <li>🎙️ <b>La Entrevista</b> — the 10 interview questions, out loud (the conversation part)</li>
-            <li>📖 <b>Lectura</b> — one passage, 6/6</li>
-            <li>🗂️ <b>Repaso</b> — 10 real bank questions</li>
-            <li>🏛️ <b>Plática</b> — the consulate conversation</li>
-            <li>👂 <b>Oído Sharp</b> — exam words at native speed</li>
-          </ol>
-        </div>
+
       </section>`;
     $('#soundToggle', view).onclick = () => { player.toggleSound(); route(); };
     startMascot();

@@ -21,15 +21,11 @@ const BADGES = [
   { id: 'lock25', icon: '🔒', name: '25 locked in', desc: 'Master 25 items (5 correct in a row each)' },
   { id: 'lock75', icon: '🧠', name: '75 locked in', desc: 'Master 75 items' },
   { id: 'speak90', icon: '🎤', name: '¡Perfecto!', desc: 'Score 90%+ on a phrase' },
-  { id: 'platica1', icon: '🎬', name: '¡Primera plática!', desc: 'Complete a full conversation (every line 5/5)' },
-  { id: 'fastear', icon: '🏃', name: 'Fast ear', desc: 'Catch 10 keywords at native speed' },
   { id: 'listen10', icon: '👂', name: 'Oído de oro', desc: 'A perfect 10/10 listening round' },
-  { id: 'race300', icon: '⚡', name: 'Rayo', desc: 'Score 300+ in Word Race' },
   { id: 'gram10', icon: '📐', name: 'Grammar crush', desc: 'Master 10 grammar rules' },
   { id: 'streak3', icon: '🔥', name: '3-day streak', desc: 'Play 3 days in a row' },
   { id: 'streak7', icon: '🌋', name: '7-day streak', desc: 'Play 7 days in a row' },
   { id: 'level5', icon: '🦆', name: 'Level 5', desc: 'Reach level 5 — your bird is fully formed' },
-  { id: 'entrevista10', icon: '🎙️', name: '¡Lista para la entrevista!', desc: 'All 10 interview questions locked in (5/5 each)' },
   { id: 'lectura16', icon: '📖', name: 'Lector', desc: 'All 16 exam passages locked in (6/6, five times each)' },
   { id: 'ciudadano', icon: '🇲🇽', name: 'Ciudadano', desc: 'Lock in 75%+ of the EXAM level' },
 ];
@@ -41,7 +37,6 @@ const QUESTS = [
 ];
 
 const MASCOT_LINES = [
-  'Plática first. Real conversations, real people, real speed — that\'s the job. 🚕',
   'Five in a row and it\'s yours. We never drill what you already know. Promise.',
   'Can\'t catch fast Spanish? Oído Sharp has a keyword task for exactly that. Catch the word, then the meaning.',
   'Say it OUT LOUD, even when you mess up. Especially when you mess up. 🗣️',
@@ -49,13 +44,10 @@ const MASCOT_LINES = [
   'Your mouth is a muscle — feed it daily. 🏋️',
   'Mistakes reset your streak of five. That\'s not a punishment, that\'s the price of admission.',
   'Pro tip: in Vocab Smash, say the answer before you type it. It counts double in real life.',
-  '¡Vámonos! The taxi is not calling itself. 🚕',
-  'Exam week? La Entrevista first — the 10 questions, out loud, like the real one. 🎙️',
-  'In the exam they ask with "usted". Answer polite: podría, usted, por favor. 🇲🇽',
   'One passage a day, 6/6, and in two weeks you have read all 16 — five times. 📖',
   'Tú vas en B1 — practica donde duele, no donde es fácil. 🎯',
   'Tres seguidas y la racha sube: ¡+10 XP! El pájaro se pone contento. 🔥',
-  'The exam is a boss fight. 10 questions, 16 passages, 683 cards — you farm them one by one. 🎮',
+  'The exam is a boss fight. 16 passages, 683 cards — you farm them one by one. 🎮',
 ];
 
 function todayStr() { return new Date().toISOString().slice(0, 10); }
@@ -152,7 +144,7 @@ const player = {
     const earned = [];
     const tryBadge = (id, cond) => { if (cond && !d.badges[id]) { d.badges[id] = true; earned.push(id); } };
     let totalLocked = 0, gramLocked = 0;
-    let exam = null, interviewLocked = 0, readingLocked = 0;
+    let exam = null, readingLocked = 0;
     try {
       DATA.levels.forEach(lv => {
         totalLocked += engine.stats(lv).locked;
@@ -160,7 +152,6 @@ const player = {
       });
       if (DATA.EXAM) {
         exam = engine.stats('EXAM');
-        interviewLocked = engine.pool('EXAM', 'interview').filter(g => engine.get('EXAM', 'interview', g.id).streak >= MASTERED_AT).length;
         readingLocked = engine.pool('EXAM', 'reading').filter(g => engine.get('EXAM', 'reading', g.id).streak >= MASTERED_AT).length;
       }
     } catch {}
@@ -170,15 +161,11 @@ const player = {
     tryBadge('lock25', totalLocked >= 25);
     tryBadge('lock75', totalLocked >= 75);
     tryBadge('speak90', d.flags.speak90);
-    tryBadge('platica1', d.flags.platica1);
-    tryBadge('fastear', d.flags.fastear);
     tryBadge('listen10', d.flags.listen10);
-    tryBadge('race300', d.flags.race300);
     tryBadge('gram10', gramLocked >= 10);
     tryBadge('streak3', d.streak >= 3);
     tryBadge('streak7', d.streak >= 7);
     tryBadge('level5', d.level >= 5);
-    tryBadge('entrevista10', d.flags.entrevista10 || (interviewLocked >= 10));
     tryBadge('lectura16', d.flags.lectura16 || (readingLocked >= 16));
     tryBadge('ciudadano', !!exam && exam.total > 0 && exam.locked / exam.total >= 0.75);
     if (earned.length) {
