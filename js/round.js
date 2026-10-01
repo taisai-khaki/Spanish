@@ -5,8 +5,7 @@
 const XPMAP = {
   'type-en': 10, 'type-es': 12, 'listen-pick': 8, 'pick-es': 6,
   'word-order': 15, 'fill-blank': 10, 'pick-correct': 12, 'pick-wrong': 12,
-  'keyword': 10, 'respond': 10, 'speak': 15,
-  'ask-listen': 8, 'ask-speak': 15, 'ask-write': 12,
+  'keyword': 10, 'speak': 15,
   'read-quiz': 10, 'listen-quiz': 12,
 };
 
@@ -20,11 +19,7 @@ const FORMAT_LABEL = {
   'pick-correct': '✅ Which is correct?',
   'pick-wrong': '❌ Spot the mistake',
   'keyword': '👂 Catch the keyword',
-  'respond': '💬 Pick your reply',
   'speak': '🎤 Say it out loud',
-  'ask-listen': '👂 Catch the question',
-  'ask-speak': '🎤 Answer out loud',
-  'ask-write': '✍️ Answer in writing',
   'read-quiz': '📖 Read & answer',
   'listen-quiz': '🎧 Listen & answer',
 };
@@ -133,7 +128,7 @@ function runRound(view, cfg) {
         const headPips = $('#pips', view);
         if (headPips) headPips.innerHTML = pipSpans(st2.streak);
         const explain = p.item.explain ? `<p class="explain">${p.item.explain}</p>` : '';
-        const correctText = p.kind === 'word' ? p.item.en : (p.kind === 'grammar' || p.kind === 'repaso' ? p.item.correct : p.item.es);
+        const correctText = p.kind === 'word' ? p.item.en : (p.kind === 'grammar' ? p.item.correct : p.item.es);
         $('#fb', view).innerHTML = `
           ${ok ? `<div class="fb good">¡Correcto! <span class="small">${res.justMastered ? '🔒 5/5 — locked in forever' : res.streak + '/5 to lock in'}</span></div>`
                : `<div class="fb bad">Not yet — <b>${esc(correctText)}</b></div>`}

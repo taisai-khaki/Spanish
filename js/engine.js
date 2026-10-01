@@ -10,10 +10,8 @@ const FORMATS = {
   word: ['type-en', 'type-es', 'listen-pick', 'pick-es'],
   sentence: ['word-order', 'type-es', 'listen-pick', 'fill-blank'],
   grammar: ['pick-correct', 'pick-wrong'],
-  dialogue: ['keyword', 'listen-pick', 'fill-blank', 'respond', 'speak'],
-  interview: ['ask-listen', 'ask-speak', 'ask-write'],
+  dialogue: ['keyword', 'listen-pick', 'fill-blank', 'speak'],
   reading: ['read-quiz', 'listen-quiz'],
-  repaso: ['pick-correct', 'pick-wrong'],
 };
 
 const engine = {
@@ -75,9 +73,7 @@ const engine = {
     if (!kind || kind === 'grammar') (d.grammar || []).forEach(g => out.push({ kind: 'grammar', id: g.id, item: g }));
     if (!kind || kind === 'dialogue') (d.dialogues || []).forEach(dlg => dlg.lines.forEach((ln, i) =>
       out.push({ kind: 'dialogue', id: dlg.id + ':' + i, item: ln, dlg, lineNo: i })));
-    if (!kind || kind === 'interview') (d.interview || []).forEach(it => out.push({ kind: 'interview', id: it.id, item: it }));
     if (!kind || kind === 'reading') (d.reading || []).forEach(p => out.push({ kind: 'reading', id: p.id, item: p }));
-    if (!kind || kind === 'repaso') (d.repaso || []).forEach(x => out.push({ kind: 'repaso', id: x.id, item: x }));
     return out;
   },
 

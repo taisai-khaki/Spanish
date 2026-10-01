@@ -1,18 +1,19 @@
 'use strict';
-/* ============ Word Order: build / type / listen / fill the gap ============ */
+/* ============ Word Order: build sentences from shuffled words ============ */
 (function () {
   window.registerGame({
     id: 'sentences',
     icon: '🧩',
     title: 'Word Order',
-    tag: 'Grammar in context',
-    desc: 'Build the sentence, type it, hear it, or fill the gap — the exercise changes every time until the sentence is yours (5/5).',
+    tag: 'Build the sentence',
+    desc: 'Drag the words into the right order. All 200 verbs, 11 magic verbs, all tenses, all glue words — grammar mastery through building.',
     xpHint: '8–15 XP per sentence',
     remaining: level => engine.unmastered(level, 'sentence').length,
     start(view, level) {
       runRound(view, {
         id: 'sentences', icon: '🧩', title: 'Word Order', level,
-        kind: 'sentence', kindLabel: 'sentence', size: 8,
+        kind: 'sentence', kindLabel: 'sentence', size: 10,
+        formatFn: () => 'word-order',
       });
     },
   });

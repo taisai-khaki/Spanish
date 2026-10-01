@@ -53,28 +53,6 @@ function keywordOptions(entry, level) {
   return shuffle([correct].concat(distr));
 }
 
-function respondOptions(entry, level) {
-  const it = entry.item;
-  const dlg = entry.dlg;
-  let yours = dlg.lines.filter(l => l.who === 'you' && l !== it);
-  let others = shuffle(yours).slice(0, 2);
-  if (others.length < 2) {
-    const extra = [];
-    DATA[level].dialogues.forEach(d => {
-      if (d !== dlg) d.lines.forEach(l => { if (l.who === 'you') extra.push(l); });
-    });
-    others = uniqNorm(
-      shuffle(others.concat(extra))
-        .filter(l => norm(l.es) !== norm(it.es))
-        .slice(0, 2)
-        .map(l => l.es)
-    ).map(es => extra.find(l => norm(l.es) === norm(es)) || yours.find(l => norm(l.es) === norm(es)));
-  }
-  const lines = uniqNorm([it.es].concat(others.map(l => l.es))).map(es =>
-    [it, ...others].find(l => norm(l.es) === norm(es)));
-  return shuffle(lines.filter(Boolean)).map(l => ({ es: l.es, en: l.en }));
-}
-
 function buildFillBlank(entry, level) {
   const clean = w => String(w).replace(/[¿?¡!,.]/g, '');
   if (entry.kind === 'dialogue') {
@@ -315,19 +293,6 @@ const tasks = {
     return null;
   },
 
-  'respond'(mount, o) {
-    const it = o.entry.item;
-    const opts = respondOptions(o.entry, o.level);
-    mount.innerHTML = `<div class="opts wide">${opts.map(x =>
-      `<button class="opt-line" type="button" data-v="${esc(x.es)}"><span>${esc(x.es)}</span><span class="gloss">${esc(x.en)}</span></button>`).join('')}</div>`;
-    $$('.opt-line', mount).forEach(b => b.onclick = () => {
-      $$('.opt-line', mount).forEach(x => { x.disabled = true; if (norm(x.dataset.v) === norm(it.es)) x.classList.add('right'); });
-      if (norm(b.dataset.v) !== norm(it.es)) b.classList.add('wrong');
-      o.onSubmit(norm(b.dataset.v) === norm(it.es));
-    });
-    return null;
-  },
-
   'pick-correct'(mount, o) {
     const it = o.entry.item;
     const opts = shuffle([it.correct].concat(it.wrongs));
@@ -359,4 +324,4 @@ const tasks = {
 };
 
 /* expose helpers for testing */
-window._tasksTest = { pickOptions, keywordOptions, respondOptions, buildFillBlank, uniqNorm };
+window._tasksTest = { pickOptions, keywordOptions, buildFillBlank, uniqNorm };
