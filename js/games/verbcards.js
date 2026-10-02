@@ -36,7 +36,7 @@
     if (group !== 'all' && card.group !== group) return false;
     if (direction !== 'both' && card.direction !== direction) return false;
     if (search) {
-      const hay = norm([card.es, card.en, card.prompt, card.badge, card.verbEs, card.verbEn].join(' '));
+      const hay = norm([card.es, card.en, card.prompt, card.badge, card.verbEs, card.verbEn].filter(Boolean).join(' '));
       if (hay.indexOf(search) < 0) return false;
     }
     return true;
