@@ -226,8 +226,8 @@ t('reading + grammar formats are from their lists', run(`
     return FORMATS.reading.includes(r) && FORMATS.grammar.includes(g); })()`));
 
 console.log('== games boot at all levels ==');
-t('3 games registered: Grammar Judge, Word Order, Level Flashcards', run('GAMES.length === 3 && JSON.stringify(GAMES.map(g => g.id)) === \'["grammar","sentences","flashcards"]\''));
-t('all 3 boot at A1/A2/B1/B2/EXAM without throwing', run(`
+t('4 games registered: Grammar Judge, Word Order, Level Flashcards, 200 Verbs & Glue Words', run('GAMES.length === 4 && JSON.stringify(GAMES.map(g => g.id)) === \'["grammar","sentences","flashcards","verbcards"]\''));
+t('all 4 boot at A1/A2/B1/B2/EXAM without throwing', run(`
   (function(){
     const v = document.getElementById('view');
     const levels = ['A1','A2','B1','B2','EXAM'];
@@ -258,6 +258,26 @@ t('Level Flashcards renders a flippable flashcard task with tense/combination de
     g.start(v, 'A2');
     const h = v.innerHTML + v.querySelector('#task').innerHTML;
     return h.includes('fc-box') && h.includes('Flip card'); })()`));
+t('200 Verbs & Glue Words renders a 4-option card and filters the deck', run(`
+  (function(){
+    const v = document.getElementById('view');
+    const g = GAMES.find(x => x.id === 'verbcards');
+    const before = engine.unmastered('A2','verbCard').length;
+    g.start(v, 'B1');
+    const h = v.innerHTML + v.querySelector('#task').innerHTML;
+    const hasCard = h.includes('fc-box') && h.includes('Flip card') && h.includes('opts wide');
+    const hasFilters = h.includes('Magic combos') && h.includes('Glue words') && h.includes('vcSearch');
+    const task = v.querySelector('#task');
+    const opts = task.querySelectorAll ? task.querySelectorAll('.opt-line') : [];
+    return before === 7076 && hasCard && hasFilters && g.remaining() === 7076;
+  })()`));
+t('the 200-verb deck is only reachable from A2 and has one-answer mastery', run(`
+  (function(){
+    const card = DATA.A2.verbCards[0];
+    const res = engine.result('A2','verbCard',card.id,true,'verb-card');
+    return engine.masteryTarget('verbCard') === 1 && res.justMastered && res.target === 1
+      && engine.unmastered('A2','verbCard').length === 7075;
+  })()`));
 t('Word Order in A2 has >=8 distractors per item and enables Check after placing 1 word', run(`
   (function(){
     const richBank = DATA.A2.sentences.every(s => s.distr.length >= 8 && s.ans.every(a => !/[¿?¡!.,]/.test(a)))

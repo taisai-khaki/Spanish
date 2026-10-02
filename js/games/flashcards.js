@@ -49,33 +49,21 @@
         kindLabel: 'flashcard',
         poolFn: () => filteredPool(level, activeFilter),
         allFn: () => engine.pool(level, 'flashcard').filter(e => matchesFilter(e.item, activeFilter)),
-        remainingFn: () => engine.unmastered(level, 'flashcard').length,
+        remainingFn: () => engine.unmastered(level, 'flashcard').filter(e => matchesFilter(e.item, activeFilter)).length,
         formatFn: () => 'flashcard',
-      });
-
-      const stage = view.querySelector('.stage');
-      if (stage) {
-        const bar = document.createElement('div');
-        bar.className = 'card fc-filter-bar';
-        bar.innerHTML = `
+        filtersFn: () => `
           <div class="row between">
-            <b>🃏 ${esc(level)} Deck: ${verbCount} verb tense/combo cards · ${nounCount} noun cards</b>
+            <b>🃏 ${esc(level)} deck: ${verbCount} verb tense/combo cards · ${nounCount} noun cards</b>
           </div>
           <div class="chip-row fc-filters">
             ${FILTERS.map(f => `<button class="pill ${activeFilter === f.id ? 'active' : ''}" type="button" data-filter="${esc(f.id)}">${esc(f.label)}</button>`).join('')}
-          </div>`;
-        if (stage.insertBefore && stage.firstChild) {
-          stage.insertBefore(bar, stage.firstChild);
-        } else {
-          stage.appendChild(bar);
-        }
-        bar.querySelectorAll('[data-filter]').forEach(btn => {
-          btn.onclick = () => {
-            activeFilter = btn.dataset.filter;
-            this.start(view, level);
-          };
-        });
-      }
+          </div>`,
+        bindFilters: v => {
+          v.querySelectorAll('[data-filter]').forEach(btn => {
+            btn.onclick = () => { activeFilter = btn.dataset.filter; runCleanup(); this.start(view, level); };
+          });
+        },
+      });
     },
   });
 })();

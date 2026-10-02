@@ -1,0 +1,1102 @@
+{
+ "1": {
+  "en": "to answer",
+  "es": "contestar",
+  "pret": [
+   "contesté",
+   "contestaste",
+   "contestó",
+   "contestamos",
+   "contestaron"
+  ]
+ },
+ "2": {
+  "en": "to arrive",
+  "es": "llegar",
+  "pret": [
+   "llegué",
+   "llegaste",
+   "llegó",
+   "llegamos",
+   "llegaron"
+  ]
+ },
+ "3": {
+  "en": "to ask",
+  "es": "preguntar",
+  "pret": [
+   "pregunté",
+   "preguntaste",
+   "preguntó",
+   "preguntamos",
+   "preguntaron"
+  ]
+ },
+ "4": {
+  "en": "to ask for",
+  "es": "pedir",
+  "pret": [
+   "pedí",
+   "pediste",
+   "pidió",
+   "pedimos",
+   "pidieron"
+  ]
+ },
+ "5": {
+  "en": "to be (permanent)",
+  "es": "ser",
+  "pret": [
+   "fui",
+   "fuiste",
+   "fue",
+   "fuimos",
+   "fueron"
+  ]
+ },
+ "6": {
+  "en": "to be (temporary)",
+  "es": "estar",
+  "pret": [
+   "estuve",
+   "estuviste",
+   "estuvo",
+   "estuvimos",
+   "estuvieron"
+  ]
+ },
+ "7": {
+  "en": "to be able",
+  "es": "poder",
+  "pret": [
+   "pude",
+   "pudiste",
+   "pudo",
+   "pudimos",
+   "pudieron"
+  ]
+ },
+ "8": {
+  "en": "to begin",
+  "es": "comenzar",
+  "pret": [
+   "comencé",
+   "comenzaste",
+   "comenzó",
+   "comenzamos",
+   "comenzaron"
+  ]
+ },
+ "9": {
+  "en": "to believe",
+  "es": "creer",
+  "pret": [
+   "creí",
+   "creíste",
+   "creyó",
+   "creímos",
+   "creyeron"
+  ]
+ },
+ "10": {
+  "en": "to bring",
+  "es": "traer",
+  "pret": [
+   "traje",
+   "trajiste",
+   "trajo",
+   "trajimos",
+   "trajeron"
+  ]
+ },
+ "11": {
+  "en": "to buy",
+  "es": "comprar",
+  "pret": [
+   "compré",
+   "compraste",
+   "compró",
+   "compramos",
+   "compraron"
+  ]
+ },
+ "12": {
+  "en": "to call",
+  "es": "llamar",
+  "pret": [
+   "llamé",
+   "llamaste",
+   "llamó",
+   "llamamos",
+   "llamaron"
+  ]
+ },
+ "13": {
+  "en": "to carry",
+  "es": "llevar",
+  "pret": [
+   "llevé",
+   "llevaste",
+   "llevó",
+   "llevamos",
+   "llevaron"
+  ]
+ },
+ "14": {
+  "en": "to change",
+  "es": "cambiar",
+  "pret": [
+   "cambié",
+   "cambiaste",
+   "cambió",
+   "cambiamos",
+   "cambiaron"
+  ]
+ },
+ "15": {
+  "en": "to clean",
+  "es": "limpiar",
+  "pret": [
+   "limpié",
+   "limpiaste",
+   "limpió",
+   "limpiamos",
+   "limpiaron"
+  ]
+ },
+ "16": {
+  "en": "to close",
+  "es": "cerrar",
+  "pret": [
+   "cerré",
+   "cerraste",
+   "cerró",
+   "cerramos",
+   "cerraron"
+  ]
+ },
+ "17": {
+  "en": "to come",
+  "es": "venir",
+  "pret": [
+   "vine",
+   "viniste",
+   "vino",
+   "vinimos",
+   "vinieron"
+  ]
+ },
+ "18": {
+  "en": "to comprehend",
+  "es": "comprender",
+  "pret": [
+   "comprendí",
+   "comprendiste",
+   "comprendió",
+   "comprendimos",
+   "comprendieron"
+  ]
+ },
+ "19": {
+  "en": "to continue",
+  "es": "continuar",
+  "pret": [
+   "continué",
+   "continuaste",
+   "continuó",
+   "continuamos",
+   "continuaron"
+  ]
+ },
+ "20": {
+  "en": "to cook",
+  "es": "cocinar",
+  "pret": [
+   "cociné",
+   "cocinaste",
+   "cocinó",
+   "cocinamos",
+   "cocinaron"
+  ]
+ },
+ "21": {
+  "en": "to count",
+  "es": "contar",
+  "pret": [
+   "conté",
+   "contaste",
+   "contó",
+   "contamos",
+   "contaron"
+  ]
+ },
+ "22": {
+  "en": "to dance",
+  "es": "bailar",
+  "pret": [
+   "bailé",
+   "bailaste",
+   "bailó",
+   "bailamos",
+   "bailaron"
+  ]
+ },
+ "23": {
+  "en": "to do",
+  "es": "hacer",
+  "pret": [
+   "hice",
+   "hiciste",
+   "hizo",
+   "hicimos",
+   "hicieron"
+  ]
+ },
+ "24": {
+  "en": "to drink (formal)",
+  "es": "beber",
+  "pret": [
+   "bebí",
+   "bebiste",
+   "bebió",
+   "bebimos",
+   "bebieron"
+  ]
+ },
+ "25": {
+  "en": "to drink (casual)",
+  "es": "tomar",
+  "pret": [
+   "tomé",
+   "tomaste",
+   "tomó",
+   "tomamos",
+   "tomaron"
+  ]
+ },
+ "26": {
+  "en": "to drive",
+  "es": "manejar",
+  "pret": [
+   "manejé",
+   "manejaste",
+   "manejó",
+   "manejamos",
+   "manejaron"
+  ]
+ },
+ "27": {
+  "en": "to earn",
+  "es": "ganar",
+  "pret": [
+   "gané",
+   "ganaste",
+   "ganó",
+   "ganamos",
+   "ganaron"
+  ]
+ },
+ "28": {
+  "en": "to eat",
+  "es": "comer",
+  "pret": [
+   "comí",
+   "comiste",
+   "comió",
+   "comimos",
+   "comieron"
+  ]
+ },
+ "29": {
+  "en": "to eat breakfast",
+  "es": "desayunar",
+  "pret": [
+   "desayuné",
+   "desayunaste",
+   "desayunó",
+   "desayunamos",
+   "desayunaron"
+  ]
+ },
+ "30": {
+  "en": "to eat dinner",
+  "es": "cenar",
+  "pret": [
+   "cené",
+   "cenaste",
+   "cenó",
+   "cenamos",
+   "cenaron"
+  ]
+ },
+ "31": {
+  "en": "to eat lunch",
+  "es": "almorzar",
+  "pret": [
+   "almorcé",
+   "almorzaste",
+   "almorzó",
+   "almorzamos",
+   "almorzaron"
+  ]
+ },
+ "32": {
+  "en": "to enjoy",
+  "es": "disfrutar",
+  "pret": [
+   "disfruté",
+   "disfrutaste",
+   "disfrutó",
+   "disfrutamos",
+   "disfrutaron"
+  ]
+ },
+ "33": {
+  "en": "to enter",
+  "es": "entrar",
+  "pret": [
+   "entré",
+   "entraste",
+   "entró",
+   "entramos",
+   "entraron"
+  ]
+ },
+ "34": {
+  "en": "to find",
+  "es": "encontrar",
+  "pret": [
+   "encontré",
+   "encontraste",
+   "encontró",
+   "encontramos",
+   "encontraron"
+  ]
+ },
+ "35": {
+  "en": "to finish",
+  "es": "terminar",
+  "pret": [
+   "terminé",
+   "terminaste",
+   "terminó",
+   "terminamos",
+   "terminaron"
+  ]
+ },
+ "36": {
+  "en": "to forget",
+  "es": "olvidar",
+  "pret": [
+   "olvidé",
+   "olvidaste",
+   "olvidó",
+   "olvidamos",
+   "olvidaron"
+  ]
+ },
+ "37": {
+  "en": "to get",
+  "es": "conseguir",
+  "pret": [
+   "conseguí",
+   "conseguiste",
+   "consiguió",
+   "conseguimos",
+   "consiguieron"
+  ]
+ },
+ "38": {
+  "en": "to give",
+  "es": "dar",
+  "pret": [
+   "di",
+   "diste",
+   "dio",
+   "dimos",
+   "dieron"
+  ]
+ },
+ "39": {
+  "en": "to go",
+  "es": "ir",
+  "pret": [
+   "fui",
+   "fuiste",
+   "fue",
+   "fuimos",
+   "fueron"
+  ]
+ },
+ "40": {
+  "en": "to go down",
+  "es": "bajar",
+  "pret": [
+   "bajé",
+   "bajaste",
+   "bajó",
+   "bajamos",
+   "bajaron"
+  ]
+ },
+ "41": {
+  "en": "to go up",
+  "es": "subir",
+  "pret": [
+   "subí",
+   "subiste",
+   "subió",
+   "subimos",
+   "subieron"
+  ]
+ },
+ "42": {
+  "en": "to hate",
+  "es": "odiar",
+  "pret": [
+   "odié",
+   "odiaste",
+   "odió",
+   "odiamos",
+   "odiaron"
+  ]
+ },
+ "43": {
+  "en": "to have",
+  "es": "tener",
+  "pret": [
+   "tuve",
+   "tuviste",
+   "tuvo",
+   "tuvimos",
+   "tuvieron"
+  ]
+ },
+ "44": {
+  "en": "to hear",
+  "es": "oír",
+  "pret": [
+   "oí",
+   "oíste",
+   "oyó",
+   "oímos",
+   "oyeron"
+  ]
+ },
+ "45": {
+  "en": "to help",
+  "es": "ayudar",
+  "pret": [
+   "ayudé",
+   "ayudaste",
+   "ayudó",
+   "ayudamos",
+   "ayudaron"
+  ]
+ },
+ "46": {
+  "en": "to hope (for)",
+  "es": "esperar",
+  "pret": [
+   "esperé",
+   "esperaste",
+   "esperó",
+   "esperamos",
+   "esperaron"
+  ]
+ },
+ "47": {
+  "en": "to hug",
+  "es": "abrazar",
+  "pret": [
+   "abracé",
+   "abrazaste",
+   "abrazó",
+   "abrazamos",
+   "abrazaron"
+  ]
+ },
+ "48": {
+  "en": "to kiss",
+  "es": "besar",
+  "pret": [
+   "besé",
+   "besaste",
+   "besó",
+   "besamos",
+   "besaron"
+  ]
+ },
+ "49": {
+  "en": "to know (a fact)",
+  "es": "saber",
+  "pret": [
+   "supe",
+   "supiste",
+   "supo",
+   "supimos",
+   "supieron"
+  ]
+ },
+ "50": {
+  "en": "to know (personally)",
+  "es": "conocer",
+  "pret": [
+   "conocí",
+   "conociste",
+   "conoció",
+   "conocimos",
+   "conocieron"
+  ]
+ },
+ "51": {
+  "en": "to learn",
+  "es": "aprender",
+  "pret": [
+   "aprendí",
+   "aprendiste",
+   "aprendió",
+   "aprendimos",
+   "aprendieron"
+  ]
+ },
+ "52": {
+  "en": "to leave (from)",
+  "es": "salir",
+  "pret": [
+   "salí",
+   "saliste",
+   "salió",
+   "salimos",
+   "salieron"
+  ]
+ },
+ "53": {
+  "en": "to listen (to)",
+  "es": "escuchar",
+  "pret": [
+   "escuché",
+   "escuchaste",
+   "escuchó",
+   "escuchamos",
+   "escucharon"
+  ]
+ },
+ "54": {
+  "en": "to live",
+  "es": "vivir",
+  "pret": [
+   "viví",
+   "viviste",
+   "vivió",
+   "vivimos",
+   "vivieron"
+  ]
+ },
+ "55": {
+  "en": "to look (at)",
+  "es": "mirar",
+  "pret": [
+   "miré",
+   "miraste",
+   "miró",
+   "miramos",
+   "miraron"
+  ]
+ },
+ "56": {
+  "en": "to look for",
+  "es": "buscar",
+  "pret": [
+   "busqué",
+   "buscaste",
+   "buscó",
+   "buscamos",
+   "buscaron"
+  ]
+ },
+ "57": {
+  "en": "to lose",
+  "es": "perder",
+  "pret": [
+   "perdí",
+   "perdiste",
+   "perdió",
+   "perdimos",
+   "perdieron"
+  ]
+ },
+ "58": {
+  "en": "to love",
+  "es": "amar",
+  "pret": [
+   "amé",
+   "amaste",
+   "amó",
+   "amamos",
+   "amaron"
+  ]
+ },
+ "59": {
+  "en": "to make",
+  "es": "hacer",
+  "pret": [
+   "hice",
+   "hiciste",
+   "hizo",
+   "hicimos",
+   "hicieron"
+  ]
+ },
+ "60": {
+  "en": "to meet (someone)",
+  "es": "conocer",
+  "pret": [
+   "conocí",
+   "conociste",
+   "conoció",
+   "conocimos",
+   "conocieron"
+  ]
+ },
+ "61": {
+  "en": "to need",
+  "es": "necesitar",
+  "pret": [
+   "necesité",
+   "necesitaste",
+   "necesitó",
+   "necesitamos",
+   "necesitaron"
+  ]
+ },
+ "62": {
+  "en": "to open",
+  "es": "abrir",
+  "pret": [
+   "abrí",
+   "abriste",
+   "abrió",
+   "abrimos",
+   "abrieron"
+  ]
+ },
+ "63": {
+  "en": "to order",
+  "es": "pedir",
+  "pret": [
+   "pedí",
+   "pediste",
+   "pidió",
+   "pedimos",
+   "pidieron"
+  ]
+ },
+ "64": {
+  "en": "to pass",
+  "es": "pasar",
+  "pret": [
+   "pasé",
+   "pasaste",
+   "pasó",
+   "pasamos",
+   "pasaron"
+  ]
+ },
+ "65": {
+  "en": "to pay",
+  "es": "pagar",
+  "pret": [
+   "pagué",
+   "pagaste",
+   "pagó",
+   "pagamos",
+   "pagaron"
+  ]
+ },
+ "66": {
+  "en": "to practice",
+  "es": "practicar",
+  "pret": [
+   "practiqué",
+   "practicaste",
+   "practicó",
+   "practicamos",
+   "practicaron"
+  ]
+ },
+ "67": {
+  "en": "to put",
+  "es": "poner",
+  "pret": [
+   "puse",
+   "pusiste",
+   "puso",
+   "pusimos",
+   "pusieron"
+  ]
+ },
+ "68": {
+  "en": "to read",
+  "es": "leer",
+  "pret": [
+   "leí",
+   "leíste",
+   "leyó",
+   "leímos",
+   "leyeron"
+  ]
+ },
+ "69": {
+  "en": "to remember",
+  "es": "recordar",
+  "pret": [
+   "recordé",
+   "recordaste",
+   "recordó",
+   "recordamos",
+   "recordaron"
+  ]
+ },
+ "70": {
+  "en": "to rest",
+  "es": "descansar",
+  "pret": [
+   "descansé",
+   "descansaste",
+   "descansó",
+   "descansamos",
+   "descansaron"
+  ]
+ },
+ "71": {
+  "en": "to return",
+  "es": "regresar",
+  "pret": [
+   "regresé",
+   "regresaste",
+   "regresó",
+   "regresamos",
+   "regresaron"
+  ]
+ },
+ "72": {
+  "en": "to run",
+  "es": "correr",
+  "pret": [
+   "corrí",
+   "corriste",
+   "corrió",
+   "corrimos",
+   "corrieron"
+  ]
+ },
+ "73": {
+  "en": "to say",
+  "es": "decir",
+  "pret": [
+   "dije",
+   "dijiste",
+   "dijo",
+   "dijimos",
+   "dijeron"
+  ]
+ },
+ "74": {
+  "en": "to see",
+  "es": "ver",
+  "pret": [
+   "vi",
+   "viste",
+   "vio",
+   "vimos",
+   "vieron"
+  ]
+ },
+ "75": {
+  "en": "to sell",
+  "es": "vender",
+  "pret": [
+   "vendí",
+   "vendiste",
+   "vendió",
+   "vendimos",
+   "vendieron"
+  ]
+ },
+ "76": {
+  "en": "to share",
+  "es": "compartir",
+  "pret": [
+   "compartí",
+   "compartiste",
+   "compartió",
+   "compartimos",
+   "compartieron"
+  ]
+ },
+ "77": {
+  "en": "to sing",
+  "es": "cantar",
+  "pret": [
+   "canté",
+   "cantaste",
+   "cantó",
+   "cantamos",
+   "cantaron"
+  ]
+ },
+ "78": {
+  "en": "to sleep",
+  "es": "dormir",
+  "pret": [
+   "dormí",
+   "dormiste",
+   "durmió",
+   "dormimos",
+   "durmieron"
+  ]
+ },
+ "79": {
+  "en": "to start",
+  "es": "empezar",
+  "pret": [
+   "empecé",
+   "empezaste",
+   "empezó",
+   "empezamos",
+   "empezaron"
+  ]
+ },
+ "80": {
+  "en": "to study",
+  "es": "estudiar",
+  "pret": [
+   "estudié",
+   "estudiaste",
+   "estudió",
+   "estudiamos",
+   "estudiaron"
+  ]
+ },
+ "81": {
+  "en": "to take",
+  "es": "tomar",
+  "pret": [
+   "tomé",
+   "tomaste",
+   "tomó",
+   "tomamos",
+   "tomaron"
+  ]
+ },
+ "82": {
+  "en": "to take out",
+  "es": "sacar",
+  "pret": [
+   "saqué",
+   "sacaste",
+   "sacó",
+   "sacamos",
+   "sacaron"
+  ]
+ },
+ "83": {
+  "en": "to talk",
+  "es": "hablar",
+  "pret": [
+   "hablé",
+   "hablaste",
+   "habló",
+   "hablamos",
+   "hablaron"
+  ]
+ },
+ "84": {
+  "en": "to teach",
+  "es": "enseñar",
+  "pret": [
+   "enseñé",
+   "enseñaste",
+   "enseñó",
+   "enseñamos",
+   "enseñaron"
+  ]
+ },
+ "85": {
+  "en": "to think",
+  "es": "pensar",
+  "pret": [
+   "pensé",
+   "pensaste",
+   "pensó",
+   "pensamos",
+   "pensaron"
+  ]
+ },
+ "86": {
+  "en": "to touch",
+  "es": "tocar",
+  "pret": [
+   "toqué",
+   "tocaste",
+   "tocó",
+   "tocamos",
+   "tocaron"
+  ]
+ },
+ "87": {
+  "en": "to travel",
+  "es": "viajar",
+  "pret": [
+   "viajé",
+   "viajaste",
+   "viajó",
+   "viajamos",
+   "viajaron"
+  ]
+ },
+ "88": {
+  "en": "to turn",
+  "es": "doblar",
+  "pret": [
+   "doblé",
+   "doblaste",
+   "dobló",
+   "doblamos",
+   "doblaron"
+  ]
+ },
+ "89": {
+  "en": "to understand",
+  "es": "entender",
+  "pret": [
+   "entendí",
+   "entendiste",
+   "entendió",
+   "entendimos",
+   "entendieron"
+  ]
+ },
+ "90": {
+  "en": "to use",
+  "es": "usar",
+  "pret": [
+   "usé",
+   "usaste",
+   "usó",
+   "usamos",
+   "usaron"
+  ]
+ },
+ "91": {
+  "en": "to visit",
+  "es": "visitar",
+  "pret": [
+   "visité",
+   "visitaste",
+   "visitó",
+   "visitamos",
+   "visitaron"
+  ]
+ },
+ "92": {
+  "en": "to wait for",
+  "es": "esperar",
+  "pret": [
+   "esperé",
+   "esperaste",
+   "esperó",
+   "esperamos",
+   "esperaron"
+  ]
+ },
+ "93": {
+  "en": "to walk",
+  "es": "caminar",
+  "pret": [
+   "caminé",
+   "caminaste",
+   "caminó",
+   "caminamos",
+   "caminaron"
+  ]
+ },
+ "94": {
+  "en": "to want",
+  "es": "querer",
+  "pret": [
+   "quise",
+   "quisiste",
+   "quiso",
+   "quisimos",
+   "quisieron"
+  ]
+ },
+ "95": {
+  "en": "to wash",
+  "es": "lavar",
+  "pret": [
+   "lavé",
+   "lavaste",
+   "lavó",
+   "lavamos",
+   "lavaron"
+  ]
+ },
+ "96": {
+  "en": "to watch",
+  "es": "mirar",
+  "pret": [
+   "miré",
+   "miraste",
+   "miró",
+   "miramos",
+   "miraron"
+  ]
+ },
+ "97": {
+  "en": "to wear",
+  "es": "usar",
+  "pret": [
+   "usé",
+   "usaste",
+   "usó",
+   "usamos",
+   "usaron"
+  ]
+ },
+ "98": {
+  "en": "to win",
+  "es": "ganar",
+  "pret": [
+   "gané",
+   "ganaste",
+   "ganó",
+   "ganamos",
+   "ganaron"
+  ]
+ },
+ "99": {
+  "en": "to work",
+  "es": "trabajar",
+  "pret": [
+   "trabajé",
+   "trabajaste",
+   "trabajó",
+   "trabajamos",
+   "trabajaron"
+  ]
+ },
+ "100": {
+  "en": "to write",
+  "es": "escribir",
+  "pret": [
+   "escribí",
+   "escribiste",
+   "escribió",
+   "escribimos",
+   "escribieron"
+  ]
+ }
+}

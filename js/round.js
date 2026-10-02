@@ -14,6 +14,7 @@ const XPMAP = {
   'keyword': 10,
   'read-quiz': 10, 'listen-quiz': 12,
   'flashcard': 10,
+  'verb-card': 10,
 };
 
 const FORMAT_LABEL = {
@@ -27,6 +28,7 @@ const FORMAT_LABEL = {
   'read-quiz': '📖 Read & answer',
   'listen-quiz': '🎧 Listen & answer',
   'flashcard': '🃏 Verb & Noun Flashcard',
+  'verb-card': '📚 Verb & Glue Card',
 };
 
 /* bank XP every N answers so a long session survives a closed tab */
@@ -60,6 +62,7 @@ function promptFor(entry, format) {
       : `<span class="prompt-k">¿Cuál tiene un error?</span><p class="muted">"${esc(it.en)}"</p>`;
     case 'keyword': return `<span class="prompt-k">¿Qué palabra clave escuchaste?</span><p class="muted small">It's fast. Catch the keyword.</p>`;
     case 'flashcard': return `<span class="prompt-k">${esc(it.badge || 'Flashcard')}</span><h2 class="q-prompt">${esc(it.prompt || it.en)}</h2>`;
+    case 'verb-card': return `<span class="prompt-k">${esc(it.badge || 'Flashcard')}</span><h2 class="q-prompt">${esc(it.prompt || it.en)}</h2>`;
   }
   return '';
 }
@@ -194,6 +197,10 @@ function runRound(view, cfg) {
     if (leftEl) leftEl.textContent = remaining == null ? '' : String(remaining);
   }
 
+  /* sentence practice and the big verb deck count after one correct answer:
+     they should not fire the full "locked in forever" celebration */
+  const LIGHT_KINDS = { verbSentence: 1, verbCard: 1 };
+
   function step() {
     const p = nextEntry();
     if (!p) return showComplete(view, cfg);
@@ -214,6 +221,7 @@ function runRound(view, cfg) {
         </div>
         ${scoreboardHTML(s, remaining)}
       </div>
+      ${cfg.filtersFn ? `<div class="card fc-filter-bar">${cfg.filtersFn()}</div>` : ''}
       <div class="card">
         ${reviewMode ? `<p class="notice">🏆 Everything in ${esc(level)} is locked in — this is free practice now. Stay as long as you like; the round ends when you go back to the games page.</p>` : ''}
         <span class="chip-cat format-chip">${FORMAT_LABEL[format] || format}</span>
@@ -221,6 +229,8 @@ function runRound(view, cfg) {
         <div id="task"></div>
         <div id="fb" class="feedback" aria-live="polite"></div>
       </div>`;
+
+    if (cfg.bindFilters) cfg.bindFilters(view, next);
 
     const mount = $('#task', view);
     clean = tasks[format](mount, {
@@ -244,7 +254,7 @@ function runRound(view, cfg) {
           if (res.justMastered) {
             s.locked++;
             if (remaining != null && remaining > 0) remaining--;
-            if (p.kind !== 'verbSentence') {
+            if (!LIGHT_KINDS[p.kind]) {
               s.xp += 20;
               fx.confetti(120);
               fx.sfx('fanfare');
@@ -266,10 +276,12 @@ function runRound(view, cfg) {
         const explain = p.item.explain ? `<p class="explain">${p.item.explain}</p>` : '';
         const correctText = format === 'listen-pick' ? p.item.en
           : (format === 'keyword' ? p.item.kw[0]
-          : (p.kind === 'grammar' ? p.item.correct : p.item.es));
+          : (p.kind === 'grammar' ? p.item.correct : (p.item.answer || p.item.es)));
         const successText = p.kind === 'verbSentence'
           ? '✅ Sentence practiced (1/1); it counts toward this verb.'
-          : (res.justMastered ? `🔒 ${res.streak}/${res.target} — locked in forever` : `${res.streak}/${res.target} to lock in`);
+          : (p.kind === 'verbCard'
+            ? '✅ Card practiced (1/1).'
+            : (res.justMastered ? `🔒 ${res.streak}/${res.target} — locked in forever` : `${res.streak}/${res.target} to lock in`));
         $('#fb', view).innerHTML = `
           ${ok ? `<div class="fb good">¡Correcto! <span class="small">${successText}</span></div>`
                : `<div class="fb bad">Not yet — <b>${esc(correctText)}</b></div>`}

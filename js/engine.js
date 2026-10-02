@@ -14,6 +14,7 @@ const FORMATS = {
   reading: ['read-quiz', 'listen-quiz'],
   verbSentence: ['word-order'],
   flashcard: ['flashcard'],
+  verbCard: ['verb-card'],
 };
 
 const engine = {
@@ -53,7 +54,9 @@ const engine = {
     return this.load(level)[this.key(level, kind, id)] || { streak: 0, last: null, seen: 0 };
   },
 
-  masteryTarget(kind) { return (kind === 'verbSentence' || kind === 'flashcard') ? 1 : MASTERED_AT; },
+  masteryTarget(kind) {
+    return (kind === 'verbSentence' || kind === 'flashcard' || kind === 'verbCard') ? 1 : MASTERED_AT;
+  },
 
   result(level, kind, id, ok, format) {
     const st = this.load(level);
@@ -82,6 +85,7 @@ const engine = {
       out.push({ kind: 'dialogue', id: dlg.id + ':' + i, item: ln, dlg, lineNo: i })));
     if (!kind || kind === 'reading') (d.reading || []).forEach(p => out.push({ kind: 'reading', id: p.id, item: p }));
     if (kind === 'flashcard') (d.flashcards || []).forEach(fc => out.push({ kind: 'flashcard', id: fc.id, item: fc }));
+    if (kind === 'verbCard') (d.verbCards || []).forEach(fc => out.push({ kind: 'verbCard', id: fc.id, item: fc }));
     return out;
   },
 
