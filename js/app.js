@@ -33,7 +33,7 @@
   function levelProgress() {
     return `
       <div class="card progress-card">
-        <h3>📈 Your progress <span class="muted small">— regular items need 5/5; A2 verb examples need 1 correct each</span></h3>
+        <h3>📈 Your progress <span class="muted small">— regular items and flash cards need 5/5; A2 verb examples need 1 correct each</span></h3>
         ${DATA.levels.map(lv => {
           const s = engine.stats(lv);
           const pct = s.total ? Math.round((s.locked / s.total) * 100) : 0;
@@ -48,22 +48,29 @@
   }
 
   function verbProgressPanel() {
-    const progress = engine.verbProgress(level);
+    const deck = (DATA[level] && DATA[level].verbCards) || [];
+    const progress = deck.length ? engine.verbCardProgress(level) : engine.verbProgress(level);
     if (!progress.length) return '';
     const learned = progress.filter(p => p.learned).length;
-    const doneSentences = progress.reduce((n, p) => n + p.done, 0);
-    const allSentences = progress.reduce((n, p) => n + p.total, 0);
+    const done = progress.reduce((n, p) => n + p.done, 0);
+    const started = progress.reduce((n, p) => n + (p.started || 0), 0);
+    const all = progress.reduce((n, p) => n + p.total, 0);
+    const blurb = deck.length
+      ? `Each verb's cards in the <b>200 Verbs &amp; Glue Words</b> deck, both directions: <b>28</b> for a regular verb (infinitive + yo presente + yo pretérito + the 11 magic frames) and <b>44</b> for an irregular verb (all 5 presente and 5 pretérito persons + the 11 magic frames). A card locks after <b>5 correct answers in a row</b> — a wrong answer resets that card. A card answered right returns only after the whole deck has been seen once. ${done}/${all} cards locked · ${started}/${all} answered correctly at least once.`
+      : `Each verb has ${progress[0].total} linked examples: 11 magic-verb frames × 6 person forms. Answer every example correctly once to learn that verb. ${done}/${all} examples completed.`;
+    const icon = deck.length ? '📚' : '🧩';
     return `
       <div class="card verb-progress-card">
-        <h3>🧩 ${level} verb practice <span class="muted small">— ${learned}/${progress.length} verbs learned</span></h3>
-        <p class="muted small">Each verb has ${progress[0].total} linked examples: 11 magic-verb frames × 6 person forms. Answer every example correctly once to learn that verb. ${doneSentences}/${allSentences} examples completed.</p>
+        <h3>${icon} ${level} verb practice <span class="muted small">— ${learned}/${progress.length} verbs learned</span></h3>
+        <p class="muted small">${blurb}</p>
         <label class="verb-search-label">Find a verb
           <input id="verbProgressFilter" class="answer-input verb-search" type="search" placeholder="Search Spanish or English" autocomplete="off">
         </label>
         <div class="verb-progress-list" aria-label="Verb practice progress">
           ${progress.map(p => {
             const pct = p.total ? Math.round((p.done / p.total) * 100) : 0;
-            const status = p.learned ? '✅ Learned' : (p.total ? `${p.done}/${p.total}` : 'Practice set not added');
+            const status = p.learned ? '✅ Learned'
+              : (p.total ? `${p.done}/${p.total}${p.started > p.done ? ` <span class="muted">· ${p.started} started</span>` : ''}` : 'Practice set not added');
             return `
               <div class="verb-progress-row" data-search="${esc(norm(p.verb.es + ' ' + p.verb.en))}">
                 <div class="verb-progress-head"><b>${esc(p.verb.es)}</b><span class="muted small">${esc(p.verb.en)}</span><span class="verb-status ${p.learned ? 'done' : ''}">${status}</span></div>

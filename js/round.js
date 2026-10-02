@@ -165,7 +165,10 @@ function runRound(view, cfg) {
         if (!batch.length) return null;
         let candidates = batch.filter(p => !served.has(entryKey(p)));
         if (!candidates.length) { served.clear(); candidates = batch.slice(); }
-        queue = candidates;
+        /* a card answered correctly stays in `served` until every card in the
+           deck has been seen once; `batchSize` only limits how much of that
+           pass is queued at a time (so wrongly answered cards come back soon) */
+        queue = cfg.batchSize ? candidates.slice(0, cfg.batchSize) : candidates;
       }
       const p = queue.shift();
       const k = entryKey(p);
@@ -197,9 +200,9 @@ function runRound(view, cfg) {
     if (leftEl) leftEl.textContent = remaining == null ? '' : String(remaining);
   }
 
-  /* sentence practice and the big verb deck count after one correct answer:
-     they should not fire the full "locked in forever" celebration */
-  const LIGHT_KINDS = { verbSentence: 1, verbCard: 1 };
+  /* sentence practice counts after one correct answer, so it should not fire
+     the full "locked in forever" celebration */
+  const LIGHT_KINDS = { verbSentence: 1 };
 
   function step() {
     const p = nextEntry();
@@ -267,6 +270,13 @@ function runRound(view, cfg) {
           s.combo = 0;
           fx.sfx('wrong');
           fx.shake($('.card', view));
+          if (cfg.retryWrong) {
+            /* put the miss back in rotation a few questions ahead */
+            const k = entryKey(p);
+            served.delete(k);
+            const pos = queue.length ? 8 + Math.floor(Math.random() * 20) : 0;
+            queue.splice(Math.min(pos, queue.length), 0, p);
+          }
         }
         s.xp += gained;
 
@@ -279,9 +289,7 @@ function runRound(view, cfg) {
           : (p.kind === 'grammar' ? p.item.correct : (p.item.answer || p.item.es)));
         const successText = p.kind === 'verbSentence'
           ? '✅ Sentence practiced (1/1); it counts toward this verb.'
-          : (p.kind === 'verbCard'
-            ? '✅ Card practiced (1/1).'
-            : (res.justMastered ? `🔒 ${res.streak}/${res.target} — locked in forever` : `${res.streak}/${res.target} to lock in`));
+          : (res.justMastered ? `🔒 ${res.streak}/${res.target} — locked in forever` : `${res.streak}/${res.target} to lock in`);
         $('#fb', view).innerHTML = `
           ${ok ? `<div class="fb good">¡Correcto! <span class="small">${successText}</span></div>`
                : `<div class="fb bad">Not yet — <b>${esc(correctText)}</b></div>`}

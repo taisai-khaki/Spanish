@@ -184,9 +184,102 @@ run('runCleanup()');
 t('leaving the game banks the rest of the session XP', run('player.data.xpTotal') > xpMid);
 t('nothing is left pending after leaving', run('pendingXP') === null);
 
+console.log('== 200-verb deck: 5-in-a-row, full-pass rotation, wrong answers return ==');
+/* the deck game works on the real A2 verb-card bank */
+run('__start("verbcards", "A2")');
+const firstId = pending().entry.id;
+answer(true);
+t('a correct answer counts 1/5 (not mastered)',
+  run(`engine.get('A2','verbCard','${firstId}').streak`) === 1
+  && !run(`engine.get('A2','verbCard','${firstId}').streak >= 5`));
+
+/* answering correct cards should not repeat them until the whole deck has
+   been through once */
+const seen = new Set();
+let repeatEarly = 0;
+for (let i = 0; i < 60; i++) {
+  const id = pending().entry.id;
+  if (seen.has(id)) repeatEarly++;
+  seen.add(id);
+  answer(true);
+}
+t('60 correct answers serve 60 different cards — a right card waits for the full pass',
+  repeatEarly === 0 && seen.size === 60);
+
+/* a wrong answer resets the counter and comes back within a few questions */
+run('__start("verbcards", "A2")');
+const missId = pending().entry.id;
+answer(false);
+let cameBack = -1;
+for (let i = 0; i < 40; i++) {
+  if (pending().entry.id === missId) { cameBack = i; break; }
+  answer(true);
+}
+t('a card answered wrong is put back into rotation within a few questions',
+  cameBack >= 0 && cameBack < 30);
+t('the wrong answer reset its counter to 0',
+  run(`engine.get('A2','verbCard','${missId}').streak`) === 0);
+answer(true);
+t('answering it correctly restarts its counter at 1/5',
+  run(`engine.get('A2','verbCard','${missId}').streak`) === 1);
+
+/* 5 in a row locks a card; a wrong answer inside those 5 wipes it.
+   (A right answer keeps the card out for the rest of the pass, so this part
+   drives the mastery counter directly.) */
+run('__start("verbcards", "A2")');
+const lockId = pending().entry.id;
+const leftBefore = run('engine.unmastered("A2","verbCard").length');
+let res5 = null;
+for (let i = 0; i < 5; i++) res5 = run(`engine.result('A2','verbCard','${lockId}',true,'verb-card')`);
+t('the fifth correct answer in a row locks the card',
+  res5.justMastered === true && res5.streak === 5 && res5.target === 5);
+t('the locked card leaves the “left to lock in” count',
+  run('engine.unmastered("A2","verbCard").length') === leftBefore - 1);
+const resetId = run(`DATA.A2.verbCards.find(c => c.id !== '${lockId}').id`);
+for (let i = 0; i < 3; i++) run(`engine.result('A2','verbCard','${resetId}',true,'verb-card')`);
+run(`engine.result('A2','verbCard','${resetId}',false,'verb-card')`);
+t('a wrong answer inside the 5 wipes the card back to 0/5',
+  run(`engine.get('A2','verbCard','${resetId}').streak`) === 0
+  && run(`engine.masteryTarget('verbCard')`) === 5);
+
+console.log('== pass model on a toy 3-card deck: one look per pass, 5 passes to lock ==');
+run(`
+  DATA.TC = { words: [], sentences: [], verbSentences: [], dialogues: [], reading: [], flashcards: [], grammar: [],
+    verbCards: [0, 1, 2].map(i => ({ id: 'TC-c' + i, es: 'es' + i, en: 'en' + i, answer: 'a' + i, prompt: 'p' + i, badge: 'b', options: ['a' + i, 'b', 'c', 'd'] })) };
+  DATA.levels.push('TC');
+  __view = fakeEl(); __pending = null;
+  runRound(__view, { id: 'tc', icon: '📚', title: 'Toy deck', level: 'TC', kind: 'verbCard', batchSize: 5, retryWrong: true });
+`);
+const servedIds = [];
+for (let i = 0; i < 15; i++) { servedIds.push(pending().entry.id); answer(true); }
+const laps = [0, 3, 6, 9, 12].map(i => servedIds.slice(i, i + 3));
+t('every pass shows the 3 cards exactly once (never twice in a pass)',
+  laps.every(l => new Set(l).size === 3));
+t('a card that was answered right is not repeated until the pass is over',
+  laps[0].every(id => laps[1].includes(id)) && laps[1].every(id => laps[2].includes(id)));
+t('after 5 clean passes all 3 cards are locked (5 correct in a row each)',
+  run(`DATA.TC.verbCards.every(c => engine.get('TC','verbCard',c.id).streak === 5)`) === true
+  && run(`engine.unmastered('TC','verbCard').length`) === 0);
+
 console.log('== empty deck still says “todo aprendido” ==');
 run('__start("flashcards", "T1")');
 t('a level with no items of that kind shows the completion card', /endcard/.test(view().innerHTML));
+
+console.log('== home page panel counts the deck per verb ==');
+/* re-render the home page against one stable #view element */
+sandbox.__stableView = sandbox.fakeEl();
+run(`
+  document.getElementById = () => __stableView;
+  document.querySelector = sel => (sel === '#view' ? __stableView : null);
+  store.set('level', 'A2');   /* the deck panel belongs to A2 */
+`);
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/app.js'), 'utf8'), sandbox, { filename: 'app.js' });
+const homeHtml = sandbox.__stableView.innerHTML;
+t('the A2 panel describes the deck with 28 / 44 cards per verb',
+  /200 Verbs &amp; Glue Words/.test(homeHtml) && /<b>28<\/b>/.test(homeHtml) && /<b>44<\/b>/.test(homeHtml));
+t('the panel lists all 190 verbs with their locked count', (homeHtml.match(/verb-progress-row/g) || []).length === 190);
+t('every row shows a card counter (x/28 or x/44)',
+  /\d+\/28/.test(homeHtml) && /\d+\/44/.test(homeHtml));
 
 console.log('');
 console.log(pass + ' passed, ' + fail + ' failed');

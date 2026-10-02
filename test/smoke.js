@@ -271,12 +271,33 @@ t('200 Verbs & Glue Words renders a 4-option card and filters the deck', run(`
     const opts = task.querySelectorAll ? task.querySelectorAll('.opt-line') : [];
     return before === 7076 && hasCard && hasFilters && g.remaining() === 7076;
   })()`));
-t('the 200-verb deck is only reachable from A2 and has one-answer mastery', run(`
+t('the 200-verb deck is only reachable from A2 and takes 5 correct answers in a row', run(`
   (function(){
     const card = DATA.A2.verbCards[0];
-    const res = engine.result('A2','verbCard',card.id,true,'verb-card');
-    return engine.masteryTarget('verbCard') === 1 && res.justMastered && res.target === 1
+    const id = card.id;
+    const first = engine.result('A2','verbCard',id,true,'verb-card');
+    const two = engine.result('A2','verbCard',id,true,'verb-card');
+    const wrong = engine.result('A2','verbCard',id,false,'verb-card');
+    let last = null;
+    for (let i = 0; i < 5; i++) last = engine.result('A2','verbCard',id,true,'verb-card');
+    return engine.masteryTarget('verbCard') === 5
+      && first.streak === 1 && two.streak === 2 && first.mastered === false && wrong.streak === 0 && !wrong.mastered
+      && last.justMastered && last.target === 5
       && engine.unmastered('A2','verbCard').length === 7075;
+  })()`));
+t('the home page counts locked cards per verb (28 regular / 44 irregular, both directions)', run(`
+  (function(){
+    const p = engine.verbCardProgress('A2');
+    const totals = {};
+    p.forEach(x => { totals[x.total] = (totals[x.total] || 0) + 1; });
+    const sum = p.reduce((n, x) => n + x.total, 0);
+    const deckSum = DATA.A2.verbCards.filter(c => c.verbEs).length;
+    const matched = p.every(x => DATA.A2.verbCards.some(c => c.verbEs === x.verb.es));
+    return p.length === 190 && sum === deckSum && matched
+      && totals[28] > 0 && totals[44] > 0
+      && p.filter(x => x.total === 28).length === 107
+      && p.filter(x => x.total === 44).length === 83
+      && p.some(x => x.done >= 1);
   })()`));
 t('Word Order in A2 has >=8 distractors per item and enables Check after placing 1 word', run(`
   (function(){

@@ -8,7 +8,12 @@
      · glue      — all 214 glue words
 
    3,538 cards per direction · 7,076 in total. The deck always lives in A2
-   (that is where the handouts are), whatever level pill is selected. */
+   (that is where the handouts are), whatever level pill is selected.
+
+   Rules: a card is locked after 5 correct answers in a row; a wrong answer
+   resets its counter to 0 and puts it straight back into rotation. A card
+   answered correctly will not be shown again until every one of the 7,076
+   cards has been seen once — then the next pass starts. */
 (function () {
   const LEVEL = 'A2';
   let group = 'all';
@@ -53,13 +58,16 @@
   function remaining() {
     return engine.unmastered(LEVEL, 'verbCard').filter(e => matches(e.item)).length;
   }
+  function locked() {
+    return cards().filter(c => matches(c) && engine.get(LEVEL, 'verbCard', c.id).streak >= 5).length;
+  }
 
   function filterBar() {
     const m = meta();
     return `
       <div class="row between">
         <b>📚 ${m.verbs} verbs (${m.irregular} irregular) + ${m.glue} glue words · ${Number(m.total).toLocaleString()} cards</b>
-        <span class="muted small">${filtered().length.toLocaleString()} in this filter</span>
+        <span class="muted small">${locked().toLocaleString()} locked · ${filtered().length.toLocaleString()} in this filter</span>
       </div>
       <div class="chip-row fc-filters">
         ${DIRECTIONS.map(d => `<button class="pill ${direction === d.id ? 'active' : ''}" type="button" data-dir="${d.id}">${d.label}</button>`).join('')}
@@ -77,8 +85,8 @@
     icon: '📚',
     title: '200 Verbs & Glue Words',
     tag: 'A2 handouts · flashcards',
-    desc: 'All 190 unique handout verbs (200 numbered rows) in two directions: the 11 magic-verb combinations in the first person, the full presente + pretérito of every irregular verb (5 persons), infinitive + yo forms for the regular ones, and all 214 glue words. 7,076 cards, four options each — one correct answer locks a card.',
-    xpHint: '10 XP per card',
+    desc: 'All 190 unique handout verbs (200 numbered rows) in two directions: the 11 magic-verb combinations in the first person, the full presente + pretérito of every irregular verb (5 persons), infinitive + yo forms for the regular ones, and all 214 glue words. 7,076 cards, four options each. A card locks after 5 correct answers in a row; a wrong answer resets it. Cards answered right come back only after the whole deck has been seen once.',
+    xpHint: '10 XP per card · 5-in-a-row locks it',
     remaining: () => remaining(),
     start(view, level) {
       const game = this;
@@ -94,6 +102,10 @@
         remainingFn: remaining,
         formatFn: () => 'verb-card',
         filtersFn: filterBar,
+        /* refill in small chunks so a wrong answer comes back within a few
+           questions, while served keeps right answers out for a full pass */
+        batchSize: 25,
+        retryWrong: true,
         completeText: 'Every card in the 200-verb deck is locked in — all 7,076 of them. ¡Increíble!',
         bindFilters(v) {
           const restart = () => { runCleanup(); game.start(v, level); };
