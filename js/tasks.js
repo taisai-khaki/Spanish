@@ -298,6 +298,52 @@ const tasks = {
     });
     return null;
   },
+
+  /* The 200-verb deck: the card carries both sides plus its four options, so
+     ES→EN and EN→ES items use the same renderer. */
+  'verb-card'(mount, o) {
+    const it = o.entry.item;
+    const all = (it.options && it.options.length) ? it.options : [it.answer].concat(it.wrongs || []);
+    const opts = shuffle(all);
+    const rows = it.rows || [];
+    const detailsHtml = rows.length
+      ? `<div class="fc-table">${rows.map(r => `<div><b>${esc(r.k)}:</b> ${esc(r.v)}</div>`).join('')}</div>`
+      : '';
+    mount.innerHTML = `
+      <div class="card fc-box">
+        <div class="row between">
+          <span class="tag">${esc(it.badge || 'Flashcard')}</span>
+          <button class="btn ghost mini" id="fcFlip" type="button">🔄 Flip card</button>
+        </div>
+        <div id="fcBack" class="fc-back" hidden>
+          <p class="word-es">${esc(it.es)} <button class="btn ghost mini" id="fcSay" type="button">🔊</button></p>
+          <p class="muted">${esc(it.en)}</p>
+          ${detailsHtml}
+        </div>
+      </div>
+      <div class="opts wide">${opts.map(s => `<button class="opt-line" type="button" data-v="${esc(s)}">${esc(s)}</button>`).join('')}</div>`;
+    const back = $('#fcBack', mount);
+    const flipBtn = $('#fcFlip', mount);
+    if (flipBtn && back) {
+      flipBtn.onclick = () => {
+        back.hidden = !back.hidden;
+        if (!back.hidden) say(it.say || it.es, o.rate || 1);
+      };
+    }
+    const sayBtn = $('#fcSay', mount);
+    if (sayBtn) sayBtn.onclick = () => say(it.say || it.es, o.rate || 1);
+    const isRight = v => norm(v) === norm(it.answer);
+    $$('.opt-line', mount).forEach(b => b.onclick = () => {
+      if (back) back.hidden = false;
+      $$('.opt-line', mount).forEach(x => {
+        x.disabled = true;
+        if (isRight(x.dataset.v)) x.classList.add('right');
+      });
+      if (!isRight(b.dataset.v)) b.classList.add('wrong');
+      o.onSubmit(isRight(b.dataset.v));
+    });
+    return null;
+  },
 };
 
 /* expose helpers for testing */

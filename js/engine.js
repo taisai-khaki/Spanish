@@ -1,6 +1,7 @@
 'use strict';
 /* ============ Mastery engine (naturalizacion.mx cycle) ============
-   Regular items: 5 consecutive correct = locked forever; a wrong answer resets the streak.
+   Regular items and the 200-verb flash cards: 5 consecutive correct = locked
+   forever; a wrong answer resets the streak to 0.
    Tagged verbSentence items: one correct answer completes that sentence.
    Only incomplete items enter queues. ============ */
 
@@ -14,6 +15,7 @@ const FORMATS = {
   reading: ['read-quiz', 'listen-quiz'],
   verbSentence: ['word-order'],
   flashcard: ['flashcard'],
+  verbCard: ['verb-card'],
 };
 
 const engine = {
@@ -53,7 +55,9 @@ const engine = {
     return this.load(level)[this.key(level, kind, id)] || { streak: 0, last: null, seen: 0 };
   },
 
-  masteryTarget(kind) { return (kind === 'verbSentence' || kind === 'flashcard') ? 1 : MASTERED_AT; },
+  masteryTarget(kind) {
+    return kind === 'verbSentence' ? 1 : MASTERED_AT;
+  },
 
   result(level, kind, id, ok, format) {
     const st = this.load(level);
@@ -82,6 +86,7 @@ const engine = {
       out.push({ kind: 'dialogue', id: dlg.id + ':' + i, item: ln, dlg, lineNo: i })));
     if (!kind || kind === 'reading') (d.reading || []).forEach(p => out.push({ kind: 'reading', id: p.id, item: p }));
     if (kind === 'flashcard') (d.flashcards || []).forEach(fc => out.push({ kind: 'flashcard', id: fc.id, item: fc }));
+    if (kind === 'verbCard') (d.verbCards || []).forEach(fc => out.push({ kind: 'verbCard', id: fc.id, item: fc }));
     return out;
   },
 
@@ -118,6 +123,31 @@ const engine = {
         return st && st.streak >= 1;
       }).length;
       return { verb, done, total: examples.length, learned: examples.length > 0 && done === examples.length };
+    });
+  },
+
+  /* per-verb progress for the 200-verb flash-card deck (both directions):
+     a verb is learned once all of its cards are locked (streak >= 5) */
+  verbCardProgress(level) {
+    const data = DATA[level] || {};
+    const cards = data.verbCards || [];
+    const state = this.load(level);
+    const target = this.masteryTarget('verbCard');
+    const grouped = new Map();
+    cards.forEach(c => {
+      if (!c.verbEs) return;
+      if (!grouped.has(c.verbEs)) grouped.set(c.verbEs, []);
+      grouped.get(c.verbEs).push(c);
+    });
+    return (data.verbs || []).map(verb => {
+      const group = grouped.get(verb.es) || [];
+      const streaks = group.map(c => {
+        const st = state[this.key(level, 'verbCard', c.id)];
+        return st ? st.streak : 0;
+      });
+      const done = streaks.filter(x => x >= target).length;
+      const started = streaks.filter(x => x > 0).length;
+      return { verb, done, started, total: group.length, learned: group.length > 0 && done === group.length };
     });
   },
 
