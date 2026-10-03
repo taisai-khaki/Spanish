@@ -265,21 +265,37 @@ console.log('== empty deck still says “todo aprendido” ==');
 run('__start("flashcards", "T1")');
 t('a level with no items of that kind shows the completion card', /endcard/.test(view().innerHTML));
 
-console.log('== home page panel counts the deck per verb ==');
+console.log('== the home page shows the 5-step verb path (not the card bar) ==');
 /* re-render the home page against one stable #view element */
 sandbox.__stableView = sandbox.fakeEl();
 run(`
   document.getElementById = () => __stableView;
   document.querySelector = sel => (sel === '#view' ? __stableView : null);
-  store.set('level', 'A2');   /* the deck panel belongs to A2 */
+  store.set('level', 'A2');   /* the path panel belongs to A2 */
 `);
-vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/app.js'), 'utf8'), sandbox, { filename: 'app.js' });
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/app.js'), 'utf8'), sandbox, { filename: 'sandbox-app.js' });
 const homeHtml = sandbox.__stableView.innerHTML;
-t('the A2 panel describes the deck with 28 / 44 cards per verb',
-  /200 Verbs &amp; Glue Words/.test(homeHtml) && /<b>28<\/b>/.test(homeHtml) && /<b>44<\/b>/.test(homeHtml));
-t('the panel lists all 190 verbs with their locked count', (homeHtml.match(/verb-progress-row/g) || []).length === 190);
-t('every row shows a card counter (x/28 or x/44)',
-  /\d+\/28/.test(homeHtml) && /\d+\/44/.test(homeHtml));
+t('the A2 panel is the verb path with the five steps and the resume rule',
+  /verb path/.test(homeHtml) && /five steps/.test(homeHtml) && /resumes at the exact step that failed/.test(homeHtml)
+  && !/28<\/b> for a regular verb/.test(homeHtml));
+t('the panel lists all 190 verbs, each with the five-step track',
+  (homeHtml.match(/verb-progress-row/g) || []).length === 190
+  && (homeHtml.match(/class="vp-step/g) || []).length === 190 * 5);
+t('every verb row has its path state and a practice link',
+  /Not started/.test(homeHtml) && /#\/verbpath\//.test(homeHtml) && /Continue the path|Start the path/.test(homeHtml));
+/* save a step for one verb and check the panel follows the saved progress */
+run(`
+  verbPathProgress.record(VERB_PATH.byEs.comer, true, 0);
+  verbPathProgress.record(VERB_PATH.byEs.comer, true, 1);
+  verbPathProgress.record(VERB_PATH.byEs.comer, false, 2);
+`);
+sandbox.__stableView2 = sandbox.fakeEl();
+run('document.getElementById = () => __stableView2; document.querySelector = sel => (sel === "#view" ? __stableView2 : null);');
+vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/app.js'), 'utf8'), sandbox, { filename: 'sandbox-app2.js' });
+const homeHtml2 = sandbox.__stableView2.innerHTML;
+t('a verb that passed root + presente and missed the pretérito shows “Step 3/5 · Pretérito”',
+  /▶ Step 3\/5 · Pretérito/.test(homeHtml2));
+t('the saved miss never sends the verb back to step 1', !/▶ Step 1\/5/.test(homeHtml2) && /1 in progress/.test(homeHtml2));
 
 console.log('');
 console.log(pass + ' passed, ' + fail + ' failed');

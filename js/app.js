@@ -22,10 +22,14 @@
   function route() {
     if (mascotTimer) { clearInterval(mascotTimer); mascotTimer = null; }
     runCleanup();
-    const id = location.hash.replace('#/', '') || 'home';
+    /* "#/game" or "#/game/argument" (the verb path uses it to jump to one verb) */
+    const raw = location.hash.replace('#/', '') || 'home';
+    const slash = raw.indexOf('/');
+    const id = slash < 0 ? raw : raw.slice(0, slash);
+    const arg = slash < 0 ? '' : decodeURIComponent(raw.slice(slash + 1));
     const game = GAMES.find(g => g.id === id);
     if (!game) return home();
-    game.start(view, level);
+    game.start(view, level, arg);
     window.scrollTo(0, 0);
   }
 
@@ -47,30 +51,80 @@
       </div>`;
   }
 
+  /* ---------- the verb path is the verb progress bar now ----------
+     Every verb shows the five steps of the path — root → presente →
+     pretérito → the 11 magic combos → word order — instead of a locked-card
+     bar. The current step is highlighted, a missed step stays highlighted
+     until it is passed, and all five mean the verb is learned. */
+  function verbPathTrack(steps, stepIndex) {
+    return `<div class="vp-track vp-track-mini" role="list">
+      ${steps.map((st, i) => {
+        const state = i < stepIndex ? 'done' : (i === stepIndex ? 'now' : 'todo');
+        const mark = i < stepIndex ? '✓' : (i === stepIndex ? '▶' : '·');
+        return `<span class="vp-step ${state}" role="listitem" title="${esc(st.label + ' — ' + st.blurb)}">${mark} ${esc(st.label)}</span>`;
+      }).join('')}
+    </div>`;
+  }
+
+  function verbPathPanel() {
+    const verbs = (DATA[level] && DATA[level].verbPath) || [];
+    const steps = window.VERB_PATH_STEPS || [];
+    if (!verbs.length || !window.verbPathProgress) return '';
+    const st = verbPathProgress.stats();
+    const status = p => p.learned ? '✅ Learned'
+      : (p.step > 0 ? `▶ Step ${p.step + 1}/5 · ${(steps[p.step] || {}).label || ''}`
+      : (p.attempts > 0 ? '▶ Step 1/5 · Root' : 'Not started'));
+    return `
+      <div class="card verb-progress-card">
+        <h3>🧭 ${level} verb path <span class="muted small">— ${st.learned}/${st.total} verbs learned</span></h3>
+        <p class="muted small">Each verb walks <b>five steps</b>: 🌱 root (English → Spanish) → 🕐 presente → ⏪ pretérito → ✨ the 11 magic combos → 🧩 word order. The part of the verb that stays is shown; the part that changes is typed. Pass all five and the verb is learned.</p>
+        <p class="muted small">A mistake never sends you back to the start: the steps you already passed stay saved and the verb resumes at the exact step that failed. ${st.learned} learned · ${st.started} in progress · ${st.fresh} not started.</p>
+        <div class="row between vp-panel-top">
+          <a class="btn" href="#/verbpath">▶ ${st.learned || st.started ? 'Continue the path' : 'Start the path'}</a>
+          <span class="muted small">the 📚 200-verb deck still counts its own 7,076 cards inside the game</span>
+        </div>
+        <label class="verb-search-label">Find a verb
+          <input id="verbProgressFilter" class="answer-input verb-search" type="search" placeholder="Search Spanish or English" autocomplete="off">
+        </label>
+        <div class="verb-progress-list" aria-label="Verb path progress">
+          ${verbs.map(v => {
+            const p = verbPathProgress.get(v.es);
+            return `
+              <div class="verb-progress-row" data-search="${esc(norm(v.es + ' ' + v.en))}">
+                <div class="verb-progress-head">
+                  <b>${esc(v.es)}</b>
+                  <span class="muted small">${esc(v.en)}</span>
+                  <span class="verb-status ${p.learned ? 'done' : ''}">${status(p)}</span>
+                </div>
+                <div class="vp-row">
+                  ${verbPathTrack(v.steps, p.step)}
+                  <a class="btn ghost mini vp-row-go" href="#/verbpath/${encodeURIComponent(v.es)}">Practice</a>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }
+
   function verbProgressPanel() {
-    const deck = (DATA[level] && DATA[level].verbCards) || [];
-    const progress = deck.length ? engine.verbCardProgress(level) : engine.verbProgress(level);
+    const path = (DATA[level] && DATA[level].verbPath) || [];
+    if (path.length && window.verbPathProgress) return verbPathPanel();
+    const progress = engine.verbProgress(level);
     if (!progress.length) return '';
     const learned = progress.filter(p => p.learned).length;
     const done = progress.reduce((n, p) => n + p.done, 0);
-    const started = progress.reduce((n, p) => n + (p.started || 0), 0);
     const all = progress.reduce((n, p) => n + p.total, 0);
-    const blurb = deck.length
-      ? `Each verb's cards in the <b>200 Verbs &amp; Glue Words</b> deck, both directions: <b>28</b> for a regular verb (infinitive + yo presente + yo pretérito + the 11 magic frames) and <b>44</b> for an irregular verb (all 5 presente and 5 pretérito persons + the 11 magic frames). A card locks after <b>5 correct answers in a row</b> — a wrong answer resets that card. A card answered right returns only after the whole deck has been seen once. ${done}/${all} cards locked · ${started}/${all} answered correctly at least once.`
-      : `Each verb has ${progress[0].total} linked examples: 11 magic-verb frames × 6 person forms. Answer every example correctly once to learn that verb. ${done}/${all} examples completed.`;
-    const icon = deck.length ? '📚' : '🧩';
     return `
       <div class="card verb-progress-card">
-        <h3>${icon} ${level} verb practice <span class="muted small">— ${learned}/${progress.length} verbs learned</span></h3>
-        <p class="muted small">${blurb}</p>
+        <h3>🧩 ${level} verb practice <span class="muted small">— ${learned}/${progress.length} verbs learned</span></h3>
+        <p class="muted small">Each verb has ${progress[0].total} linked examples: 11 magic-verb frames × 6 person forms. Answer every example correctly once to learn that verb. ${done}/${all} examples completed.</p>
         <label class="verb-search-label">Find a verb
           <input id="verbProgressFilter" class="answer-input verb-search" type="search" placeholder="Search Spanish or English" autocomplete="off">
         </label>
         <div class="verb-progress-list" aria-label="Verb practice progress">
           ${progress.map(p => {
             const pct = p.total ? Math.round((p.done / p.total) * 100) : 0;
-            const status = p.learned ? '✅ Learned'
-              : (p.total ? `${p.done}/${p.total}${p.started > p.done ? ` <span class="muted">· ${p.started} started</span>` : ''}` : 'Practice set not added');
+            const status = p.learned ? '✅ Learned' : `${p.done}/${p.total}`;
             return `
               <div class="verb-progress-row" data-search="${esc(norm(p.verb.es + ' ' + p.verb.en))}">
                 <div class="verb-progress-head"><b>${esc(p.verb.es)}</b><span class="muted small">${esc(p.verb.en)}</span><span class="verb-status ${p.learned ? 'done' : ''}">${status}</span></div>

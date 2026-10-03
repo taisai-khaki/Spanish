@@ -226,7 +226,8 @@ t('reading + grammar formats are from their lists', run(`
     return FORMATS.reading.includes(r) && FORMATS.grammar.includes(g); })()`));
 
 console.log('== games boot at all levels ==');
-t('4 games registered: Grammar Judge, Word Order, Level Flashcards, 200 Verbs & Glue Words', run('GAMES.length === 4 && JSON.stringify(GAMES.map(g => g.id)) === \'["grammar","sentences","flashcards","verbcards"]\''));
+t('5 games registered: Grammar Judge, Word Order, Level Flashcards, 200 Verbs & Glue Words, Verb Path', run('GAMES.length === 5 && JSON.stringify(GAMES.map(g => g.id)) === \'["grammar","sentences","flashcards","verbcards","verbpath"]\''));
+t('the Verb Path game is registered with its 190-verb route', run('(function () { const g = GAMES.find(x => x.id === "verbpath"); return !!g && /5 steps/.test(g.tag) && DATA.A2.verbPath.length === 190 && typeof verbPathProgress.get === "function"; })()'));
 t('all 4 boot at A1/A2/B1/B2/EXAM without throwing', run(`
   (function(){
     const v = document.getElementById('view');
