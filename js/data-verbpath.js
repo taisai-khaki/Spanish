@@ -1,14 +1,13 @@
 'use strict';
-/* ============ 🧭 The Verb Path: 5 steps from meaning to a real sentence ============
+/* ============ 🧭 The Verb Path: 4 steps from meaning to a real sentence ============
    Built on the 200-verb handout deck (js/data-verbs200.js) plus the A2
    word-order bank (js/data-sentences.js). Every one of the 190 handout verbs
-   gets the same five-step route:
+   gets the same four-step route:
 
      1 · Root        English → Spanish:  "to eat"            → comer
      2 · Presente    the part that stays is shown; the rest → [com] + "o"   (como)
      3 · Pretérito   the same drill in the simple past      → [com] + "í"   (comí)
-     4 · Combos      type the 11 magic-verb combinations    → "Necesito comer"
-     5 · Word order  build a real sentence from shuffled words
+     4 · Word order  build a real sentence from shuffled words
 
    Rules for the split steps (2 and 3):
      · whatever does not change in that person of that tense is shown,
@@ -26,28 +25,11 @@
 (function () {
   const LEVEL = 'A2';
 
-  /* English for the 11 magic frames — the deck builds these from the verb
-     gloss; weather verbs (llover / nevar) read naturally here */
-  const WEATHER_EN = {
-    necesitar: b => 'It needs to ' + b,
-    'tener-que': b => 'It has to ' + b,
-    querer: b => 'It wants to ' + b,
-    'ir-a': b => 'It is going to ' + b,
-    poder: b => 'It can ' + b,
-    'acabar-de': (b, past) => 'It has just ' + past,
-    podria: b => 'It could ' + b,
-    deberia: b => 'It should ' + b,
-    soler: (b, past, third) => 'It usually ' + third,
-    gustar: (b, past, third) => 'I like it when it ' + third,
-    gustaria: b => 'I would like it to ' + b,
-  };
-
   const STEPS = [
     { id: 'root', n: 1, label: 'Root', icon: '🌱', blurb: 'English → Spanish infinitive' },
     { id: 'presente', n: 2, label: 'Presente', icon: '🕐', blurb: 'present tense — type the part that changes' },
     { id: 'preterito', n: 3, label: 'Pretérito', icon: '⏪', blurb: 'simple past — type the part that changes' },
-    { id: 'combos', n: 4, label: 'Magic combos', icon: '✨', blurb: 'the 11 magic-verb combinations (first person)' },
-    { id: 'order', n: 5, label: 'Word order', icon: '🧩', blurb: 'build the full sentence from shuffled words' },
+    { id: 'order', n: 4, label: 'Word order', icon: '🧩', blurb: 'build the full sentence from shuffled words' },
   ];
   const STEP_COUNT = STEPS.length;
 
@@ -55,7 +37,7 @@
   function nkey(s) {
     return String(s == null ? '' : s).toLowerCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-      .replace(/[¿?¡!.,;:()"'´`\-\/]/g, ' ')
+      .replace(/[¿?¡!.,;:()"\'´`\-\\/]/g, ' ')
       .replace(/\s+/g, ' ').trim();
   }
   function stripAccents(s) { return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
@@ -71,17 +53,6 @@
     const inf = bareInfinitive(es);
     const raw = inf.slice(-2);
     return raw === 'ír' ? 'ir' : raw;
-  }
-  /* English for the magic frames of weather verbs; the other 188 verbs reuse
-     the deck's own frame English (VERB_DECK_FRAMES) with a clean gloss */
-  function magicEnglish(frameId, gloss, defective) {
-    if (defective) {
-      const fn = WEATHER_EN[frameId];
-      return fn ? fn(gloss, gloss + 'ed', gloss + 's') : null;
-    }
-    const frames = (typeof window !== 'undefined' && window.VERB_DECK_FRAMES) || [];
-    const frame = frames.filter(f => f.id === frameId)[0];
-    return frame ? frame.en(gloss) : null;
   }
 
   /* ---------------- the split: what stays, what the player types ----------------
@@ -120,13 +91,15 @@
     const byVerb = new Map();
     cards.forEach(c => {
       if (!c.verbEs) return;
-      if (!byVerb.has(c.verbEs)) byVerb.set(c.verbEs, { inf: null, forms: {}, magic: [] });
+      if (c.group === 'magic') return; // magic combos removed from the path
+      if (!byVerb.has(c.verbEs)) byVerb.set(c.verbEs, { inf: null, forms: {} });
       const g = byVerb.get(c.verbEs);
-      if (c.group === 'magic') g.magic.push(c);
-      else if (c.tense) {
+      if (c.tense) {
         if (!g.forms[c.tense]) g.forms[c.tense] = {};
         g.forms[c.tense][c.person] = c;
-      } else g.inf = c;
+      } else {
+        g.inf = c;
+      }
     });
 
     const orderByVerb = new Map();
@@ -168,14 +141,6 @@
         };
       };
 
-      const combos = g.magic.map(c => ({
-        frameId: c.frameId,
-        label: (c.badge || '').replace(/^Magic frame · /, '').replace(/ · #\d+.*$/, ''),
-        es: c.es,
-        en: magicEnglish(c.frameId, gloss, defective) || c.en,
-        hint: String(c.es).replace(/\s+\S+$/, ' …'),
-      }));
-
       const steps = [
         {
           id: 'root', n: 1, kind: 'root', label: 'Root', icon: '🌱',
@@ -189,13 +154,7 @@
         tenseStep('presente', 2),
         tenseStep('preterito', 3),
         {
-          id: 'combos', n: 4, kind: 'combos', label: 'Magic combos', icon: '✨',
-          combos,
-          total: combos.length,
-          irregular: !!inf.irregular, reflexive: refl, defective,
-        },
-        {
-          id: 'order', n: 5, kind: 'order', label: 'Word order', icon: '🧩',
+          id: 'order', n: 4, kind: 'order', label: 'Word order', icon: '🧩',
           items: (orderByVerb.get(es) || []).slice(),
           irregular: !!inf.irregular, reflexive: refl, defective,
         },
@@ -235,14 +194,13 @@
 
   /* is a typed answer right? (accents, case and punctuation are forgiven;
      typing the whole form on a split step also counts) */
-  function answerOk(step, typed, combo) {
+  function answerOk(step, typed) {
     const t = nkey(typed);
     if (!t) return false;
     if (step.kind === 'split') {
       return nkey(assembled(step, typed)) === nkey(step.full) || t === nkey(step.full);
     }
     if (step.kind === 'root') return (step.accept || [step.answer]).some(a => nkey(a) === t);
-    if (step.kind === 'combos') return !!combo && nkey(combo.es) === t;
     return nkey(step.answer) === t;
   }
 
