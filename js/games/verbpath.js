@@ -1,55 +1,63 @@
 'use strict';
-/* ============ 🧭 Verb Path (A2 · 190 handout verbs · 5 steps) ============
+/* ============ 🧭 Verb Path (A2 · 190 handout verbs · 4 steps) ============
    The learning path the deck alone cannot teach: every verb is walked through
 
      1 · Root        English → Spanish      "to eat"          → comer
      2 · Presente    shown stem + typed end  [com]___         → "o"    (como)
      3 · Pretérito   the same in the past    [com]___         → "í"    (comí)
-     4 · Combos      all 11 magic frames     "I need to eat"  → "Necesito comer"
-     5 · Word order  the shuffled-word builder for that verb
+     4 · Word order  the shuffled-word builder for that verb
 
-   A verb is learned when all five steps are passed. If a step is missed the
+   A verb is learned when all four steps are passed. If a step is missed the
    progress up to the previous step is kept AND the step that failed is kept
    too: the verb comes back at the step with the mistake, never from the top.
    ============ */
 (function () {
   const LEVEL = window.VERB_PATH_LEVEL || 'A2';
   const STEPS = window.VERB_PATH_STEPS || [];
-  const STEP_COUNT = STEPS.length || 5;
-  const XP_STEP = { root: 12, split: 14, combo: 16, order: 20 };
+  const STEP_COUNT = STEPS.length || 4;
+  const XP_STEP = { root: 12, split: 14, order: 20 };
   const XP_LEARNED = 40;
   const PKEY = 'verbPath.' + LEVEL;
   const TITLE = 'Verb Path';
 
   function model() { return (DATA[LEVEL] && DATA[LEVEL].verbPath) || []; }
   function stepXp(step) {
-    if (step.kind === 'combos') return XP_STEP.combo;
     if (step.kind === 'order') return XP_STEP.order;
     if (step.kind === 'split') return XP_STEP.split;
     return XP_STEP.root;
   }
 
   /* ---------------- progress: one record per verb ----------------
-     { step: 0..5, magicDone: 0..11, attempts, correct, wrong }
+     { step: 0..4, attempts, correct, wrong }
      `step` is the step the player is on — i.e. the step that still has to be
-     passed (5 = learned). A wrong answer never lowers `step`, it just stops
+     passed (4 = learned). A wrong answer never lowers `step`, it just stops
      the run there, so the next visit restarts exactly at the missed step. */
-  const DEFAULTS = { step: 0, magicDone: 0, attempts: 0, correct: 0, wrong: 0 };
+  const DEFAULTS = { step: 0, attempts: 0, correct: 0, wrong: 0 };
 
   const verbPathProgress = {
     key() { return PKEY; },
     all() { return store.get(PKEY, {}) || {}; },
     raw(es) { return this.all()[es] || null; },
     get(es) {
-      const rec = Object.assign({}, DEFAULTS, this.raw(es) || {});
+      const raw = this.raw(es) || {};
+      const rec = Object.assign({}, DEFAULTS, raw);
+      // migrate old 5-step saves (which had magicDone) to the new 4-step flow:
+      // old: 0 root, 1 presente, 2 preterito, 3 combos, 4 order, 5 learned
+      // new: 0 root, 1 presente, 2 preterito, 3 order, 4 learned
+      if (raw.magicDone != null || raw.step > STEP_COUNT) {
+        if (raw.step >= 5) rec.step = 4;
+        else if (raw.step >= 3) rec.step = 3;
+      }
+      delete rec.magicDone;
       rec.learned = rec.step >= STEP_COUNT;
       rec.step = Math.max(0, Math.min(STEP_COUNT, rec.step));
-      rec.magicDone = Math.max(0, rec.magicDone || 0);
       return rec;
     },
     set(es, patch) {
       const all = this.all();
-      all[es] = Object.assign({}, DEFAULTS, all[es] || {}, patch);
+      const merged = Object.assign({}, DEFAULTS, all[es] || {}, patch);
+      delete merged.magicDone;
+      all[es] = merged;
       store.set(PKEY, all);
       return this.get(es);
     },
@@ -66,17 +74,11 @@
         wrong: before.wrong + (ok ? 0 : 1),
       };
       if (!ok) {
-        /* keep the step (and the combo index) exactly where the mistake was */
+        /* keep the step exactly where the mistake was */
         return this.set(verb.es, patch);
       }
-      if (verb.steps[stepIndex] && verb.steps[stepIndex].kind === 'combos') {
-        const total = verb.steps[stepIndex].combos.length;
-        const done = Math.min(total, before.magicDone + 1);
-        if (done < total) return this.set(verb.es, Object.assign(patch, { step: Math.max(before.step, stepIndex), magicDone: done }));
-        return this.set(verb.es, Object.assign(patch, { step: Math.max(before.step, stepIndex + 1), magicDone: 0 }));
-      }
       const step = Math.max(before.step, Math.min(STEP_COUNT, stepIndex + 1));
-      return this.set(verb.es, Object.assign(patch, { step, magicDone: step >= 4 ? 0 : before.magicDone }));
+      return this.set(verb.es, Object.assign(patch, { step }));
     },
     stats() {
       const verbs = model();
@@ -101,15 +103,14 @@
     String(s).split('').forEach(c => { h = (h * 31 + c.charCodeAt(0)) % 99991; });
     return h;
   }
-  function stepIndexOf(verb, stepId) { return verb.steps.findIndex(s => s.id === stepId); }
 
   /* ---------------- the game ---------------- */
   window.registerGame({
     id: 'verbpath',
     icon: '🧭',
     title: 'Verb Path',
-    tag: 'A2 · 5 steps per verb',
-    desc: 'The whole route for each of the 190 handout verbs: type the infinitive from English, then fill the piece that changes in the presente and pretérito, then type all 11 magic-verb combinations, then build a real sentence from shuffled words. Pass all five steps and the verb is learned. A mistake saves your progress at exactly that step — the verb resumes there next time, never from the top.',
+    tag: 'A2 · 4 steps per verb',
+    desc: 'The whole route for each of the 190 handout verbs: type the infinitive from English, then fill the piece that changes in the presente and pretérito, then build a real sentence from shuffled words. Pass all four steps and the verb is learned. A mistake saves your progress at exactly that step — the verb resumes there next time, never from the top.',
     xpHint: '12–20 XP per step · +40 XP when a verb is learned',
     remaining: () => remainingCount(),
     start(view, level, startVerb) {
@@ -178,16 +179,11 @@
     function serve(verb) {
       const p = verbPathProgress.get(verb.es);
       verbPathProgress.set(verb.es, { attempts: p.attempts + 1 });
-      const combos = (verb.steps[3].combos || []).length;
       /* a learned verb starts the walk again from the root (free practice —
          the saved steps never move backwards) */
       const fromTop = reviewMode || p.learned;
       let stepIndex = fromTop ? 0 : Math.min(p.step, STEP_COUNT - 1);
-      let comboIndex = 0;
-      if (!fromTop && verb.steps[stepIndex] && verb.steps[stepIndex].kind === 'combos' && combos) {
-        comboIndex = p.magicDone % combos;
-      }
-      card = { verb, stepIndex, comboIndex };
+      card = { verb, stepIndex };
       renderStep();
     }
 
@@ -199,7 +195,7 @@
           <div class="end-emoji">🏆</div>
           <h1>¡Todos los verbos!</h1>
           <p class="big">All ${verbs.length} handout verbs have walked the whole path.</p>
-          <p class="muted">Root, presente, pretérito, the 11 magic combos and a real sentence — for every one of them. ¡Increíble!</p>
+          <p class="muted">Root, presente, pretérito and a real sentence — for every one of them. ¡Increíble!</p>
           <div class="row center">${backBtn()}</div>
         </div>`;
     }
@@ -229,21 +225,18 @@
     }
 
     /* ---------------- rendering ---------------- */
-    function verbStrip(verb, stepIndex, comboIndex) {
-      const combos = (verb.steps[3].combos || []).length;
+    function verbStrip(verb, stepIndex) {
       return `<div class="vp-track" role="list" aria-label="Verb steps">
         ${verb.steps.map((st, i) => {
           const state = i < stepIndex ? 'done' : (i === stepIndex ? 'now' : 'todo');
           const mark = i < stepIndex ? '✓' : (i === stepIndex ? '▶' : '·');
-          const label = (st.kind === 'combos' && i === stepIndex && combos)
-            ? `${st.label} ${comboIndex + 1}/${combos}` : st.label;
-          return `<span class="vp-step ${state}" role="listitem" title="${esc(st.icon + ' ' + st.label + ' — ' + st.blurb)}">${mark} ${esc(label)}</span>`;
+          return `<span class="vp-step ${state}" role="listitem" title="${esc(st.icon + ' ' + st.label + ' — ' + st.blurb)}">${mark} ${esc(st.label)}</span>`;
         }).join('')}
       </div>`;
     }
 
     function headHTML() {
-      const { verb, stepIndex, comboIndex } = card;
+      const { verb, stepIndex } = card;
       const showVerb = stepIndex > 0 || reviewMode;
       const verbLabel = showVerb
         ? `${verb.handoutNo ? '#' + verb.handoutNo + ' · ' : ''}${esc(verb.es)} <span class="muted">— ${esc(verb.en)}</span>`
@@ -260,28 +253,25 @@
         </div>
         <div class="card">
           ${reviewMode ? `<p class="notice">🏆 Every verb on the path is learned — this is free practice. The saved steps never go backwards, so nothing you earned here can be lost.</p>` : ''}
-          ${verbStrip(verb, stepIndex, comboIndex)}
+          ${verbStrip(verb, stepIndex)}
           <div id="task"></div>
           <div id="fb" class="feedback" aria-live="polite"></div>
         </div>`;
     }
 
     function renderStep() {
-      const { verb, stepIndex, comboIndex } = card;
+      const { verb, stepIndex } = card;
       const step = verb.steps[stepIndex];
       view.innerHTML = headHTML();
-      if (step.kind === 'combos') mountCombo(verb, step, comboIndex);
-      else if (step.kind === 'order') mountOrder(verb, step);
+      if (step.kind === 'order') mountOrder(verb, step);
       else if (step.kind === 'split') mountSplit(verb, step);
       else mountRoot(verb, step);
       updateScoreboard();
       window.scrollTo(0, 0);
     }
 
-    function chip(step, comboIndex) {
-      const combos = (step.combos || []).length;
-      const extra = step.kind === 'combos' && combos ? ` · combo ${comboIndex + 1}/${combos}` : '';
-      return `<span class="chip-cat format-chip">Step ${step.n}/${STEP_COUNT} · ${esc(step.label)}${extra}</span>`;
+    function chip(step) {
+      return `<span class="chip-cat format-chip">Step ${step.n}/${STEP_COUNT} · ${esc(step.label)}</span>`;
     }
 
     function hintBox(mount, html) {
@@ -341,34 +331,18 @@
       bindInput(mount, step, verb);
     }
 
-    /* ---------- step 4: the 11 magic combinations, typed ---------- */
-    function mountCombo(verb, step, comboIndex) {
-      const mount = $('#task', view);
-      const combo = step.combos[comboIndex];
-      mount.innerHTML = `
-        ${chip(step, comboIndex)}
-        <span class="prompt-k">Magic combo · ${esc(combo.label)}</span>
-        <h2 class="q-prompt">${esc(combo.en)}</h2>
-        <p class="muted small">Type the whole combination in Spanish. The magic verb is conjugated; the second verb stays in the infinitive.</p>
-        <div class="ansform">
-          <input id="vpInput" class="answer-input vp-input-wide" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Necesito …" aria-label="Your answer">
-          <button class="btn" id="vpCheck" type="button">Check ✓</button>
-          <button class="btn ghost" id="vpHint" type="button">💡 Hint</button>
-        </div>
-        <div id="vpHintBox" class="vp-hint" hidden></div>`;
-      hintBox(mount, `<b>Hint:</b> the frame starts <b>${esc(combo.hint)}</b>`);
-      bindInput(mount, step, verb, combo);
-    }
-
-    /* ---------- step 5: the shuffled-word builder ---------- */
+    /* ---------- step 4: the shuffled-word builder ---------- */
     function mountOrder(verb, step) {
       const mount = $('#task', view);
       const p = verbPathProgress.get(verb.es);
       const items = step.items || [];
       if (!items.length) {
-        /* no sentence bank for this verb — fall back to its first combo */
-        card = { verb, stepIndex: 3, comboIndex: 0 };
-        return renderStep();
+        mount.innerHTML = `
+          ${chip(step)}
+          <p class="muted">No sentence bank for this verb — marking it as learned.</p>
+          <div class="row center"><button class="btn" id="vpNext" type="button">Next verb →</button></div>`;
+        $('#vpNext', mount).onclick = () => finish(true, null, { es: verb.es, en: verb.en });
+        return;
       }
       const item = items[(hash(verb.es) + p.attempts) % items.length];
       mount.innerHTML = `
@@ -386,7 +360,7 @@
     }
 
     /* ---------- shared typed-input plumbing ---------- */
-    function bindInput(mount, step, verb, combo) {
+    function bindInput(mount, step, verb) {
       const input = $('#vpInput', mount);
       const check = $('#vpCheck', mount);
       const submit = () => {
@@ -397,7 +371,7 @@
         if (check) check.disabled = true;
         const hintBtn = $('#vpHint', mount);
         if (hintBtn) hintBtn.disabled = true;
-        finish(verbPathAnswerOk(step, value, combo), value, null, combo);
+        finish(verbPathAnswerOk(step, value), value, null);
       };
       if (check) check.onclick = submit;
       if (input) {
@@ -409,8 +383,8 @@
     /* ---------------- answering ---------------- */
     let lastOk = false;
 
-    function finish(ok, typed, orderItem, combo) {
-      const { verb, stepIndex, comboIndex } = card;
+    function finish(ok, typed, orderItem) {
+      const { verb, stepIndex } = card;
       const step = verb.steps[stepIndex];
       const before = verbPathProgress.get(verb.es);
       verbPathProgress.record(verb, ok, stepIndex);
@@ -457,19 +431,6 @@
         detail = ok
           ? `${esc(step.full)} — ${esc(step.tenseLabel.toLowerCase())}, ${esc(step.personLabel)}. ${step.shown ? `“${esc(step.shown)}” stayed, you added “${esc(step.answer)}”.` : 'The whole form was yours.'}`
           : `${step.shown ? `“${esc(step.shown)}” stays` : 'Nothing stays here'}; you type <b>${esc(step.answer)}</b> → <b>${esc(step.full)}</b>.`;
-      } else if (step.kind === 'combos') {
-        const c = combo || step.combos[comboIndex];
-        answerHtml = `<span class="vp-answer">${esc(c.es)}</span>`;
-        spoken = c.es;
-        const done = verbPathProgress.get(verb.es).magicDone;
-        if (ok) {
-          detail = done >= step.combos.length
-            ? `All ${step.combos.length} magic combinations typed. Last step: build the sentence.`
-            : `Combo ${comboIndex + 1}/${step.combos.length} done — ${step.combos.length - comboIndex - 1} to go.`;
-          nextLabel = done >= step.combos.length ? 'Word order →' : `Next combo ${comboIndex + 2}/${step.combos.length} →`;
-        } else {
-          detail = `The frame is conjugated in the first person and the second verb stays in the infinitive: <b>${esc(c.es)}</b>.`;
-        }
       } else {
         const item = orderItem || { es: '', en: '' };
         answerHtml = `<span class="vp-answer vp-answer-sentence">${esc(item.es)}</span>`;
@@ -479,14 +440,13 @@
       }
 
       const correctAnswerText = step.kind === 'split' ? step.full
-        : (step.kind === 'combos' ? (combo || step.combos[comboIndex]).es
-        : (step.kind === 'order' ? (orderItem || {}).es : step.answer));
+        : (step.kind === 'order' ? (orderItem || {}).es : step.answer);
       if (!ok) answerHtml = `<span class="vp-answer">${esc(correctAnswerText)}</span>`;
 
       const lastStep = step.kind === 'order';
       const justLearned = ok && lastStep && !before.learned;
       $('#fb', view).innerHTML = `
-        ${ok ? `<div class="fb good">¡Correcto! <span class="small">${justLearned ? 'All five steps passed — the verb is learned 🔒 (+' + XP_LEARNED + ' XP)' : 'Step locked in — keep going.'}</span></div>`
+        ${ok ? `<div class="fb good">¡Correcto! <span class="small">${justLearned ? 'All four steps passed — the verb is learned 🔒 (+' + XP_LEARNED + ' XP)' : 'Step locked in — keep going.'}</span></div>`
              : `<div class="fb bad">Not yet — <span class="small">this verb waits at this step; everything you passed before it stays saved.</span></div>`}
         <div class="recall">${esc(step.icon)} ${answerHtml}
           <button class="btn ghost mini" id="vpSay" type="button">🔊</button>
@@ -505,7 +465,7 @@
         fx.confetti(150);
         fx.sfx('fanfare');
         fx.stamp('¡APRENDIDO!');
-        try { player.toast(`<b>${esc(verb.es)}</b> — all 5 steps passed, it's yours now 🔒 (+${XP_LEARNED} XP)`, { icon: '🔒' }); } catch {}
+        try { player.toast(`<b>${esc(verb.es)}</b> — all 4 steps passed, it's yours now 🔒 (+${XP_LEARNED} XP)`, { icon: '🔒' }); } catch {}
       }
 
       updateScoreboard();
@@ -530,23 +490,14 @@
       clearKey();
       if (clean && clean.cleanup) clean.cleanup();
       clean = null;
-      const { verb, stepIndex, comboIndex } = card;
-      const step = verb.steps[stepIndex];
+      const { verb, stepIndex } = card;
 
       if (!lastOk) {
         requeue(verb);
         return nextVerb();
       }
-      if (step.kind === 'combos') {
-        if (comboIndex + 1 < step.combos.length) {
-          card = { verb, stepIndex, comboIndex: comboIndex + 1 };
-          return renderStep();
-        }
-        card = { verb, stepIndex: 4, comboIndex: 0 };
-        return renderStep();
-      }
-      if (step.kind === 'order') return nextVerb();
-      card = { verb, stepIndex: stepIndex + 1, comboIndex: 0 };
+      if (verb.steps[stepIndex].kind === 'order') return nextVerb();
+      card = { verb, stepIndex: stepIndex + 1 };
       return renderStep();
     }
 
@@ -565,13 +516,12 @@
       <div class="card center">
         <div class="end-emoji">🧭</div>
         <h1>Verb Path</h1>
-        <p class="muted">Five steps per verb — one verb learned when all five are passed.</p>
+        <p class="muted">Four steps per verb — one verb learned when all four are passed.</p>
         <ol class="vp-intro">
           <li><b>1 · Root</b> — you see the English, you type the Spanish verb: <i>“to eat” → comer</i></li>
           <li><b>2 · Presente</b> — the part of the verb that stays is shown, you type the part that changes: <i>com___ → “o”</i>. Irregulars keep only the piece of the stem that survives (<i>t___ → “go”</i> = tengo); if nothing survives (<i>ir → voy</i>) the box is empty and you type it all.</li>
           <li><b>3 · Pretérito</b> — the same drill in the simple past: <i>com___ → “í”</i> (comí)</li>
-          <li><b>4 · Magic combos</b> — all 11 magic frames, typed: <i>“I need to eat” → Necesito comer</i></li>
-          <li><b>5 · Word order</b> — build a real sentence from shuffled words, distractors included</li>
+          <li><b>4 · Word order</b> — build a real sentence from shuffled words, distractors included</li>
         </ol>
         <p class="notice">Miss a step and the verb keeps everything you already passed — it comes back at the step with the mistake, never from the beginning. ${st.total} handout verbs · ${st.learned} learned · ${st.started} in progress · ${st.fresh} new.</p>
         <div class="row center"><button class="btn big" id="vpGo" type="button">Start ▶</button></div>

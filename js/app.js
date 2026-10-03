@@ -52,10 +52,10 @@
   }
 
   /* ---------- the verb path is the verb progress bar now ----------
-     Every verb shows the five steps of the path — root → presente →
-     pretérito → the 11 magic combos → word order — instead of a locked-card
+     Every verb shows the four steps of the path — root → presente →
+     pretérito → word order — instead of a locked-card
      bar. The current step is highlighted, a missed step stays highlighted
-     until it is passed, and all five mean the verb is learned. */
+     until it is passed, and all four mean the verb is learned. */
   function verbPathTrack(steps, stepIndex) {
     return `<div class="vp-track vp-track-mini" role="list">
       ${steps.map((st, i) => {
@@ -72,12 +72,12 @@
     if (!verbs.length || !window.verbPathProgress) return '';
     const st = verbPathProgress.stats();
     const status = p => p.learned ? '✅ Learned'
-      : (p.step > 0 ? `▶ Step ${p.step + 1}/5 · ${(steps[p.step] || {}).label || ''}`
-      : (p.attempts > 0 ? '▶ Step 1/5 · Root' : 'Not started'));
+      : (p.step > 0 ? `▶ Step ${p.step + 1}/4 · ${(steps[p.step] || {}).label || ''}`
+      : (p.attempts > 0 ? '▶ Step 1/4 · Root' : 'Not started'));
     return `
       <div class="card verb-progress-card">
         <h3>🧭 ${level} verb path <span class="muted small">— ${st.learned}/${st.total} verbs learned</span></h3>
-        <p class="muted small">Each verb walks <b>five steps</b>: 🌱 root (English → Spanish) → 🕐 presente → ⏪ pretérito → ✨ the 11 magic combos → 🧩 word order. The part of the verb that stays is shown; the part that changes is typed. Pass all five and the verb is learned.</p>
+        <p class="muted small">Each verb walks <b>four steps</b>: 🌱 root (English → Spanish) → 🕐 presente → ⏪ pretérito → 🧩 word order. The part of the verb that stays is shown; the part that changes is typed. Pass all four and the verb is learned.</p>
         <p class="muted small">A mistake never sends you back to the start: the steps you already passed stay saved and the verb resumes at the exact step that failed. ${st.learned} learned · ${st.started} in progress · ${st.fresh} not started.</p>
         <div class="row between vp-panel-top">
           <a class="btn" href="#/verbpath">▶ ${st.learned || st.started ? 'Continue the path' : 'Start the path'}</a>
