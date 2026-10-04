@@ -10,6 +10,11 @@
    A verb is learned when all four steps are passed. If a step is missed the
    progress up to the previous step is kept AND the step that failed is kept
    too: the verb comes back at the step with the mistake, never from the top.
+
+   Rotation rule: a missed verb is not shown again until every other verb that
+   is still not learned has had its turn — it goes to the back of the rotation.
+   With 190 verbs pending, a miss on the very first verb comes back only after
+   the other 189 have been served once. One turn per verb per pass.
    ============ */
 (function () {
   const LEVEL = window.VERB_PATH_LEVEL || 'A2';
@@ -110,7 +115,7 @@
     icon: '🧭',
     title: 'Verb Path',
     tag: 'A2 · 4 steps per verb',
-    desc: 'The whole route for each of the 190 handout verbs: type the infinitive from English, then fill the piece that changes in the presente and pretérito, then build a real sentence from shuffled words. Pass all four steps and the verb is learned. A mistake saves your progress at exactly that step — the verb resumes there next time, never from the top.',
+    desc: 'The whole route for each of the 190 handout verbs: type the infinitive from English, then fill the piece that changes in the presente and pretérito, then build a real sentence from shuffled words. Pass all four steps and the verb is learned. A mistake saves your progress at exactly that step — the verb resumes there next time, never from the top — and it waits at the back of the rotation, so every other verb that is still not learned gets its turn first.',
     xpHint: '12–20 XP per step · +40 XP when a verb is learned',
     remaining: () => remainingCount(),
     start(view, level, startVerb) {
@@ -383,6 +388,15 @@
     /* ---------------- answering ---------------- */
     let lastOk = false;
 
+    /* how long the missed verb waits: everything still in the rotation is
+       served once before it comes back */
+    function backAfterHTML() {
+      const ahead = queue.length;
+      return ahead
+        ? `It comes back after the other ${ahead} verb${ahead === 1 ? '' : 's'} ${ahead === 1 ? 'has' : 'have'} had ${ahead === 1 ? 'its' : 'their'} turn.`
+        : 'Nothing else is waiting, so it comes straight back.';
+    }
+
     function finish(ok, typed, orderItem) {
       const { verb, stepIndex } = card;
       const step = verb.steps[stepIndex];
@@ -447,7 +461,7 @@
       const justLearned = ok && lastStep && !before.learned;
       $('#fb', view).innerHTML = `
         ${ok ? `<div class="fb good">¡Correcto! <span class="small">${justLearned ? 'All four steps passed — the verb is learned 🔒 (+' + XP_LEARNED + ' XP)' : 'Step locked in — keep going.'}</span></div>`
-             : `<div class="fb bad">Not yet — <span class="small">this verb waits at this step; everything you passed before it stays saved.</span></div>`}
+             : `<div class="fb bad">Not yet — <span class="small">this verb waits at this step; everything you passed before it stays saved. ${backAfterHTML()}</span></div>`}
         <div class="recall">${esc(step.icon)} ${answerHtml}
           <button class="btn ghost mini" id="vpSay" type="button">🔊</button>
         </div>
@@ -484,8 +498,9 @@
     }
 
     /* the run only moves on after a correct answer; a miss hands the turn to
-       the next verb and drops the missed one back into rotation a few
-       questions later — at the very step it failed */
+       the next verb and sends the missed one to the back of the rotation —
+       it comes back at the very step it failed, but only after every other
+       verb that is still not learned has been served once */
     function next() {
       clearKey();
       if (clean && clean.cleanup) clean.cleanup();
@@ -501,10 +516,16 @@
       return renderStep();
     }
 
-    /* a missed verb goes back into rotation a few questions ahead */
+    /* A missed verb goes to the BACK of the rotation: one turn per verb per
+       pass, so it is not repeated until every other verb that is still not
+       learned has been served once (190 pending → a miss on the first verb
+       comes back after the other 189). The queue is the rotation: verbs are
+       shifted off the front as they are served and a miss is pushed onto the
+       end, so the queue only empties when the last pending verb is learned.
+       If nothing else is left waiting, the verb simply comes round again —
+       there is no other verb to give the turn to. */
     function requeue(verb) {
-      const pos = queue.length ? 4 + Math.floor(Math.random() * 8) : 0;
-      queue.splice(Math.min(pos, queue.length), 0, verb);
+      queue.push(verb);
     }
 
     /* ---------------- start screen ---------------- */
@@ -523,7 +544,7 @@
           <li><b>3 · Pretérito</b> — the same drill in the simple past: <i>com___ → “í”</i> (comí)</li>
           <li><b>4 · Word order</b> — build a real sentence from shuffled words, distractors included</li>
         </ol>
-        <p class="notice">Miss a step and the verb keeps everything you already passed — it comes back at the step with the mistake, never from the beginning. ${st.total} handout verbs · ${st.learned} learned · ${st.started} in progress · ${st.fresh} new.</p>
+        <p class="notice">Miss a step and the verb keeps everything you already passed — it comes back at the step with the mistake, never from the beginning. It also waits for the rest of the rotation: one turn per verb per pass, so a missed verb is not repeated until every other verb that is still not learned has been shown once. ${st.total} handout verbs · ${st.learned} learned · ${st.started} in progress · ${st.fresh} new.</p>
         <div class="row center"><button class="btn big" id="vpGo" type="button">Start ▶</button></div>
       </div>`;
 
