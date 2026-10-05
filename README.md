@@ -1,6 +1,6 @@
 # 🇪🇸 Spanish Game Lab
 
-Three browser games for learning Spanish fast — zero install, no accounts, no build step.
+Six browser games for learning Spanish fast — zero install, no accounts, no build step.
 Progress is saved in your browser (localStorage).
 
 ## The rule (from naturalizacion.mx)
@@ -34,8 +34,9 @@ XP is banked every 10 answers and whenever you leave the game, so a long session
 | 🧩 **Word Order** | Grammar in context | build the sentence from shuffled words (with rich tense, subject, and similar-word distractors) |
 | 🃏 **Level Flashcards** | Verbs (Tenses & Combinations) + Nouns | flippable flashcards & active check for all level verbs across Presente, Pretérito, Imperfecto, Futuro, Condicional, and Combinations + all nouns in the level |
 | 📚 **200 Verbs & Glue Words** | The A2 handouts, drilled | **7,076 cards** (3,538 per direction, ES→EN and EN→ES): the 11 magic-verb combinations for every verb (first person), the full presente + pretérito of all 85 irregular verbs (5 persons each), infinitive + yo forms for the 105 regular verbs, and all 214 glue words. 5 correct in a row locks a card (a wrong answer resets it), and right answers wait for a full pass before returning. Filters by group, direction, and a verb search box |
+| ✍️ **Topic Text Studio** | Personalized reading + verbs | Available at **every level, including EXAM**. Type any topic, choose a 4-sentence short text, an 8-sentence long text, or an 8-turn conversation, and the browser generates a Spanish text around that topic using verbs from the selected level. Listen to the result, then type every highlighted verb in context for 20–40 XP. |
 
-Every game runs as one endless session — press **← Games** to end it.
+The mastery drills run as endless sessions — press **← Games** to end one. Topic Text Studio completes after you practise every generated target verb, then lets you generate or review another text.
 
 ## Content
 
@@ -101,6 +102,7 @@ python3 -m http.server 8080
 - [`js/data-verbs200.js`](js/data-verbs200.js) — the 200 handout rows, irregular classification, the presente/pretérito conjugation engine, the magic frames and the 214 glue words → the 7,076-card deck in `DATA.A2.verbCards`.
 - [`js/data-verbpath.js`](js/data-verbpath.js) — builds the 🧭 five-step path for all 190 handout verbs (the show/type split, the 11 combos, the word-order link) → `DATA.A2.verbPath`.
 - [`js/games/verbpath.js`](js/games/verbpath.js) — the Verb Path game itself plus `verbPathProgress` (the per-verb step saved in `spanlab.verbPath.A2`).
+- [`js/games/topic-text.js`](js/games/topic-text.js) — the all-level Topic Text Studio: topic/format setup, browser-side text generation from each level's verb bank, listening, and typed in-context verb practice.
 - [`js/data-exam.js`](js/data-exam.js) — EXAM words, grammar, the consulate dialogue, and reading passages.
 - [`js/data-bank.js`](js/data-bank.js) — the real 683-question bank (generated from `naturalizacion.mx/data/questions.json`).
 
