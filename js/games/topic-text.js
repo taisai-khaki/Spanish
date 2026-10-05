@@ -1,9 +1,10 @@
 'use strict';
 /* ============ Topic Text Studio ============
-   The player supplies any topic and chooses a short text, a long text, or a
-   conversation. The generator stays entirely in the browser and builds the
-   result from verb forms that belong to the selected level. Every generated
-   target can then be practised as a typed, in-context verb challenge. */
+   The player types any topic; the text is then *composed*, not looked up.
+   js/topic-engine.js owns the sentences: it draws a tense per role, picks
+   verbs from the selected level's own bank, fills the slots with nouns from
+   the topic's semantic field, and marks one conjugated form per line. Every
+   generation is a new text, so the same topic never repeats itself. */
 (function () {
   const MARK = '{{verb}}';
   const MODE_META = {
@@ -12,210 +13,25 @@
     conversation: { label: 'Conversation', icon: '💬', count: 8, note: '8 turns · two speakers' },
   };
 
-  /* EXAM has no flash-card verb category of its own. These verbs are taken
-     directly from its interview sentences and reading passages. */
-  const EXAM_VERBS = {
-    vivir: 'to live', practicar: 'to practise', considerar: 'to consider',
-    aprender: 'to learn', ayudar: 'to help', formar: 'to form / become part of',
-    demostrar: 'to demonstrate', comprender: 'to understand', recordar: 'to remember',
-    respetar: 'to respect', participar: 'to participate', preparar: 'to prepare',
-  };
+  function engine() {
+    if (!window.TopicTextEngine) throw new Error('The text engine did not load. Reload the page.');
+    return window.TopicTextEngine;
+  }
 
   function cleanTopic(value) {
     return String(value || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/[{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 80);
   }
 
-  function quoted(topic) { return `«${topic}»`; }
-
-  function levelVerbMap(level) {
-    const map = new Map();
-    const cards = (DATA[level] && DATA[level].flashcards) || [];
-    cards.forEach(card => {
-      if (card.cardType === 'verb' && card.verbEs && !map.has(card.verbEs)) {
-        map.set(card.verbEs, card.verbEn || card.en || 'level verb');
-      }
-    });
-    if (level === 'EXAM') {
-      Object.keys(EXAM_VERBS).forEach(es => map.set(es, EXAM_VERBS[es]));
-    }
-    return map;
-  }
-
-  function makeLine(verb, answer, text, speaker) {
-    return { verb, answer, text, speaker: speaker || '', en: '' };
-  }
-
-  /* Each line has exactly one marked target. Other familiar verbs may appear
-     naturally around it, but the marked form is the one used by the game. */
-  function poolsFor(level, topic) {
-    const t = quoted(topic);
-    const pools = {
-      A1: {
-        narrative: [
-          makeLine('querer', 'quiero', `Hoy ${MARK} hablar de ${t}.`),
-          makeLine('hablar', 'hablo', `${MARK} de ${t} con mi familia.`),
-          makeLine('ver', 'veo', `Cuando ${MARK} algo sobre ${t}, presto atención.`),
-          makeLine('entender', 'entiendo', `Con un buen ejemplo, ${MARK} mejor ${t}.`),
-          makeLine('aprender', 'aprendo', `Cada día ${MARK} algo nuevo sobre ${t}.`),
-          makeLine('hacer', 'hago', `También ${MARK} una actividad relacionada con ${t}.`),
-          makeLine('poder', 'puedo', `Con práctica, ${MARK} explicar una idea sobre ${t}.`),
-          makeLine('necesitar', 'necesito', `Si tengo dudas, ${MARK} más ejemplos de ${t}.`),
-          makeLine('tener', 'tengo', `${MARK} una pregunta importante sobre ${t}.`),
-          makeLine('ir', 'voy', `Mañana ${MARK} a buscar información sobre ${t}.`),
-          makeLine('gustar', 'me gusta', `${MARK} descubrir palabras nuevas con ${t}.`),
-          makeLine('ayudar', 'ayudo', `A veces ${MARK} a un amigo a hablar de ${t}.`),
-        ],
-        conversation: [
-          makeLine('querer', 'Quieres', `¿${MARK} hablar de ${t}?`, 'A'),
-          makeLine('poder', 'puedo', `Sí, ${MARK} empezar con una idea sencilla.`, 'B'),
-          makeLine('entender', 'Entiendes', `¿${MARK} por qué ${t} es interesante?`, 'A'),
-          makeLine('aprender', 'Aprendo', `${MARK} algo nuevo cada vez que leo sobre el tema.`, 'B'),
-          makeLine('ver', 'Ves', `¿${MARK} algún ejemplo de ${t} cerca de aquí?`, 'A'),
-          makeLine('tener', 'Tengo', `${MARK} uno y te lo puedo mostrar.`, 'B'),
-          makeLine('hacer', 'Hacemos', `¿${MARK} una lista de palabras importantes?`, 'A'),
-          makeLine('hablar', 'hablamos', `Perfecto, y después ${MARK} otra vez de ${t}.`, 'B'),
-        ],
-      },
-      A2: {
-        narrative: [
-          makeLine('decidir', 'decidí', `Ayer ${MARK} investigar ${t}.`),
-          makeLine('buscar', 'busqué', `Primero ${MARK} información clara sobre ${t}.`),
-          makeLine('leer', 'leí', `Después ${MARK} varios ejemplos relacionados con ${t}.`),
-          makeLine('encontrar', 'encontré', `En uno de ellos ${MARK} una idea sorprendente sobre ${t}.`),
-          makeLine('pensar', 'pensé', `Entonces ${MARK} con calma en ${t}.`),
-          makeLine('escribir', 'escribí', `Más tarde ${MARK} un resumen breve de ${t}.`),
-          makeLine('compartir', 'compartí', `También ${MARK} mis notas sobre ${t} con un amigo.`),
-          makeLine('explicar', 'expliqué', `Al final le ${MARK} por qué ${t} me parecía interesante.`),
-          makeLine('organizar', 'organicé', `Para no olvidar nada, ${MARK} las ideas principales de ${t}.`),
-          makeLine('practicar', 'practiqué', `Luego ${MARK} cómo hablar de ${t} en español.`),
-          makeLine('recordar', 'recordé', `Gracias a los ejemplos, ${MARK} los detalles de ${t}.`),
-          makeLine('recomendar', 'recomendé', `Por último, ${MARK} una lectura sobre ${t}.`),
-        ],
-        conversation: [
-          makeLine('buscar', 'Buscaste', `¿${MARK} información sobre ${t}?`, 'A'),
-          makeLine('leer', 'leí', `Sí, ${MARK} varios ejemplos esta mañana.`, 'B'),
-          makeLine('comprender', 'Comprendiste', `¿${MARK} las ideas principales del tema?`, 'A'),
-          makeLine('preguntar', 'pregunté', `Casi todas; también ${MARK} lo que no estaba claro.`, 'B'),
-          makeLine('responder', 'respondieron', `¿Y qué te ${MARK} sobre ${t}?`, 'A'),
-          makeLine('recomendar', 'recomendaron', `Me ${MARK} comparar dos puntos de vista.`, 'B'),
-          makeLine('escribir', 'escribiste', `Entonces, ¿${MARK} un resumen?`, 'A'),
-          makeLine('compartir', 'compartiré', `Sí, y mañana lo ${MARK} contigo.`, 'B'),
-        ],
-      },
-      B1: {
-        narrative: [
-          makeLine('considerar', 'considero', `Cuando ${MARK} ${t}, intento observar el contexto completo.`),
-          makeLine('comprobar', 'compruebo', `Primero ${MARK} los datos relacionados con ${t}.`),
-          makeLine('imaginar', 'imagino', `Luego ${MARK} cómo cambiaría ${t} desde otra perspectiva.`),
-          makeLine('reconocer', 'reconozco', `También ${MARK} que ${t} puede provocar opiniones distintas.`),
-          makeLine('demostrar', 'demuestra', `Un ejemplo concreto ${MARK} la complejidad de ${t}.`),
-          makeLine('dudar', 'dudo', `A veces ${MARK} de las explicaciones más simples de ${t}.`),
-          makeLine('admitir', 'admito', `Sin embargo, ${MARK} que todavía tengo preguntas sobre ${t}.`),
-          makeLine('garantizar', 'garantiza', `Ninguna fuente ${MARK} una respuesta definitiva sobre ${t}.`),
-          makeLine('limitar', 'limita', `Una perspectiva demasiado estrecha ${MARK} el debate sobre ${t}.`),
-          makeLine('permitir', 'permite', `Una conversación abierta ${MARK} comprender mejor ${t}.`),
-          makeLine('convencer', 'convence', `Al final, un argumento bien explicado ${MARK} más que una opinión sobre ${t}.`),
-          makeLine('preferir', 'prefiero', `Por eso ${MARK} seguir investigando ${t} antes de decidir.`),
-        ],
-        conversation: [
-          makeLine('considerar', 'consideras', `¿Qué ${MARK} más importante de ${t}?`, 'A'),
-          makeLine('imaginar', 'imagino', `${MARK} que depende mucho del contexto.`, 'B'),
-          makeLine('comprobar', 'comprobaste', `¿${MARK} los datos antes de llegar a esa conclusión?`, 'A'),
-          makeLine('reconocer', 'reconozco', `Sí, aunque ${MARK} que faltan algunos detalles.`, 'B'),
-          makeLine('dudar', 'dudas', `Entonces, ¿todavía ${MARK} de la explicación sobre ${t}?`, 'A'),
-          makeLine('demostrar', 'demuestra', `Un caso reciente ${MARK} que el asunto es complejo.`, 'B'),
-          makeLine('admitir', 'admito', `${MARK} que ese ejemplo cambia mi opinión.`, 'A'),
-          makeLine('preferir', 'prefiero', `Yo ${MARK} investigar un poco más antes de concluir.`, 'B'),
-        ],
-      },
-      B2: {
-        narrative: [
-          makeLine('evaluar', 'evalúo', `Cuando ${MARK} ${t}, distingo primero los hechos de las opiniones.`),
-          makeLine('cuestionar', 'cuestiono', `A continuación, ${MARK} los supuestos habituales sobre ${t}.`),
-          makeLine('reflexionar', 'reflexiono', `También ${MARK} sobre las consecuencias de ${t} a largo plazo.`),
-          makeLine('determinar', 'determino', `Con esa información, ${MARK} qué aspectos de ${t} requieren más atención.`),
-          makeLine('establecer', 'establezco', `Después ${MARK} criterios claros para analizar ${t}.`),
-          makeLine('implementar', 'implemento', `Si la evidencia lo permite, ${MARK} una estrategia relacionada con ${t}.`),
-          makeLine('promover', 'promuevo', `Al mismo tiempo, ${MARK} un diálogo informado sobre ${t}.`),
-          makeLine('preservar', 'preservo', `Durante el debate, ${MARK} los matices esenciales de ${t}.`),
-          makeLine('recuperar', 'recupero', `Cuando surge una contradicción, ${MARK} el argumento central sobre ${t}.`),
-          makeLine('facilitar', 'facilita', `Una estructura rigurosa ${MARK} la comprensión de ${t}.`),
-          makeLine('impedir', 'impide', `La falta de evidencia ${MARK} llegar a una conclusión firme sobre ${t}.`),
-          makeLine('superar', 'superamos', `Con análisis y diálogo, ${MARK} las explicaciones superficiales de ${t}.`),
-        ],
-        conversation: [
-          makeLine('evaluar', 'evalúas', `¿Cómo ${MARK} el impacto de ${t}?`, 'A'),
-          makeLine('cuestionar', 'cuestiono', `Primero ${MARK} las premisas del argumento.`, 'B'),
-          makeLine('determinar', 'determinas', `¿Y cómo ${MARK} qué evidencia es relevante?`, 'A'),
-          makeLine('establecer', 'establezco', `${MARK} varios criterios antes de compararla.`, 'B'),
-          makeLine('promover', 'promueve', `¿Crees que este enfoque ${MARK} un debate más útil?`, 'A'),
-          makeLine('facilitar', 'facilita', `Sí, porque ${MARK} una lectura crítica de ${t}.`, 'B'),
-          makeLine('impedir', 'impide', `¿Qué ${MARK} llegar a una conclusión definitiva?`, 'A'),
-          makeLine('perseverar', 'perseveramos', `La incertidumbre; aun así, ${MARK} en el análisis.`, 'B'),
-        ],
-      },
-      EXAM: {
-        narrative: [
-          makeLine('practicar', 'practico', `Para el examen, ${MARK} una respuesta sobre ${t}.`),
-          makeLine('considerar', 'considero', `Primero ${MARK} los hechos principales relacionados con ${t}.`),
-          makeLine('recordar', 'recuerdo', `Después ${MARK} las fechas y los nombres importantes de ${t}.`),
-          makeLine('comprender', 'comprendo', `Con una lectura atenta, ${MARK} por qué ${t} es relevante.`),
-          makeLine('aprender', 'aprendo', `Con cada ejemplo ${MARK} algo nuevo sobre ${t}.`),
-          makeLine('ayudar', 'ayudo', `Si un compañero tiene dudas, lo ${MARK} a repasar ${t}.`),
-          makeLine('respetar', 'respeto', `En mi respuesta ${MARK} los distintos puntos de vista sobre ${t}.`),
-          makeLine('demostrar', 'demostrar', `Así puedo ${MARK} lo que sé acerca de ${t}.`),
-          makeLine('participar', 'participar', `También quiero ${MARK} en una conversación sobre ${t}.`),
-          makeLine('preparar', 'preparo', `Antes de la entrevista, ${MARK} otro ejemplo de ${t}.`),
-          makeLine('vivir', 'vivo', `Cuando explico dónde ${MARK}, relaciono mi experiencia con ${t}.`),
-          makeLine('formar', 'formar', `Mi objetivo es ${MARK} una opinión clara sobre ${t}.`),
-        ],
-        conversation: [
-          makeLine('preparar', 'preparas', `¿Cómo ${MARK} una respuesta sobre ${t}?`, 'Entrevistador'),
-          makeLine('practicar', 'Practico', `${MARK} con ejemplos claros y frases completas.`, 'Tú'),
-          makeLine('comprender', 'Comprendes', `¿${MARK} por qué este tema es importante?`, 'Entrevistador'),
-          makeLine('recordar', 'recuerdo', `Sí, y también ${MARK} los datos principales.`, 'Tú'),
-          makeLine('considerar', 'consideras', `¿Qué ${MARK} más relevante de ${t}?`, 'Entrevistador'),
-          makeLine('respetar', 'respeto', `En primer lugar, ${MARK} las distintas perspectivas.`, 'Tú'),
-          makeLine('demostrar', 'demostrarás', `¿Cómo ${MARK} lo que has aprendido?`, 'Entrevistador'),
-          makeLine('participar', 'participaré', `${MARK} con una respuesta ordenada y precisa.`, 'Tú'),
-        ],
-      },
-    };
-    return pools[level] || pools.A1;
-  }
-
-  function orderedSample(lines, count) {
-    if (lines.length <= count) return lines.slice();
-    /* Keep the opening line so every text introduces the topic, then vary the
-       remaining details without scrambling their narrative order. */
-    const picked = shuffle(lines.slice(1).map((line, index) => ({ line, index })))
-      .slice(0, count - 1)
-      .sort((a, b) => a.index - b.index)
-      .map(item => item.line);
-    return [lines[0]].concat(picked);
-  }
-
+  /* One generation = one call to the engine. `seed` is left to the engine so
+     that pressing "New version" really produces a different text. */
   function generateTopicText(topicValue, modeValue, levelValue) {
     const topic = cleanTopic(topicValue);
     const mode = MODE_META[modeValue] ? modeValue : 'short';
-    const level = DATA[levelValue] ? levelValue : 'A1';
+    const level = (window.DATA && DATA[levelValue]) ? levelValue : 'A1';
     if (!topic) throw new Error('Please enter a topic first.');
-
-    const map = levelVerbMap(level);
-    const pools = poolsFor(level, topic);
-    const source = mode === 'conversation' ? pools.conversation : pools.narrative;
-    const valid = source.filter(line => map.has(line.verb) && line.text.split(MARK).length === 2);
-    const count = MODE_META[mode].count;
-    if (valid.length < count) throw new Error(`Not enough ${level} verbs are available for this text.`);
-
-    const lines = mode === 'conversation' ? valid.slice(0, count) : orderedSample(valid, count);
-    lines.forEach(line => { line.en = map.get(line.verb); });
-    const plainText = lines.map(line => {
-      const sentence = line.text.replace(MARK, line.answer);
-      return line.speaker ? `${line.speaker}: ${sentence}` : sentence;
-    }).join(mode === 'conversation' ? '\n' : ' ');
-
-    return { topic, mode, level, lines, plainText, meta: MODE_META[mode] };
+    const passage = engine().build({ level, topic, mode });
+    passage.meta = Object.assign({}, MODE_META[mode], passage.meta || {});
+    return passage;
   }
 
   function renderTarget(line, blank) {
@@ -303,15 +119,18 @@
           <div><span class="chip-cat">Generated for you</span><h1>${esc(passage.topic)}</h1></div>
           <button class="btn ghost mini" id="topicEdit" type="button">✎ Change setup</button>
         </div>
-        <p class="muted small">Highlighted forms come from the <b>${esc(passage.level)}</b> verb bank. Read the whole text aloud, then practise each one.</p>
+        <p class="muted small">Written for you from the <b>${esc(passage.level)}</b> verb bank · ${esc((passage.meta.tensesUsed || []).length || 1)} tense${(passage.meta.tensesUsed || []).length === 1 ? '' : 's'} · ${esc(passage.fieldLabel || passage.field || '')}. Read the whole text aloud, then practise each form. ↻ builds a different one.</p>
         ${passageHTML(passage, -1)}
         <div class="topic-verb-shelf" aria-label="Target verbs">
-          ${unique.map(line => `<span class="topic-verb-chip"><b>${esc(line.answer)}</b><small>${esc(line.verb)} · ${esc(line.en)}</small></span>`).join('')}
+          ${unique.map(line => `<span class="topic-verb-chip"><b>${esc(line.answer)}</b><small>${esc(line.verb)} · ${esc(line.tenseLabel || '')}${line.personLabel ? ' · ' + esc(line.personLabel) : ''}</small></span>`).join('')}
         </div>
+        <div id="topicGlossBox" class="topic-gloss" hidden>${passage.lines.map(line =>
+          `<p class="muted small">${esc(line.gloss || '')}</p>`).join('')}</div>
         <div class="topic-actions">
           <button class="btn big" id="topicPractice" type="button">Practise ${passage.lines.length} verbs →</button>
           <button class="btn ghost" id="topicListen" type="button">🔊 Listen</button>
-          ${passage.mode === 'conversation' ? '' : '<button class="btn ghost" id="topicAgain" type="button">↻ New version</button>'}
+          <button class="btn ghost" id="topicGloss" type="button">🅰 English</button>
+          <button class="btn ghost" id="topicAgain" type="button">↻ New version</button>
         </div>
       </div>`;
   }
@@ -383,6 +202,11 @@
           awarded = false;
           renderGenerated();
         };
+        const gloss = $('#topicGloss', view);
+        if (gloss) gloss.onclick = () => {
+          const box = $('#topicGlossBox', view);
+          if (box) box.hidden = !box.hidden;
+        };
         $('#topicEdit', view).onclick = renderSetup;
         window.scrollTo(0, 0);
       }
@@ -415,7 +239,7 @@
             <span class="chip-cat">Verb ${index + 1} of ${passage.lines.length}</span>
             <p class="muted small">Complete the highlighted sentence with the correct form of <b>${esc(line.verb)}</b>.</p>
             <div class="topic-quiz-context">${passageHTML(passage, index)}</div>
-            <div class="topic-hint"><b>${esc(line.verb)}</b><span>${esc(line.en)}</span><button class="btn ghost mini" id="topicHearLine" type="button">🔊 Hear line</button></div>
+            <div class="topic-hint"><b>${esc(line.verb)}</b><span>${esc(line.tenseLabel || '')}${line.personLabel ? ' · ' + esc(line.personLabel) : ''}</span><button class="btn ghost mini" id="topicHearLine" type="button">🔊 Hear line</button></div>
             <form id="topicAnswerForm" class="ansform">
               <label class="sr-only" for="topicAnswer">Missing verb form</label>
               <input id="topicAnswer" class="answer-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type the missing form">
@@ -505,8 +329,10 @@
   window.topicTextGenerator = {
     generate: generateTopicText,
     cleanTopic,
-    availableVerbs(level) { return Array.from(levelVerbMap(level).keys()); },
     modes: MODE_META,
     marker: MARK,
+    /* kept for the tests and for other games that ask what is practisable */
+    availableVerbs(level) { return engine().verbBank(level).map(v => v.es); },
+    engine: () => window.TopicTextEngine,
   };
 })();

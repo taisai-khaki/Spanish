@@ -595,6 +595,14 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 .topic-verb-chip b { color: var(--teal); font-size: 14px; }
 .topic-verb-chip small { color: var(--muted); font-size: 10.5px; }
+/* the English reading of the generated text, hidden until asked for */
+.topic-gloss {
+  margin-top: 16px; padding: 12px 14px; border-radius: 12px;
+  border: 1px dashed #CBE5DE; background: #F7FBFA;
+}
+.topic-gloss[hidden] { display: none; }
+.topic-gloss p { margin: 0 0 6px; }
+.topic-gloss p:last-child { margin-bottom: 0; }
 .topic-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 .topic-actions.center { justify-content: center; }
 
