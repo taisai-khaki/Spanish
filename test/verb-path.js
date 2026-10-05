@@ -1,10 +1,10 @@
 'use strict';
 /* Verb Path regression test. Run: node test/verb-path.js
-   Checks the five-step model built from the 200-verb deck (root, presente,
-   pretérito, 11 magic combos, word order), the "show what stays / type what
-   changes" rule for regular, irregular, reflexive and impersonal verbs, the
-   accent-tolerant answer checking, and the save/resume rule: a mistake keeps
-   every step already passed and resumes at the step that failed. */
+   Checks the four-step model built from the 200-verb deck (root, presente,
+   pretérito, word order), the "show what stays / type what changes" rule for
+   regular, irregular, reflexive and impersonal verbs, the accent-tolerant
+   answer checking, and the save/resume rule: a mistake keeps every step
+   already passed and resumes at the step that failed. */
 const assert = require('assert');
 const fs = require('fs');
 const vm = require('vm');
@@ -38,31 +38,24 @@ const model = j(`{
   meta: DATA.A2.verbPathMeta,
   verbs: DATA.A2.verbPath.length,
   stepIds: Array.from(new Set(DATA.A2.verbPath.map(v => v.steps.map(s => s.id).join(',')))),
-  fiveSteps: DATA.A2.verbPath.every(v => v.steps.length === 5
-    && v.steps.map(s => s.n).join(',') === '1,2,3,4,5'
-    && v.steps.map(s => s.id).join(',') === 'root,presente,preterito,combos,order'),
+  fourSteps: DATA.A2.verbPath.every(v => v.steps.length === 4
+    && v.steps.map(s => s.n).join(',') === '1,2,3,4'
+    && v.steps.map(s => s.id).join(',') === 'root,presente,preterito,order'),
   rootAnswers: DATA.A2.verbPath.every(v => v.steps[0].answer === v.es),
   reflexiveAccepts: DATA.A2.verbPath.filter(v => v.reflexive)
     .every(v => v.steps[0].accept.length === 2 && v.steps[0].accept[1] === v.es.slice(0, -2)),
   splitsAssemble: DATA.A2.verbPath.every(v => v.steps.slice(1, 3)
     .every(s => s.shown + s.answer === s.full && s.answer.length > 0)),
   everyVerbHasSplits: DATA.A2.verbPath.every(v => v.steps[1].full && v.steps[2].full),
-  comboCounts: Array.from(new Set(DATA.A2.verbPath.map(v => v.steps[3].combos.length))),
-  comboFrames: Array.from(new Set(DATA.A2.verbPath.map(v => v.steps[3].combos.map(c => c.frameId).join(',')))),
-  comboHints: DATA.A2.verbPath.every(v => v.steps[3].combos.every(c => /…$/.test(c.hint) && c.en && c.es)),
-  orderCounts: Array.from(new Set(DATA.A2.verbPath.map(v => v.steps[4].items.length))),
-  orderItemsComplete: DATA.A2.verbPath.every(v => v.steps[4].items.every(it => it.es && it.en && it.ans.length && it.distr.length >= 3)),
-  orderPerson: Array.from(new Set(DATA.A2.verbPath.map(v => Array.from(new Set(v.steps[4].items.map(i => i.personId))).length))),
+  orderCounts: Array.from(new Set(DATA.A2.verbPath.map(v => v.steps[3].items.length))),
+  orderItemsComplete: DATA.A2.verbPath.every(v => v.steps[3].items.every(it => it.es && it.en && it.ans.length && it.distr.length >= 3)),
+  orderPerson: Array.from(new Set(DATA.A2.verbPath.map(v => Array.from(new Set(v.steps[3].items.map(i => i.personId))).length))),
   verbsMatchDeck: (function () {
     const deckVerbs = Array.from(new Set(DATA.A2.verbCards.filter(c => c.verbEs).map(c => c.verbEs))).sort();
     const pathVerbs = DATA.A2.verbPath.map(v => v.es).sort();
     return deckVerbs.length === pathVerbs.length && deckVerbs.every((v, i) => v === pathVerbs[i]);
   })(),
-  combosMatchDeck: DATA.A2.verbPath.every(function (v) {
-    const deck = DATA.A2.verbCards.filter(c => c.group === 'magic' && c.verbEs === v.es && c.direction === 'es-en');
-    return deck.length === v.steps[3].combos.length
-      && deck.every(c => v.steps[3].combos.some(x => x.frameId === c.frameId && x.es === c.es));
-  }),
+  noCombosLeft: DATA.A2.verbPath.every(v => v.steps.every(s => s.combos === undefined)),
   regularsShowTheStem: DATA.A2.verbPath.filter(v => !v.irregular && !v.defective).every(function (v) {
     const inf = v.es.replace(/se$/, '');
     const stem = inf.slice(0, -2);
@@ -72,16 +65,13 @@ const model = j(`{
 }`);
 
 test('the path covers all 190 handout verbs from the deck', model.verbs === 190 && model.meta.verbs === 190 && model.verbsMatchDeck);
-test('every verb has the same five steps in order', model.fiveSteps && model.stepIds.length === 1);
+test('every verb has the same four steps in order', model.fourSteps && model.stepIds.length === 1 && model.noCombosLeft);
 test('step 1 (root) asks for the infinitive, and reflexives also accept the bare verb',
   model.rootAnswers && model.reflexiveAccepts);
 test('presente + pretérito always show a piece and the typed piece finishes the form',
   model.splitsAssemble && model.everyVerbHasSplits);
 test('regular verbs show the stem only — hablar → [habl] + "o"', model.regularsShowTheStem);
-test('every verb drills its 11 magic combinations with a hint',
-  model.comboCounts.length === 1 && model.comboCounts[0] === 11
-  && model.comboFrames[0].split(',').length === 11 && model.comboHints && model.combosMatchDeck);
-test('step 5 is the word-order bank for that verb (66 sentences, distractors included)',
+test('step 4 is the word-order bank for that verb (66 sentences, distractors included)',
   model.orderCounts.length === 1 && model.orderCounts[0] === 66 && model.orderItemsComplete && model.orderPerson[0] === 6);
 test('85 irregular / 105 regular, no build problems', model.meta.irregular === 85 && model.meta.regular === 105
   && model.meta.problems.length === 0);
@@ -109,11 +99,7 @@ const splits = j(`{
     return es + ' presente [' + v.steps[1].shown + '] + (' + v.steps[1].answer + ') = ' + v.steps[1].full
       + ' / pretérito [' + v.steps[2].shown + '] + (' + v.steps[2].answer + ') = ' + v.steps[2].full;
   }),
-  accents: VERB_PATH.byEs.continuar.steps[1].shown + '|' + VERB_PATH.byEs.continuar.steps[1].answer,
-  magic: ['comer','irse','llover'].map(function (es) {
-    const v = VERB_PATH.byEs[es];
-    return v.steps[3].combos.map(function (c) { return c.en + ' -> ' + c.es; }).join(' | ');
-  })
+  accents: VERB_PATH.byEs.continuar.steps[1].shown + '|' + VERB_PATH.byEs.continuar.steps[1].answer
 }`, null);
 
 test('a regular verb shows the stem and the player types the ending',
@@ -130,14 +116,6 @@ test('reflexives keep the pronoun with the person', splits.reflexive.join(' ; ')
 test('impersonal verbs use the 3rd person (llover → [ll] + "ueve", nevar → [n] + "ieva")',
   splits.impersonal.join(' ; ') === 'llover presente [ll] + (ueve) = llueve / pretérito [llov] + (ió) = llovió ; nevar presente [n] + (ieva) = nieva / pretérito [nev] + (ó) = nevó');
 test('accented verbs keep the accent in the shown piece (continúo)', splits.accents === 'continú|o');
-test('magic combos keep the infinitive (and the reflexive clitic with it)',
-  splits.magic[0].indexOf('I need to eat -> Necesito comer') === 0
-  && splits.magic[1].indexOf('I need to leave -> Necesito irme') === 0
-  && splits.magic[1].indexOf('Necesito ir') >= 0
-  && splits.magic[2].indexOf('It has just rained -> Acaba de llover') >= 0
-  && splits.magic[2].indexOf('It usually rains -> Suele llover') >= 0
-  && splits.magic[2].indexOf('I like it when it rains -> Me gusta cuando llueve') >= 0
-  && splits.magic[2].indexOf('I usually rain') < 0);
 
 /* ---------------- answer checking ---------------- */
 const check = (es, stepIndex, typed) =>
@@ -157,7 +135,6 @@ const progress = j(`(function () {
   const v = VERB_PATH.byEs.comer;
   const out = [];
   const snap = label => out.push(label + ': step=' + verbPathProgress.get('comer').step
-    + ' magicDone=' + verbPathProgress.get('comer').magicDone
     + ' learned=' + verbPathProgress.get('comer').learned
     + ' correct=' + verbPathProgress.get('comer').correct
     + ' wrong=' + verbPathProgress.get('comer').wrong);
@@ -167,36 +144,26 @@ const progress = j(`(function () {
   verbPathProgress.record(v, false, 2); snap('pretérito missed');
   verbPathProgress.record(v, false, 2); snap('pretérito missed again');
   verbPathProgress.record(v, true, 2);  snap('pretérito passed (resumed there)');
-  verbPathProgress.record(v, true, 3);  snap('combo 1');
-  verbPathProgress.record(v, true, 3);  snap('combo 2');
-  verbPathProgress.record(v, false, 3); snap('combo 3 missed');
-  verbPathProgress.record(v, true, 3);  snap('combo 3 passed');
-  for (let i = 0; i < 8; i++) verbPathProgress.record(v, true, 3);
-  snap('all 11 combos passed');
-  verbPathProgress.record(v, true, 4);  snap('word order passed');
-  verbPathProgress.record(v, false, 4); snap('a miss on a learned verb');
+  verbPathProgress.record(v, false, 3); snap('word order missed');
+  verbPathProgress.record(v, true, 3);  snap('word order passed');
+  verbPathProgress.record(v, false, 3); snap('a miss on a learned verb');
   return out;
 })()`, null);
 
-test('a fresh verb starts at the root step', progress[0] === 'fresh: step=0 magicDone=0 learned=false correct=0 wrong=0');
+test('a fresh verb starts at the root step', progress[0] === 'fresh: step=0 learned=false correct=0 wrong=0');
 test('each passed step is saved and moves the verb forward',
-  progress[1] === 'root passed: step=1 magicDone=0 learned=false correct=1 wrong=0'
-  && progress[2] === 'presente passed: step=2 magicDone=0 learned=false correct=2 wrong=0');
+  progress[1] === 'root passed: step=1 learned=false correct=1 wrong=0'
+  && progress[2] === 'presente passed: step=2 learned=false correct=2 wrong=0');
 test('a mistake freezes the verb at the failed step — nothing already passed is lost',
-  progress[3] === 'pretérito missed: step=2 magicDone=0 learned=false correct=2 wrong=1'
-  && progress[4] === 'pretérito missed again: step=2 magicDone=0 learned=false correct=2 wrong=2'
-  && progress[5] === 'pretérito passed (resumed there): step=3 magicDone=0 learned=false correct=3 wrong=2');
-test('inside the magic-combos step the exact combo is remembered',
-  progress[6] === 'combo 1: step=3 magicDone=1 learned=false correct=4 wrong=2'
-  && progress[7] === 'combo 2: step=3 magicDone=2 learned=false correct=5 wrong=2'
-  && progress[8] === 'combo 3 missed: step=3 magicDone=2 learned=false correct=5 wrong=3'
-  && progress[9] === 'combo 3 passed: step=3 magicDone=3 learned=false correct=6 wrong=3');
-test('finishing all 11 combos moves to the word-order step',
-  progress[10] === 'all 11 combos passed: step=4 magicDone=0 learned=false correct=14 wrong=3');
+  progress[3] === 'pretérito missed: step=2 learned=false correct=2 wrong=1'
+  && progress[4] === 'pretérito missed again: step=2 learned=false correct=2 wrong=2'
+  && progress[5] === 'pretérito passed (resumed there): step=3 learned=false correct=3 wrong=2');
+test('a miss on the last step keeps the verb there, unlearned',
+  progress[6] === 'word order missed: step=3 learned=false correct=3 wrong=3');
 test('passing the word-order step learns the verb',
-  progress[11] === 'word order passed: step=5 magicDone=0 learned=true correct=15 wrong=3');
+  progress[7] === 'word order passed: step=4 learned=true correct=4 wrong=3');
 test('a miss after learning never un-learns the verb',
-  progress[12] === 'a miss on a learned verb: step=5 magicDone=0 learned=true correct=15 wrong=4');
+  progress[8] === 'a miss on a learned verb: step=4 learned=true correct=4 wrong=4');
 
 const resume = j(`(function () {
   verbPathProgress.reset();
@@ -229,14 +196,12 @@ test('stats split learned / in progress / new', resume.stats.total === 190
 const full = j(`(function () {
   verbPathProgress.reset();
   const v = VERB_PATH.byEs.ir;
-  const order = [0, 1, 2];
+  const order = [0, 1, 2, 3];
   order.forEach(i => verbPathProgress.record(v, true, i));
-  for (let i = 0; i < 11; i++) verbPathProgress.record(v, true, 3);
-  verbPathProgress.record(v, true, 4);
   const p = verbPathProgress.get('ir');
   return { step: p.step, learned: p.learned, correct: p.correct, wrong: p.wrong, remaining: DATA.A2.verbPath.filter(x => !verbPathProgress.get(x.es).learned).length };
 })()`, null);
-test('a full clean run: 3 typed steps + 11 combos + 1 sentence = learned', full.step === 5 && full.learned
-  && full.correct === 15 && full.wrong === 0 && full.remaining === 189);
+test('a full clean run: 3 typed steps + 1 sentence = learned', full.step === 4 && full.learned
+  && full.correct === 4 && full.wrong === 0 && full.remaining === 189);
 
 console.log('\nVerb Path: all checks passed ✅');

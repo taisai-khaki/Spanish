@@ -7,7 +7,8 @@ Progress is saved in your browser (localStorage).
 
 **Regular items and the 200-verb flash cards:** 5 correct in a row learns and retires the item; one wrong answer resets its streak to 0.
 **A2 verb variations:** each verb has 66 linked sentence builders (11 magic frames × 6 person forms). A sentence counts after one correct answer, and the verb is learned only when all 66 are complete. Wrong answers stay in the queue.
-**🧭 Verb Path (A2 handout verbs):** each verb is walked through five steps — root (English → Spanish), presente, pretérito, the 11 magic combos, then a real word-order sentence. Pass all five and the verb is learned. A wrong answer keeps every step already passed **and** saves the step that failed, so the verb resumes exactly there, never from the beginning.
+**🧭 Verb Path (A2 handout verbs):** each verb is walked through four steps — root (English → Spanish), presente, pretérito, then a real word-order sentence. Pass all four and the verb is learned. A wrong answer keeps every step already passed **and** saves the step that failed, so the verb resumes exactly there, never from the beginning.
+**How the path rotates:** one turn per verb per pass. A verb missed at any step goes to the **back of the rotation**, so it is not shown again until every other verb that is still not learned has had its turn — with 190 verbs pending, a miss on the first verb comes back only after the other 189 have been served once (and then at the exact step it failed).
 Queues contain only items that are not yet learned.
 
 **How the 200-verb deck rotates** (📚 200 Verbs & Glue Words): a card answered correctly is not shown again until every one of the 7,076 cards has been seen once — so one correct answer per card per pass, and a card needs 5 passes of correct answers to lock. A card answered **wrong** is put straight back into rotation within a few questions (up to ~30), so misses get fixed immediately; the pass keeps counting where it was.
@@ -28,7 +29,7 @@ XP is banked every 10 answers and whenever you leave the game, so a long session
 
 | Game | Skill | Formats |
 | --- | --- | --- |
-| 🧭 **Verb Path** | Verbs, inside-out | one verb per turn, five typed steps: **1 root** (English → Spanish infinitive) → **2 presente** → **3 pretérito** (the part that stays is shown, the part that changes is typed — regular verbs show the stem, irregulars keep only the piece of the stem that survives, and `ir` shows nothing at all) → **4 the 11 magic combos typed** → **5 the word-order sentence**. A miss saves the run at that step; the verb comes back there |
+| 🧭 **Verb Path** | Verbs, inside-out | one verb per turn, four typed steps: **1 root** (English → Spanish infinitive) → **2 presente** → **3 pretérito** (the part that stays is shown, the part that changes is typed — regular verbs show the stem, irregulars keep only the piece of the stem that survives, and `ir` shows nothing at all) → **4 the word-order sentence**. A miss saves the run at that step and sends the verb to the back of the rotation, so every other unlearned verb is shown before it comes back there |
 | 📐 **Grammar Judge** | Grammar | ¿cuál es correcta? · spot the mistake (covering all Word Order grammar rules across A1–B2) |
 | 🧩 **Word Order** | Grammar in context | build the sentence from shuffled words (with rich tense, subject, and similar-word distractors) |
 | 🃏 **Level Flashcards** | Verbs (Tenses & Combinations) + Nouns | flippable flashcards & active check for all level verbs across Presente, Pretérito, Imperfecto, Futuro, Condicional, and Combinations + all nouns in the level |
@@ -78,7 +79,7 @@ python3 -m http.server 8080
 
 ## The Verb Path (🧭, A2 handout verbs)
 
-`js/data-verbpath.js` turns the deck plus the A2 word-order bank into the five-step route for all 190 verbs; `js/games/verbpath.js` plays it and keeps the per-verb progress in `spanlab.verbPath.A2` (steps passed, combo index, attempts, correct/wrong).
+`js/data-verbpath.js` turns the deck plus the A2 word-order bank into the four-step route for all 190 verbs; `js/games/verbpath.js` plays it and keeps the per-verb progress in `spanlab.verbPath.A2` (steps passed, attempts, correct/wrong).
 
 **What the player sees per step**
 
@@ -87,12 +88,11 @@ python3 -m http.server 8080
 | 1 · Root | the English gloss (`to eat`) | the Spanish infinitive (`comer`); reflexives also accept the bare verb (`sentir` for `sentirse`) |
 | 2 · Presente | the piece that stays (`com`), labeled Presente · Yo (I) | the piece that changes (`o` → **como**) |
 | 3 · Pretérito | the same in the simple past (`com`) | the piece that changes (`í` → **comí**) |
-| 4 · Combos | the English of each magic frame (`I need to eat`) | the full combination (`Necesito comer`) — all 11 |
-| 5 · Word order | the English sentence | taps the shuffled words into place (the existing builder, distractors included) |
+| 4 · Word order | the English sentence | taps the shuffled words into place (the existing builder, distractors included) |
 
 **The show/type rule** is the longest shared prefix between the infinitive and the real form, so what must be typed is always the part that changed: `hablar` → `[habl]`+`o`, `tener` → `[ten]`+`go`, `poder` → `[p]`+`uedo`, `pedir` → `[p]`+`ido`, `sentirse` → `[me sent]`+`í`, `continuar` → `[continú]`+`o`, and for `ir` nothing is shown at all — the player types `voy` (presente) and `fui` (pretérito). `llover`/`nevar` are impersonal, so those two drill the 3rd person (`[ll]`+`ueve`). Accents and case are forgiven when checking.
 
-**Saving:** progress is per verb and per step. Passing a step advances it; missing one stops the walk right there and hands the turn to the next verb — the missed verb drops back into rotation a few questions later **at the failing step** (inside the combos step, the exact combo number is kept too). A learned verb is retired from the queue; opening it with **Practice** walks the whole path again without ever moving the saved steps backwards.
+**Saving & rotation:** progress is per verb and per step. Passing a step advances it; missing one stops the walk right there and hands the turn to the next verb. The missed verb goes to the **back of the rotation** — one turn per verb per pass — so it is not repeated until every other verb that is still not learned has been shown once (190 pending → a miss on the first verb comes back only after the other 189), and it resumes **at the failing step**. A learned verb is retired from the rotation; opening it with **Practice** walks the whole path again without ever moving the saved steps backwards.
 
 ## Content files
 
