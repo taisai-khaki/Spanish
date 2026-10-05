@@ -226,9 +226,9 @@ t('reading + grammar formats are from their lists', run(`
     return FORMATS.reading.includes(r) && FORMATS.grammar.includes(g); })()`));
 
 console.log('== games boot at all levels ==');
-t('5 games registered: Grammar Judge, Word Order, Level Flashcards, 200 Verbs & Glue Words, Verb Path', run('GAMES.length === 5 && JSON.stringify(GAMES.map(g => g.id)) === \'["grammar","sentences","flashcards","verbcards","verbpath"]\''));
+t('6 games registered, including Topic Text Studio', run('GAMES.length === 6 && JSON.stringify(GAMES.map(g => g.id)) === \'["grammar","sentences","flashcards","verbcards","verbpath","topic-text"]\''));
 t('the Verb Path game is registered with its 190-verb route', run('(function () { const g = GAMES.find(x => x.id === "verbpath"); return !!g && /4 steps/.test(g.tag) && DATA.A2.verbPath.length === 190 && typeof verbPathProgress.get === "function"; })()'));
-t('all 4 boot at A1/A2/B1/B2/EXAM without throwing', run(`
+t('all 6 games boot at A1/A2/B1/B2/EXAM without throwing', run(`
   (function(){
     const v = document.getElementById('view');
     const levels = ['A1','A2','B1','B2','EXAM'];
@@ -240,6 +240,36 @@ t('all 4 boot at A1/A2/B1/B2/EXAM without throwing', run(`
       }
     }
     return true; })()`));
+t('Topic Text Studio generates short, long, and conversation practice at every level', run(`
+  (function(){
+    const counts = { short: 4, long: 8, conversation: 8 };
+    return ['A1','A2','B1','B2','EXAM'].every(lv =>
+      Object.keys(counts).every(mode => {
+        const p = topicTextGenerator.generate('la comida y los viajes', mode, lv);
+        const allowed = new Set(topicTextGenerator.availableVerbs(lv));
+        return p.level === lv && p.mode === mode && p.lines.length === counts[mode]
+          && p.plainText.includes('la comida y los viajes')
+          && p.lines.every(line => allowed.has(line.verb)
+            && line.text.split(topicTextGenerator.marker).length === 2
+            && p.plainText.includes(line.answer));
+      }));
+  })()`));
+t('Topic Text Studio uses only verbs from each selected level bank', run(`
+  (function(){
+    return ['A1','A2','B1','B2'].every(lv => {
+      const flashVerbs = new Set(DATA[lv].flashcards.filter(c => c.cardType === 'verb').map(c => c.verbEs));
+      return ['short','long','conversation'].every(mode =>
+        topicTextGenerator.generate('un tema de prueba', mode, lv).lines.every(line => flashVerbs.has(line.verb)));
+    });
+  })()`));
+t('Topic Text Studio cleans empty/control-heavy topics and has EXAM interview verbs', run(`
+  (function(){
+    let rejected = false;
+    try { topicTextGenerator.generate('   ', 'short', 'A1'); } catch (e) { rejected = true; }
+    const p = topicTextGenerator.generate('  México\\n y {historia}  ', 'conversation', 'EXAM');
+    return rejected && p.topic === 'México y historia'
+      && p.lines.every(line => topicTextGenerator.availableVerbs('EXAM').includes(line.verb));
+  })()`));
 t('Level Flashcards in A1–B2 covers verbs across all tenses/combinations plus all level nouns', run(`
   (function(){
     const g = GAMES.find(x => x.id === 'flashcards');
